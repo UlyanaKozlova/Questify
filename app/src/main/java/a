@@ -1,0 +1,107 @@
+
+Clothing
+- long localId;
+- String globalId;
+
+- string name;
+- int price;
+
+- long updatedAt;
+- boolean isDeleted;
+- boolean needSync;
+
+Pet
+- long localId;
+- String globalId;
+
+- String userGlobalId;
+- String currentClothingGlobalId;
+
+- long updatedAt;
+- boolean isDeleted;
+- boolean needSync;
+
+
+PetClothingCrossRef
+- String petGlobalId;
+- String clothingGlobalId
+
+
+
+Project
+- Long localId;
+- String globalId;
+
+- String userGlobalId;
+
+- String projectName;
+
+- long updatedAt;
+- boolean isDeleted;
+- boolean needSync;
+
+
+Task
+- Long localId;
+- String globalId;
+
+- String projectGlobalId;
+- String userGlobalId;
+
+- boolean isDone;
+- String taskName;
+- String description;
+- Priority priority;
+- Difficulty difficulty;
+- long deadline;
+
+- long updatedAt;
+- boolean isDeleted;
+- boolean needSync;
+
+
+Subtask
+- Long localId;
+- String globalId;
+
+- String taskGlobalId;
+
+- boolean isDone;
+- String subtaskName;
+
+- long updatedAt;
+- boolean isDeleted;
+- boolean needSync;
+
+
+User
+- String globalId;
+
+- String username;
+- String passwordHash;
+- int level;
+- Long coins;
+
+- long updatedAt;
+- boolean isDeleted;
+- boolean needSync;
+
+
+
+
+public enum Difficulty {
+    VERY_DIFFICULT("very-difficult"),
+    DIFFICULT("difficult"),
+    MEDIUM("medium"),
+    EASY("easy"),
+    VERY_EASY("very-easy");
+    private final String difficulty;
+}
+public enum Priority {
+    VERY_HIGH("very-high"),
+    HIGH("high"),
+    MEDIUM("medium"),
+    LOW("low"),
+    VERY_LOW("very-low");
+    private final String priority;
+}
