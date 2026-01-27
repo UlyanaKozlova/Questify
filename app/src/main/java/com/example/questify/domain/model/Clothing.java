@@ -8,6 +8,13 @@ public class Clothing {
 
     private long updatedAt;
 
+    public Clothing(String globalId, String name, int price, long updatedAt) {
+        this.globalId = globalId;
+        this.name = name;
+        this.price = price;
+        this.updatedAt = updatedAt;
+    }
+
     public String getGlobalId() {
         return globalId;
     }

@@ -8,6 +8,13 @@ public class Pet {
 
     private long updatedAt;
 
+    public Pet(String globalId, String userGlobalId, String currentClothingGlobalId, long updatedAt) {
+        this.globalId = globalId;
+        this.userGlobalId = userGlobalId;
+        this.currentClothingGlobalId = currentClothingGlobalId;
+        this.updatedAt = updatedAt;
+    }
+
     public String getCurrentClothingGlobalId() {
         return currentClothingGlobalId;
     }

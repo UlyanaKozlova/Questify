@@ -9,6 +9,13 @@ public class Project {
 
     private long updatedAt;
 
+    public Project(String globalId, String userGlobalId, String projectName, long updatedAt) {
+        this.globalId = globalId;
+        this.userGlobalId = userGlobalId;
+        this.projectName = projectName;
+        this.updatedAt = updatedAt;
+    }
+
     public String getGlobalId() {
         return globalId;
     }

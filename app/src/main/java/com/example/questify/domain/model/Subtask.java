@@ -11,6 +11,14 @@ public class Subtask {
 
     private long updatedAt;
 
+    public Subtask(String globalId, String taskGlobalId, boolean isDone, String subtaskName, long updatedAt) {
+        this.globalId = globalId;
+        this.taskGlobalId = taskGlobalId;
+        this.isDone = isDone;
+        this.subtaskName = subtaskName;
+        this.updatedAt = updatedAt;
+    }
+
     public String getGlobalId() {
         return globalId;
     }

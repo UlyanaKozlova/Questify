@@ -13,6 +13,15 @@ public class User {
 
     private long updatedAt;
 
+    public User(String globalId, String username, String passwordHash, int level, long coins, long updatedAt) {
+        this.globalId = globalId;
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.level = level;
+        this.coins = coins;
+        this.updatedAt = updatedAt;
+    }
+
     public String getGlobalId() {
         return globalId;
     }

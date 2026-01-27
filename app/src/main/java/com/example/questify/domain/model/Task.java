@@ -18,6 +18,28 @@ public class Task {
 
     private long updatedAt;
 
+    public Task(String globalId,
+                String projectGlobalId,
+                String userGlobalId,
+                boolean isDone,
+                String taskName,
+                String description,
+                Priority priority,
+                Difficulty difficulty,
+                long deadline,
+                long updatedAt) {
+        this.globalId = globalId;
+        this.projectGlobalId = projectGlobalId;
+        this.userGlobalId = userGlobalId;
+        this.isDone = isDone;
+        this.taskName = taskName;
+        this.description = description;
+        this.priority = priority;
+        this.difficulty = difficulty;
+        this.deadline = deadline;
+        this.updatedAt = updatedAt;
+    }
+
     public String getGlobalId() {
         return globalId;
     }

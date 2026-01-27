@@ -6,6 +6,11 @@ public class PetClothingLink {
     private String petGlobalId;
     private String clothingGlobalId;
 
+    public PetClothingLink(String petGlobalId, String clothingGlobalId) {
+        this.petGlobalId = petGlobalId;
+        this.clothingGlobalId = clothingGlobalId;
+    }
+
     public String getPetGlobalId() {
         return petGlobalId;
     }
