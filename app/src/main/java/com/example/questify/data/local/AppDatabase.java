@@ -52,8 +52,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     AppDatabase.class,
                                     "questify_database"
-                            )
-                            .fallbackToDestructiveMigration() // todo миграции
+                            )// todo миграции
                             .build();
                 }
             }

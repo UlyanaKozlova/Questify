@@ -8,10 +8,12 @@ import com.example.questify.data.mapper.UserMapper;
 import com.example.questify.domain.model.User;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class UserRepository {
 
     private final UserDao userDao;
-
+    @Inject
     public UserRepository(UserDao userDao) {
         this.userDao = userDao;
     }

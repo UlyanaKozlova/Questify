@@ -9,10 +9,12 @@ import com.example.questify.domain.model.Subtask;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 public class SubtaskRepository {
 
     private final SubtaskDao subtaskDao;
-
+    @Inject
     public SubtaskRepository(SubtaskDao subtaskDao) {
         this.subtaskDao = subtaskDao;
     }

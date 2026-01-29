@@ -11,10 +11,13 @@ import com.example.questify.domain.model.Clothing;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 public class ClothingRepository {
 
     private final ClothingDao clothingDao;
 
+    @Inject
     public ClothingRepository(ClothingDao clothingDao) {
         this.clothingDao = clothingDao;
     }
