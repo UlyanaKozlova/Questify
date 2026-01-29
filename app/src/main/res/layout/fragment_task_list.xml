@@ -17,12 +17,13 @@
             android:layout_height="wrap_content"
             android:text="@string/buttonFilter" />
 
-        <Button
-            android:id="@+id/buttonSort"
+        <Spinner
+            android:id="@+id/spinnerSort"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="@string/buttonSort" />
+            android:prompt="@string/buttonSort" />
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.questify.R;
 import com.example.questify.domain.model.Task;
+import com.example.questify.domain.usecase.plans.sort.SortType;
 import com.example.questify.ui.tasks.create.TaskCreateFragment;
 
 
@@ -38,7 +42,15 @@ public class TaskListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         Button buttonFilter = view.findViewById(R.id.buttonFilter);
-        Button buttonSort = view.findViewById(R.id.buttonSort);
+
+        Spinner spinnerSort = view.findViewById(R.id.spinnerSort);
+        ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.sort_options,
+                android.R.layout.simple_spinner_item);
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSort.setAdapter(sortAdapter);
+
         Button buttonImport = view.findViewById(R.id.buttonImport);
         Button buttonAdd = view.findViewById(R.id.buttonAddTask);
 
@@ -51,8 +63,27 @@ public class TaskListFragment extends Fragment {
             @Override
             public void onTaskChecked(Task task, boolean isChecked) {
                 taskListViewModel.completeTask(task, isChecked);
+                //todo почему не меняется
+
             }
         });
+
+        spinnerSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    return;
+                }
+                SortType type = SortType.getType(position);
+                taskListViewModel.sort(type);
+                spinnerSort.setSelection(0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
 
         recyclerView.setAdapter(taskListAdapter);
 
@@ -64,9 +95,6 @@ public class TaskListFragment extends Fragment {
             // todo фильтр
         });
 
-        buttonSort.setOnClickListener(v -> {
-            // todo сорт
-        });
 
         buttonAdd.setOnClickListener(v -> {
             requireActivity()
@@ -83,6 +111,7 @@ public class TaskListFragment extends Fragment {
             // todo импорт
         });
     }
+
     @Override
     public void onResume() {
         super.onResume();
