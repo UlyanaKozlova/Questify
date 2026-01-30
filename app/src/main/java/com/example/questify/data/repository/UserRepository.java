@@ -19,7 +19,6 @@ public class UserRepository {
         this.userDao = userDao;
         this.session = session;
     }
-
     public void ensureLocalUserExists() {
         UserEntity existing = userDao.getUserSync(session.getUserGlobalId());
         if (existing == null) {
@@ -27,7 +26,7 @@ public class UserRepository {
             user.globalId = session.getUserGlobalId();
             user.username = "LocalUser";
             user.passwordHash = "12345";
-            user.level = 1;
+            user.level = 0;
             user.coins = 0;
             user.updatedAt = System.currentTimeMillis();
             user.isDeleted = false;
@@ -35,21 +34,6 @@ public class UserRepository {
             userDao.insert(user);
         }
     }
-    public UserEntity getCurrentUser() {
-        return userDao.getUserSync(session.getUserGlobalId());
-    }
-
-    public void update(UserEntity user) {
-        userDao.update(user);
-    }
-
-    public void save(User user) {
-        UserEntity entity = UserMapper.toEntity(user);
-        entity.updatedAt = System.currentTimeMillis();
-        entity.needsSync = true;
-        userDao.insert(entity);
-    }
-
     public void update(User user) {
         UserEntity entity = UserMapper.toEntity(user);
         entity.updatedAt = System.currentTimeMillis();
