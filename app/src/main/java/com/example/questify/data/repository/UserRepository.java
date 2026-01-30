@@ -1,11 +1,11 @@
 package com.example.questify.data.repository;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
+import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.UserDao;
 import com.example.questify.data.local.entity.UserEntity;
 import com.example.questify.data.mapper.UserMapper;
 import com.example.questify.domain.model.User;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -13,13 +13,34 @@ import javax.inject.Inject;
 public class UserRepository {
 
     private final UserDao userDao;
+    private final UserSession session;
     @Inject
-    public UserRepository(UserDao userDao) {
+    public UserRepository(UserDao userDao, UserSession session) {
         this.userDao = userDao;
+        this.session = session;
     }
 
-    public LiveData<User> getUser(String globalId) {
-        return Transformations.map(userDao.getUser(globalId), UserMapper::toDomain);
+    public void ensureLocalUserExists() {
+        UserEntity existing = userDao.getUserSync(session.getUserGlobalId());
+        if (existing == null) {
+            UserEntity user = new UserEntity();
+            user.globalId = session.getUserGlobalId();
+            user.username = "LocalUser";
+            user.passwordHash = "12345";
+            user.level = 1;
+            user.coins = 0;
+            user.updatedAt = System.currentTimeMillis();
+            user.isDeleted = false;
+            user.needsSync = false;
+            userDao.insert(user);
+        }
+    }
+    public UserEntity getCurrentUser() {
+        return userDao.getUserSync(session.getUserGlobalId());
+    }
+
+    public void update(UserEntity user) {
+        userDao.update(user);
     }
 
     public void save(User user) {

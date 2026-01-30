@@ -2,9 +2,7 @@ package com.example.questify.domain.model;
 
 
 public class User {
-
     private String globalId;
-
     private String username;
     private String passwordHash;
 
@@ -13,8 +11,12 @@ public class User {
 
     private long updatedAt;
     //todo hash, equals, string, delete set во всех
-
-    public User(String globalId, String username, String passwordHash, int level, long coins, long updatedAt) {
+    public User(String globalId,
+                String username,
+                String passwordHash,
+                int level,
+                long coins,
+                long updatedAt) {
         this.globalId = globalId;
         this.username = username;
         this.passwordHash = passwordHash;
