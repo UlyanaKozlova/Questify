@@ -1,5 +1,7 @@
 package com.example.questify.domain.model;
 
+import java.util.UUID;
+
 public class Task {
 
     private String globalId;
@@ -38,6 +40,28 @@ public class Task {
         this.difficulty = difficulty;
         this.deadline = deadline;
         this.updatedAt = updatedAt;
+    }
+
+    public Task(String projectGlobalId,
+                String userGlobalId,
+                String taskName,
+                String description,
+                Priority priority,
+                Difficulty difficulty,
+                long deadline) {
+        this.globalId = UUID.randomUUID().toString();
+        this.projectGlobalId = projectGlobalId;
+        this.userGlobalId = userGlobalId;
+        this.isDone = false;
+        this.taskName = taskName;
+        this.description = description;
+        this.priority = priority;
+        this.difficulty = difficulty;
+        this.deadline = deadline;
+        this.updatedAt = System.currentTimeMillis();
+    }
+
+    public Task() {
     }
 
     public String getGlobalId() {

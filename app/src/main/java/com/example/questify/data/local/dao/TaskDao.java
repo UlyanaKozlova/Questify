@@ -17,8 +17,8 @@ public interface TaskDao {
     @Update
     void update(TaskEntity entity);
 
-    @Query("SELECT * FROM tasks WHERE userGlobalId = :userGlobalId AND isDeleted = 0")
-    LiveData<List<TaskEntity>> getTasksForUser(String userGlobalId);
+    @Query("SELECT * FROM tasks WHERE isDeleted = 0")
+    List<TaskEntity> getTasksForUser();
 
     @Query("SELECT * FROM tasks WHERE projectGlobalId = :projectGlobalId AND isDeleted = 0")
     LiveData<List<TaskEntity>> getTasksForProject(String projectGlobalId);

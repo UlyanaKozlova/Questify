@@ -18,8 +18,8 @@ public interface ProjectDao {
     @Update
     void update(ProjectEntity entity);
 
-    @Query("SELECT * FROM projects WHERE userGlobalId = :userGlobalId AND isDeleted = 0")
-    LiveData<List<ProjectEntity>> getProjectsForUser(String userGlobalId);
+    @Query("SELECT * FROM projects WHERE isDeleted = 0")
+    List<ProjectEntity> getProjectsForUser();
 
     @Query("SELECT * FROM projects WHERE globalId = :globalId LIMIT 1")
     ProjectEntity getByGlobalId(String globalId);

@@ -12,6 +12,7 @@ public class User {
     private long coins;
 
     private long updatedAt;
+    //todo hash, equals, string, delete set во всех
 
     public User(String globalId, String username, String passwordHash, int level, long coins, long updatedAt) {
         this.globalId = globalId;
