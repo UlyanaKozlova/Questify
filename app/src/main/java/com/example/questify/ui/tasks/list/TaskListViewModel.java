@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.domain.model.Task;
+import com.example.questify.domain.usecase.plans.filter.FilterTasksUseCase;
+import com.example.questify.domain.usecase.plans.filter.TaskFilter;
 import com.example.questify.domain.usecase.plans.sort.SortOrder;
 import com.example.questify.domain.usecase.plans.sort.SortTasksUseCase;
 import com.example.questify.domain.usecase.plans.sort.SortType;
@@ -21,19 +23,19 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class TaskListViewModel extends ViewModel {
-    @Inject
-    SortTasksUseCase sortTasksUseCase;
     private final GetAllTasksUseCase getAllTasksUseCase;
     private final CompleteTaskUseCase completeTaskUseCase;
-
-    private final MutableLiveData<List<Task>> tasks = new MutableLiveData<>();
+    @Inject
+    SortTasksUseCase sortTasksUseCase;
+    @Inject
+    FilterTasksUseCase filterTasksUseCase;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-
+    private TaskFilter currentFilter = null;
     private SortType currentSortType = SortType.DEADLINE;
     private SortOrder currentSortOrder = SortOrder.ASC;
 
-
+    private final MutableLiveData<List<Task>> tasks = new MutableLiveData<>();
     public LiveData<List<Task>> getTasks() {
         return tasks;
     }
@@ -48,8 +50,14 @@ public class TaskListViewModel extends ViewModel {
 
 
     public void loadTasks() {
-        executor.execute(() -> tasks.postValue(getAllTasksUseCase.execute()));
+        executor.execute(() -> {
+            List<Task> list = getAllTasksUseCase.execute();
+            tasks.postValue(currentFilter != null
+                    ? filterTasksUseCase.execute(list, currentFilter)
+                    : list);
+        });
     }
+
     public void completeTask(Task task, boolean isDone) {
         executor.execute(() -> {
             if (isDone) {
@@ -58,6 +66,7 @@ public class TaskListViewModel extends ViewModel {
             loadTasks();
         });
     }
+
     public void sort(SortType type) {
         executor.execute(() -> {
             List<Task> list = getAllTasksUseCase.execute();
@@ -75,6 +84,15 @@ public class TaskListViewModel extends ViewModel {
             tasks.postValue(list);
         });
     }
+
     // todo мб хранить сразу список чтобы делать частичные сортировки
     // todo сделать визуализацию по возрастанию или по убыванию
+    public void applyFilter(TaskFilter filter) {
+        if (filter.getPriority() == null && filter.getDifficulty() == null && filter.getDeadlineBefore() == null) {
+            currentFilter = null;
+        } else {
+            currentFilter = filter;
+        }
+        loadTasks();
+    }
 }

@@ -20,6 +20,7 @@ import com.example.questify.R;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.usecase.plans.sort.SortType;
 import com.example.questify.ui.tasks.create.TaskCreateFragment;
+import com.example.questify.ui.tasks.list.filter.TaskFilterFragment;
 
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -87,23 +88,23 @@ public class TaskListFragment extends Fragment {
 
         recyclerView.setAdapter(taskListAdapter);
 
-        taskListViewModel = new ViewModelProvider(this).get(TaskListViewModel.class);
+        taskListViewModel = new ViewModelProvider(requireActivity()).get(TaskListViewModel.class);
         taskListViewModel.getTasks().observe(getViewLifecycleOwner(), taskListAdapter::submitList);
 
 
-        buttonFilter.setOnClickListener(v -> {
-            // todo фильтр
-        });
+        buttonFilter.setOnClickListener(v -> requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, new TaskFilterFragment())
+                .addToBackStack(null)
+                .commit());
 
-
-        buttonAdd.setOnClickListener(v -> {
-            requireActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragmentContainer, new TaskCreateFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        buttonAdd.setOnClickListener(v -> requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, new TaskCreateFragment())
+                .addToBackStack(null)
+                .commit());
         // todo навигация??
 
 
