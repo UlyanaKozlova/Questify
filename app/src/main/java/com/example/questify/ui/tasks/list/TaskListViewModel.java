@@ -60,12 +60,11 @@ public class TaskListViewModel extends ViewModel {
 
     public void completeTask(Task task, boolean isDone) {
         executor.execute(() -> {
-            if (isDone) {
-                completeTaskUseCase.execute(task);
-            }
-            loadTasks();
+            completeTaskUseCase.execute(task, isDone);
+            loadTasks(); // todo сортировка после отметки сбрасывается
         });
     }
+
 
     public void sort(SortType type) {
         executor.execute(() -> {
@@ -75,6 +74,7 @@ public class TaskListViewModel extends ViewModel {
                 currentSortOrder = (currentSortOrder == SortOrder.ASC)
                         ? SortOrder.DESC
                         : SortOrder.ASC;
+                // todo сортировка не сочетается с фильтрацией???
             } else {
                 currentSortType = type;
                 currentSortOrder = SortOrder.ASC;

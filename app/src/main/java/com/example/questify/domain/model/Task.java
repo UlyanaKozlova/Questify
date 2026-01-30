@@ -3,6 +3,7 @@ package com.example.questify.domain.model;
 import java.util.UUID;
 
 public class Task {
+    private long localId;
 
     private String globalId;
 
@@ -20,7 +21,8 @@ public class Task {
 
     private long updatedAt;
 
-    public Task(String globalId,
+    public Task(long localId,
+                String globalId,
                 String projectGlobalId,
                 String userGlobalId,
                 boolean isDone,
@@ -30,6 +32,7 @@ public class Task {
                 Difficulty difficulty,
                 long deadline,
                 long updatedAt) {
+        this.localId = localId;
         this.globalId = globalId;
         this.projectGlobalId = projectGlobalId;
         this.userGlobalId = userGlobalId;
@@ -142,5 +145,13 @@ public class Task {
 
     public void setUpdatedAt(long updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public long getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(long localId) {
+        this.localId = localId;
     }
 }

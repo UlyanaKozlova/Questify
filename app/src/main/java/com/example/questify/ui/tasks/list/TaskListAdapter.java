@@ -76,8 +76,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
             checkBox.setOnCheckedChangeListener(null);
             checkBox.setChecked(task.isDone());
-            checkBox.setOnCheckedChangeListener((btn, checked) ->
-                    listener.onTaskChecked(task, checked)
+            checkBox.setOnCheckedChangeListener((button, isChecked) ->
+                    listener.onTaskChecked(task, isChecked)
             );
 
             itemView.setOnClickListener(v -> listener.onTaskClicked(task));

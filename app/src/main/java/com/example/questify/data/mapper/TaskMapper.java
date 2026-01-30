@@ -10,7 +10,9 @@ public class TaskMapper {
     public static Task toDomain(TaskEntity entity) {
         return entity == null
                 ? null
-                : new Task(entity.globalId,
+                : new Task(
+                entity.localId,
+                entity.globalId,
                 entity.projectGlobalId,
                 entity.userGlobalId,
                 entity.isDone,
@@ -27,6 +29,7 @@ public class TaskMapper {
         }
 
         TaskEntity entity = new TaskEntity();
+        entity.localId = model.getLocalId();
         entity.globalId = model.getGlobalId();
         entity.projectGlobalId = model.getProjectGlobalId();
         entity.userGlobalId = model.getUserGlobalId();
@@ -35,7 +38,6 @@ public class TaskMapper {
         entity.description = model.getDescription();
         entity.deadline = model.getDeadline();
         entity.updatedAt = model.getUpdatedAt();
-
         entity.priority = model.getPriority().name();
         entity.difficulty = model.getDifficulty().name();
 
