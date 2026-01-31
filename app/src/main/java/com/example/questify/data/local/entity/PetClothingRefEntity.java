@@ -5,11 +5,10 @@ import androidx.room.Entity;
 import androidx.annotation.NonNull;
 
 @Entity(
-        tableName = "pet_clothing_cross_ref",
+        tableName = "pet_clothing_ref",
         primaryKeys = {"petGlobalId", "clothingGlobalId"}
 )
-public class PetClothingCrossRefEntity {
-
+public class PetClothingRefEntity {
     @NonNull
     public String petGlobalId;
 

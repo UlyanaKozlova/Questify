@@ -17,6 +17,6 @@ public class GetAllTasksUseCase {
     }
 
     public List<Task> execute() {
-        return taskRepository.getTasksForUser();
+        return taskRepository.getAll();
     }
 }

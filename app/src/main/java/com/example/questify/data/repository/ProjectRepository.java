@@ -14,16 +14,10 @@ import javax.inject.Inject;
 public class ProjectRepository {
 
     private final ProjectDao projectDao;
+
     @Inject
     public ProjectRepository(ProjectDao projectDao) {
         this.projectDao = projectDao;
-    }
-
-    public List<Project> getProjectsForUser() {
-        return projectDao.getProjectsForUser()
-                .stream()
-                .map(ProjectMapper::toDomain)
-                .collect(Collectors.toList());
     }
 
     public void save(Project project) {
@@ -40,11 +34,31 @@ public class ProjectRepository {
         projectDao.update(entity);
     }
 
+    public void delete(Project project) {
+        projectDao.delete(ProjectMapper.toEntity(project));
+    }
+
+    public void deleteAll() {
+        for (ProjectEntity projectEntity : projectDao.getAll()) {
+            projectDao.delete(projectEntity);
+        }
+    }
+
+    public List<Project> getAll() {
+        return projectDao.getAll()
+                .stream()
+                .map(ProjectMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
     public Project getByGlobalId(String globalId) {
         return ProjectMapper.toDomain(projectDao.getByGlobalId(globalId));
     }
 
-    public List<ProjectEntity> getNeedingSync() {
-        return projectDao.getNeedingSync();
+    public List<Project> getNeedingSync() {
+        return projectDao.getNeedingSync()
+                .stream()
+                .map(ProjectMapper::toDomain)
+                .collect(Collectors.toList());
     }
 }

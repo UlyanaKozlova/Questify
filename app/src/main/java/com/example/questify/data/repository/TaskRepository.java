@@ -13,18 +13,11 @@ import javax.inject.Inject;
 public class TaskRepository {
 
     private final TaskDao taskDao;
+
     @Inject
     public TaskRepository(TaskDao taskDao) {
         this.taskDao = taskDao;
     }
-
-    public List<Task> getTasksForUser() {
-        return taskDao.getTasksForUser()
-                .stream()
-                .map(TaskMapper::toDomain)
-                .collect(Collectors.toList());
-    }
-
 
     public void save(Task task) {
         TaskEntity entity = TaskMapper.toEntity(task);
@@ -32,9 +25,8 @@ public class TaskRepository {
         entity.needsSync = true;
         entity.isDeleted = false;
 
-        long id = taskDao.insert(entity);
+        taskDao.insert(entity);
     }
-
 
     public void update(Task task) {
         TaskEntity entity = TaskMapper.toEntity(task);
@@ -43,14 +35,31 @@ public class TaskRepository {
         taskDao.update(entity);
     }
 
-    public Task getByGlobalId(String globalId) {
-        return TaskMapper.toDomain(taskDao.getByGlobalId(globalId));
-    }
     public void delete(Task task) {
         taskDao.delete(TaskMapper.toEntity(task));
     }
 
-    public List<TaskEntity> getNeedingSync() {
-        return taskDao.getNeedingSync();
+    public void deleteAll() {
+        for (TaskEntity taskEntity : taskDao.getAll()) {
+            taskDao.delete(taskEntity);
+        }
+    }
+
+    public List<Task> getAll() {
+        return taskDao.getAll()
+                .stream()
+                .map(TaskMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public Task getByGlobalId(String globalId) {
+        return TaskMapper.toDomain(taskDao.getByGlobalId(globalId));
+    }
+
+    public List<Task> getNeedingSync() {
+        return taskDao.getNeedingSync()
+                .stream()
+                .map(TaskMapper::toDomain)
+                .collect(Collectors.toList());
     }
 }

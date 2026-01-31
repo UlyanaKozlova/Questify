@@ -24,7 +24,7 @@ public class GetUserUseCase {
     public User execute() {
         try {
             return executor.submit(() ->
-                    userRepository.getUserSync(userSession.getUserGlobalId())
+                    userRepository.getUserByGlobalId(userSession.getUserGlobalId())
             ).get();
         } catch (Exception e) {
             throw new RuntimeException(e);

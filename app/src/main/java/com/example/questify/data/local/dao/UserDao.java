@@ -1,6 +1,5 @@
 package com.example.questify.data.local.dao;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -13,16 +12,12 @@ import java.util.List;
 public interface UserDao {
     @Insert
     void insert(UserEntity entity);
-
     @Update
     void update(UserEntity entity);
 
-    @Query("SELECT * FROM users WHERE globalId = :globalId LIMIT 1")
-    LiveData<UserEntity> getUser(String globalId);
 
     @Query("SELECT * FROM users WHERE globalId = :globalId LIMIT 1")
-    UserEntity getUserSync(String globalId);
-
+    UserEntity getUser(String globalId);
     @Query("SELECT * FROM users WHERE needsSync = 1")
     List<UserEntity> getNeedingSync();
 }

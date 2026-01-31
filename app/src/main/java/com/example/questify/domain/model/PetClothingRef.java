@@ -1,12 +1,12 @@
 package com.example.questify.domain.model;
 
 
-public class PetClothingLink {
+public class PetClothingRef {
 
     private String petGlobalId;
     private String clothingGlobalId;
 
-    public PetClothingLink(String petGlobalId, String clothingGlobalId) {
+    public PetClothingRef(String petGlobalId, String clothingGlobalId) {
         this.petGlobalId = petGlobalId;
         this.clothingGlobalId = clothingGlobalId;
     }

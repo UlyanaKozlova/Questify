@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.example.questify.data.local.AppDatabase;
 import com.example.questify.data.local.dao.ClothingDao;
+import com.example.questify.data.local.dao.PetClothingRefDao;
 import com.example.questify.data.local.dao.PetDao;
 import com.example.questify.data.local.dao.ProjectDao;
 import com.example.questify.data.local.dao.SubtaskDao;
@@ -56,6 +57,11 @@ public class DatabaseModule {
     @Provides
     public ClothingDao provideClothingDao(AppDatabase db) {
         return db.clothingDao();
+    }
+
+    @Provides
+    public PetClothingRefDao petClothingRefDao(AppDatabase db) {
+        return db.petClothingCrossRefDao();
     }
 }
 

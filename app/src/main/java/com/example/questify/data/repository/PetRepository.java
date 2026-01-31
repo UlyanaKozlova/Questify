@@ -1,29 +1,37 @@
 package com.example.questify.data.repository;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
 
+import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.PetDao;
 import com.example.questify.data.local.entity.PetEntity;
 import com.example.questify.data.mapper.PetMapper;
 import com.example.questify.domain.model.Pet;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 public class PetRepository {
 
     private final PetDao petDao;
+    private final UserSession userSession;
+    private final ClothingRepository clothingRepository;
 
     @Inject
-    public PetRepository(PetDao petDao) {
+    public PetRepository(PetDao petDao,
+                         UserSession userSession,
+                         ClothingRepository clothingRepository) {
         this.petDao = petDao;
+        this.userSession = userSession;
+        this.clothingRepository = clothingRepository;
     }
 
-    public LiveData<Pet> getPetForUser(String userGlobalId) {
-        return Transformations.map(petDao.getPetForUser(userGlobalId), PetMapper::toDomain);
+    public Pet getPetForUser() {
+        return PetMapper.toDomain(petDao.getPet());
     }
+
 
     public void save(Pet pet) {
         PetEntity entity = PetMapper.toEntity(pet);
@@ -40,10 +48,35 @@ public class PetRepository {
     }
 
     public Pet getByGlobalId(String globalId) {
-        return PetMapper.toDomain(petDao.getByGlobalId(globalId));
+        return PetMapper.toDomain(petDao.getPetByGlobalId(globalId));
     }
 
-    public List<PetEntity> getNeedingSync() {
-        return petDao.getNeedingSync();
+    public List<Pet> getNeedingSync() {
+        return petDao.getNeedingSync()
+                .stream()
+                .map(PetMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public void ensureLocalPetExists() {
+        if (petDao.getPetByGlobalId(userSession.getUserGlobalId()) == null) {
+            PetEntity petEntity = new PetEntity();
+            petEntity.globalId = UUID.randomUUID().toString();
+            petEntity.userGlobalId = userSession.getUserGlobalId();
+            petEntity.currentClothingGlobalId = clothingRepository.getDefaultGlobalId();
+            petEntity.updatedAt = System.currentTimeMillis();
+            petEntity.isDeleted = false;
+            petEntity.needsSync = true;
+            petDao.insert(petEntity);
+        }
+    }
+
+    public void deleteProgress() {
+        PetEntity petEntity = petDao.getPetByGlobalId(userSession.getUserGlobalId());
+        petEntity.currentClothingGlobalId = clothingRepository.getDefaultGlobalId();
+        petEntity.updatedAt = System.currentTimeMillis();
+        petEntity.isDeleted = false;
+        petEntity.needsSync = true;
+        petDao.update(petEntity);
     }
 }

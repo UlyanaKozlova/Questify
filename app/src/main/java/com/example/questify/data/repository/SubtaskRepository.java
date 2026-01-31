@@ -1,11 +1,10 @@
 package com.example.questify.data.repository;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
 import com.example.questify.data.local.dao.SubtaskDao;
 import com.example.questify.data.local.entity.SubtaskEntity;
 import com.example.questify.data.mapper.SubtaskMapper;
 import com.example.questify.domain.model.Subtask;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,18 +13,10 @@ import javax.inject.Inject;
 public class SubtaskRepository {
 
     private final SubtaskDao subtaskDao;
+
     @Inject
     public SubtaskRepository(SubtaskDao subtaskDao) {
         this.subtaskDao = subtaskDao;
-    }
-
-    public LiveData<List<Subtask>> getSubtasksForTask(String taskGlobalId) {
-        return Transformations.map(subtaskDao.getSubtasksForTask(taskGlobalId),
-                entities -> entities
-                        .stream()
-                        .map(SubtaskMapper::toDomain)
-                        .collect(Collectors.toList())
-        );
     }
 
     public void save(Subtask subtask) {
@@ -42,11 +33,31 @@ public class SubtaskRepository {
         subtaskDao.update(entity);
     }
 
+    public void delete(Subtask subtask) {
+        subtaskDao.delete(SubtaskMapper.toEntity(subtask));
+    }
+
+    public void deleteAll() {
+        for (SubtaskEntity subtaskEntity : subtaskDao.getAllSubtasks()) {
+            subtaskDao.delete(subtaskEntity);
+        }
+    }
+
     public Subtask getByGlobalId(String globalId) {
         return SubtaskMapper.toDomain(subtaskDao.getByGlobalId(globalId));
     }
 
-    public List<SubtaskEntity> getNeedingSync() {
-        return subtaskDao.getNeedingSync();
+    public List<Subtask> getNeedingSync() {
+        return subtaskDao.getNeedingSync()
+                .stream()
+                .map(SubtaskMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public List<Subtask> getSubtasksForTask(String taskGlobalId) {
+        return subtaskDao.getSubtasksForTask(taskGlobalId)
+                .stream()
+                .map(SubtaskMapper::toDomain)
+                .collect(Collectors.toList());
     }
 }
