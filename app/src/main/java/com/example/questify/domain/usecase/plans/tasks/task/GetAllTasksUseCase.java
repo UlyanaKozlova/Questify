@@ -1,4 +1,4 @@
-package com.example.questify.domain.usecase.plans.task;
+package com.example.questify.domain.usecase.plans.tasks.task;
 
 
 import com.example.questify.data.repository.TaskRepository;

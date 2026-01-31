@@ -1,4 +1,4 @@
-package com.example.questify.domain.usecase.plans.sort;
+package com.example.questify.domain.usecase.plans.tasks.sort;
 
 import java.util.Arrays;
 

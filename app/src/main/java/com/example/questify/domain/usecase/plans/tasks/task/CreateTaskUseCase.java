@@ -1,4 +1,4 @@
-package com.example.questify.domain.usecase.plans.task;
+package com.example.questify.domain.usecase.plans.tasks.task;
 
 import com.example.questify.UserSession;
 import com.example.questify.data.repository.TaskRepository;
@@ -33,5 +33,6 @@ public class CreateTaskUseCase {
                 deadline));
         // todo если проекта не существует то создать
         // todo сгенерировать подзадачи
+        // todo проверка на существование такой же задачи
     }
 }

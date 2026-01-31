@@ -1,4 +1,4 @@
-package com.example.questify.domain.usecase.plans.filter;
+package com.example.questify.domain.usecase.plans.tasks.filter;
 
 import com.example.questify.domain.model.Task;
 

@@ -17,7 +17,7 @@ import android.widget.Spinner;
 import com.example.questify.R;
 import com.example.questify.domain.model.Difficulty;
 import com.example.questify.domain.model.Priority;
-import com.example.questify.domain.usecase.plans.filter.TaskFilter;
+import com.example.questify.domain.usecase.plans.tasks.filter.TaskFilter;
 import com.example.questify.ui.tasks.list.TaskListViewModel;
 
 import java.util.stream.IntStream;

@@ -8,7 +8,7 @@ import com.example.questify.domain.model.Priority;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.usecase.plans.project.CreateProjectUseCase;
 import com.example.questify.domain.usecase.plans.project.GetProjectsUseCase;
-import com.example.questify.domain.usecase.plans.task.CreateTaskUseCase;
+import com.example.questify.domain.usecase.plans.tasks.task.CreateTaskUseCase;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

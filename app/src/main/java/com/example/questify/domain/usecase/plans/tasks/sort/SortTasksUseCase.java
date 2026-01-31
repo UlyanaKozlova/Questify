@@ -1,4 +1,4 @@
-package com.example.questify.domain.usecase.plans.sort;
+package com.example.questify.domain.usecase.plans.tasks.sort;
 
 import com.example.questify.domain.model.Task;
 
