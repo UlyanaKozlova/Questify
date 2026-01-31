@@ -6,6 +6,9 @@ import com.example.questify.domain.usecase.game.clothes.InitClothingUseCase;
 import com.example.questify.domain.usecase.game.pet.InitPetUseCase;
 import com.example.questify.domain.usecase.user.InitUserUseCase;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
@@ -17,8 +20,12 @@ public class AppInitViewModel extends ViewModel {
     public AppInitViewModel(InitUserUseCase initUserUseCase,
                             InitPetUseCase initPetUseCase,
                             InitClothingUseCase initClothingUseCase) {
-        initClothingUseCase.execute();
-        initUserUseCase.execute();
-        initPetUseCase.execute();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            initClothingUseCase.execute();
+            initUserUseCase.execute();
+            initPetUseCase.execute();
+        });
+        executor.close();
     }
 }
