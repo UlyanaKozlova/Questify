@@ -1,17 +1,22 @@
 package com.example.questify.ui.tasks.list;
 
+import android.content.Context;
+import android.net.Uri;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.domain.model.Task;
-import com.example.questify.domain.usecase.plans.filter.FilterTasksUseCase;
-import com.example.questify.domain.usecase.plans.filter.TaskFilter;
-import com.example.questify.domain.usecase.plans.sort.SortOrder;
-import com.example.questify.domain.usecase.plans.sort.SortTasksUseCase;
-import com.example.questify.domain.usecase.plans.sort.SortType;
-import com.example.questify.domain.usecase.plans.task.CompleteTaskUseCase;
-import com.example.questify.domain.usecase.plans.task.GetAllTasksUseCase;
+import com.example.questify.domain.usecase.plans.tasks.imp.ImportTasksUseCaseFactory;
+import com.example.questify.domain.usecase.plans.tasks.filter.FilterTasksUseCase;
+import com.example.questify.domain.usecase.plans.tasks.filter.TaskFilter;
+import com.example.questify.domain.usecase.plans.tasks.sort.SortOrder;
+import com.example.questify.domain.usecase.plans.tasks.sort.SortTasksUseCase;
+import com.example.questify.domain.usecase.plans.tasks.sort.SortType;
+import com.example.questify.domain.usecase.plans.tasks.task.CompleteTaskUseCase;
+import com.example.questify.domain.usecase.plans.tasks.task.CreateTaskUseCase;
+import com.example.questify.domain.usecase.plans.tasks.task.GetAllTasksUseCase;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -25,6 +30,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class TaskListViewModel extends ViewModel {
     private final GetAllTasksUseCase getAllTasksUseCase;
     private final CompleteTaskUseCase completeTaskUseCase;
+    private final ImportTasksUseCaseFactory importFactory;
+    private final CreateTaskUseCase createTaskUseCase;
     @Inject
     SortTasksUseCase sortTasksUseCase;
     @Inject
@@ -36,15 +43,21 @@ public class TaskListViewModel extends ViewModel {
     private SortOrder currentSortOrder = SortOrder.ASC;
 
     private final MutableLiveData<List<Task>> tasks = new MutableLiveData<>();
+
     public LiveData<List<Task>> getTasks() {
         return tasks;
     }
 
     @Inject
     public TaskListViewModel(GetAllTasksUseCase getAllTasksUseCase,
-                             CompleteTaskUseCase completeTaskUseCase) {
+                             CompleteTaskUseCase completeTaskUseCase,
+                             ImportTasksUseCaseFactory importFactory,
+                             CreateTaskUseCase createTaskUseCase) {
         this.getAllTasksUseCase = getAllTasksUseCase;
         this.completeTaskUseCase = completeTaskUseCase;
+        this.importFactory = importFactory;
+        this.createTaskUseCase = createTaskUseCase;
+
         loadTasks();
     }
 
@@ -94,5 +107,9 @@ public class TaskListViewModel extends ViewModel {
             currentFilter = filter;
         }
         loadTasks();
+    }
+
+    public void importFromFile(Context context, Uri uri, String fileName) {
+        importFactory.get(fileName, createTaskUseCase).execute(context, uri);
     }
 }
