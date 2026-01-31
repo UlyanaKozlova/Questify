@@ -17,6 +17,6 @@ public class GetProjectsUseCase {
     }
 
     public List<Project> execute() {
-        return projectRepository.getProjectsForUser();
+        return projectRepository.getAll();
     }
 }

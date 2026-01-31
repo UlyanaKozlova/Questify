@@ -1,6 +1,8 @@
 package com.example.questify.domain.usecase.plans.tasks.task;
 
 
+import androidx.lifecycle.LiveData;
+
 import com.example.questify.data.repository.TaskRepository;
 import com.example.questify.domain.model.Task;
 
@@ -19,4 +21,7 @@ public class GetAllTasksUseCase {
     public List<Task> execute() {
         return taskRepository.getAll();
     }
+    public LiveData<List<Task>> executeLive() {
+        return taskRepository.getAllLive();
+    } // todo не круто
 }

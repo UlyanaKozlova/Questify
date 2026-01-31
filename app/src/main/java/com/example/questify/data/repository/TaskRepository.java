@@ -1,5 +1,8 @@
 package com.example.questify.data.repository;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+
 import com.example.questify.data.local.dao.TaskDao;
 import com.example.questify.data.local.entity.TaskEntity;
 import com.example.questify.data.mapper.TaskMapper;
@@ -51,6 +54,13 @@ public class TaskRepository {
                 .map(TaskMapper::toDomain)
                 .collect(Collectors.toList());
     }
+    public LiveData<List<Task>> getAllLive() {
+        return Transformations.map(taskDao.getAllLive(),
+                list -> list.stream()
+                        .map(TaskMapper::toDomain)
+                        .collect(Collectors.toList()));
+    }
+
 
     public Task getByGlobalId(String globalId) {
         return TaskMapper.toDomain(taskDao.getByGlobalId(globalId));

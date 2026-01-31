@@ -138,7 +138,6 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        taskListViewModel.loadTasks();
     }
 
     private String getFileName(Uri uri) {

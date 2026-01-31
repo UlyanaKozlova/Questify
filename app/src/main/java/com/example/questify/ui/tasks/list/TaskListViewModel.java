@@ -57,24 +57,23 @@ public class TaskListViewModel extends ViewModel {
         this.completeTaskUseCase = completeTaskUseCase;
         this.importFactory = importFactory;
         this.createTaskUseCase = createTaskUseCase;
-
-        loadTasks();
-    }
-
-
-    public void loadTasks() {
-        executor.execute(() -> {
-            List<Task> list = getAllTasksUseCase.execute();
-            tasks.postValue(currentFilter != null
-                    ? filterTasksUseCase.execute(list, currentFilter)
-                    : list);
+        getAllTasksUseCase.executeLive().observeForever(list -> {
+            if (list == null) {
+                return;
+            }
+            List<Task> sorted = sortTasksUseCase.execute(list, currentSortType, currentSortOrder);
+            if (currentFilter != null) {
+                sorted = filterTasksUseCase.execute(sorted, currentFilter);
+            }
+            tasks.postValue(sorted);
         });
     }
 
     public void completeTask(Task task, boolean isDone) {
         executor.execute(() -> {
             completeTaskUseCase.execute(task, isDone);
-            loadTasks(); // todo сортировка после отметки сбрасывается
+            // todo сортировка после отметки сбрасывается
+            // кнопка отменить фильтрацию не работает
         });
     }
 
@@ -98,7 +97,6 @@ public class TaskListViewModel extends ViewModel {
         });
     }
 
-    // todo мб хранить сразу список чтобы делать частичные сортировки
     // todo сделать визуализацию по возрастанию или по убыванию
     public void applyFilter(TaskFilter filter) {
         if (filter.getPriority() == null && filter.getDifficulty() == null && filter.getDeadlineBefore() == null) {
@@ -106,7 +104,13 @@ public class TaskListViewModel extends ViewModel {
         } else {
             currentFilter = filter;
         }
-        loadTasks();
+        List<Task> current = tasks.getValue();
+        if (current != null) {
+            List<Task> filtered = currentFilter != null
+                    ? filterTasksUseCase.execute(current, currentFilter)
+                    : current;
+            tasks.setValue(filtered);
+        }
     }
 
     public void importFromFile(Context context, Uri uri, String fileName) {

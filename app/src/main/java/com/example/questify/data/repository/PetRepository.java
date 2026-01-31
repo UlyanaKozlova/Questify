@@ -59,7 +59,7 @@ public class PetRepository {
     }
 
     public void ensureLocalPetExists() {
-        if (petDao.getPetByGlobalId(userSession.getUserGlobalId()) == null) {
+        if (petDao.getPet() == null) {
             PetEntity petEntity = new PetEntity();
             petEntity.globalId = UUID.randomUUID().toString();
             petEntity.userGlobalId = userSession.getUserGlobalId();
@@ -72,7 +72,7 @@ public class PetRepository {
     }
 
     public void deleteProgress() {
-        PetEntity petEntity = petDao.getPetByGlobalId(userSession.getUserGlobalId());
+        PetEntity petEntity = petDao.getPet();
         petEntity.currentClothingGlobalId = clothingRepository.getDefaultGlobalId();
         petEntity.updatedAt = System.currentTimeMillis();
         petEntity.isDeleted = false;

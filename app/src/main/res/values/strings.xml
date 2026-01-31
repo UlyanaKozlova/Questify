@@ -16,6 +16,15 @@
     <string name="showButton">Показать</string>
     <string name="doneButton">Выполнена</string>
     <string name="deleteTaskButton">Удалить задачу</string>
+    <string name="tasksMenuItem">Tasks</string>
+    <string name="calendarMenuItem">Calendar</string>
+    <string name="shopMenuItem">Shop</string>
+    <string name="statisticsMenuItem">Stats</string>
+    <string name="petMenuItem">Pet</string>
+    <string name="settingsButton">Settings</string>
+    <string name="deleteProgressButton">Сбросить прогресс</string>
+    <string name="deleteCompletedButton">Удалить выполненные задачи</string>
+    <string name="ExportTasksButton">Экспортировать задачи</string>
     <string-array name="sort_options">
         <item>Сортировка</item>
         <item>По дедлайну</item>
