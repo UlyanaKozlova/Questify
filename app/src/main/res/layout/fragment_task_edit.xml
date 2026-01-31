@@ -1,0 +1,84 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonCancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/cancelButton" />
+
+            <Button
+                android:id="@+id/buttonSave"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/saveButton" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/checkboxDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/inputName"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/taskNameButton" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/inputDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/descriptionButton" />
+
+        <EditText
+            android:id="@+id/inputDeadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/deadlineButton" />
+
+        <Spinner
+            android:id="@+id/spinnerPriority"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Spinner
+            android:id="@+id/spinnerDifficulty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/inputProject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/projectName" />
+
+        <Button
+            android:id="@+id/buttonDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:text="@string/deleteTaskButton" />
+
+    </LinearLayout>
+</ScrollView>

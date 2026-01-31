@@ -9,11 +9,13 @@
     <string name="cancelButton">Отмена</string>
     <string name="saveButton">Сохранить</string>
     <string name="taskNameButton">Название задачи</string>
-    <string name="DescriptionButton">Описание</string>
+    <string name="descriptionButton">Описание</string>
     <string name="deadlineButton">Дедлайн</string>
     <string name="projectName">Название нового проекта</string>
     <string name="resetFilterButton">Сбросить все фильтрации</string>
     <string name="showButton">Показать</string>
+    <string name="doneButton">Выполнена</string>
+    <string name="deleteTaskButton">Удалить задачу</string>
     <string-array name="sort_options">
         <item>Сортировка</item>
         <item>По дедлайну</item>

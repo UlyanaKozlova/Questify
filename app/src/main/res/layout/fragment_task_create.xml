@@ -37,7 +37,7 @@
 
         <EditText
             android:id="@+id/inputDescription"
-            android:hint="@string/DescriptionButton"
+            android:hint="@string/descriptionButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

@@ -1,10 +1,5 @@
 package com.example.questify.data.repository;
 
-import android.util.Log;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
-
 import com.example.questify.data.local.dao.TaskDao;
 import com.example.questify.data.local.entity.TaskEntity;
 import com.example.questify.data.mapper.TaskMapper;
@@ -50,6 +45,9 @@ public class TaskRepository {
 
     public Task getByGlobalId(String globalId) {
         return TaskMapper.toDomain(taskDao.getByGlobalId(globalId));
+    }
+    public void delete(Task task) {
+        taskDao.delete(TaskMapper.toEntity(task));
     }
 
     public List<TaskEntity> getNeedingSync() {

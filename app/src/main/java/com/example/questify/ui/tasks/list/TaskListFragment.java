@@ -25,6 +25,7 @@ import com.example.questify.R;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.usecase.plans.tasks.sort.SortType;
 import com.example.questify.ui.tasks.create.TaskCreateFragment;
+import com.example.questify.ui.tasks.edit.TaskEditFragment;
 import com.example.questify.ui.tasks.list.filter.TaskFilterFragment;
 
 
@@ -72,14 +73,22 @@ public class TaskListFragment extends Fragment {
         TaskListAdapter taskListAdapter = new TaskListAdapter(new TaskListAdapter.Listener() {
             @Override
             public void onTaskClicked(Task task) {
-                // todo редактировать задачу
+                Bundle args = new Bundle();
+                args.putString("taskGlobalId", task.getGlobalId());
+
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer, TaskEditFragment.class, args)
+                        .addToBackStack(null)
+                        .commit();
             }
+
 
             @Override
             public void onTaskChecked(Task task, boolean isChecked) {
                 taskListViewModel.completeTask(task, isChecked);
                 //todo почему не меняется
-
             }
         });
 

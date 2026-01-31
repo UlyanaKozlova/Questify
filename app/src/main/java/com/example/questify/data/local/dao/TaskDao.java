@@ -2,6 +2,7 @@ package com.example.questify.data.local.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -28,4 +29,6 @@ public interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE needsSync = 1")
     List<TaskEntity> getNeedingSync();
+    @Delete
+    void delete(TaskEntity entity);
 }
