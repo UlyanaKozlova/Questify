@@ -20,8 +20,8 @@ public class UserRepository {
         this.session = session;
     }
     public void ensureLocalUserExists() {
-        UserEntity existing = userDao.getUserSync(session.getUserGlobalId());
-        if (existing == null) {
+        UserEntity userEntity = userDao.getUserSync(session.getUserGlobalId());
+        if (userEntity == null) {
             UserEntity user = new UserEntity();
             user.globalId = session.getUserGlobalId();
             user.username = "LocalUser";
@@ -34,11 +34,21 @@ public class UserRepository {
             userDao.insert(user);
         }
     }
+
+    public void deleteProgress() {
+        UserEntity userEntity = userDao.getUserSync(session.getUserGlobalId());
+        userEntity.level = 0;
+        userEntity.coins = 0;
+        userEntity.updatedAt = System.currentTimeMillis();
+        userEntity.isDeleted = false;
+        userEntity.needsSync = true;
+        userDao.update(userEntity);
+    }
     public void update(User user) {
-        UserEntity entity = UserMapper.toEntity(user);
-        entity.updatedAt = System.currentTimeMillis();
-        entity.needsSync = true;
-        userDao.update(entity);
+        UserEntity userEntity = UserMapper.toEntity(user);
+        userEntity.updatedAt = System.currentTimeMillis();
+        userEntity.needsSync = true;
+        userDao.update(userEntity);
     }
 
     public User getUserSync(String globalId) {
