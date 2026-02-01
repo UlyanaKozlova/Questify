@@ -1,0 +1,5 @@
+name,description,deadlineMillis,projectName,difficulty,priority
+Do hw,math,1960108400000,homework,EASY,HIGH
+Do hw,c+++,1960108400000,homework,VERY_DIFFICULT,VERY_LOW
+Do hw,csharp,1860108400000,homework,MEDIUM,MEDIUM
+Do hw,python,1890108400000,homework,DIFFICULT,LOW

@@ -35,7 +35,7 @@ public class ImportTasksFromJsonUseCase extends ImportTasksUseCase {
                         dto.name,
                         dto.description,
                         dto.deadlineMillis(),
-                        dto.projectGlobalId,
+                        dto.projectName,
                         Difficulty.valueOf(dto.difficulty.toUpperCase()),
                         Priority.valueOf(dto.priority.toUpperCase())
                 );
@@ -52,7 +52,7 @@ public class ImportTasksFromJsonUseCase extends ImportTasksUseCase {
         public String priority;
         public String difficulty;
         public String deadline;
-        public String projectGlobalId;
+        public String projectName;
 
         public long deadlineMillis() {
             try {
