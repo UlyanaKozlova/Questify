@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.domain.model.Task;
@@ -28,21 +28,24 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class TaskListViewModel extends ViewModel {
-    private final GetAllTasksUseCase getAllTasksUseCase;
+
     private final CompleteTaskUseCase completeTaskUseCase;
     private final ImportTasksUseCaseFactory importFactory;
     private final CreateTaskUseCase createTaskUseCase;
+
     @Inject
     SortTasksUseCase sortTasksUseCase;
     @Inject
     FilterTasksUseCase filterTasksUseCase;
+
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private TaskFilter currentFilter = null;
     private SortType currentSortType = SortType.DEADLINE;
     private SortOrder currentSortOrder = SortOrder.ASC;
 
-    private final MutableLiveData<List<Task>> tasks = new MutableLiveData<>();
+    private final MediatorLiveData<List<Task>> tasks = new MediatorLiveData<>();
+    private final LiveData<List<Task>> source;
 
     public LiveData<List<Task>> getTasks() {
         return tasks;
@@ -53,63 +56,53 @@ public class TaskListViewModel extends ViewModel {
                              CompleteTaskUseCase completeTaskUseCase,
                              ImportTasksUseCaseFactory importFactory,
                              CreateTaskUseCase createTaskUseCase) {
-        this.getAllTasksUseCase = getAllTasksUseCase;
+
         this.completeTaskUseCase = completeTaskUseCase;
         this.importFactory = importFactory;
         this.createTaskUseCase = createTaskUseCase;
-        getAllTasksUseCase.executeLive().observeForever(list -> {
-            if (list == null) {
-                return;
-            }
-            List<Task> sorted = sortTasksUseCase.execute(list, currentSortType, currentSortOrder);
-            if (currentFilter != null) {
-                sorted = filterTasksUseCase.execute(sorted, currentFilter);
-            }
-            tasks.postValue(sorted);
-        });
+
+        this.source = getAllTasksUseCase.executeLive();
+
+        tasks.addSource(source, this::recalc);
+    }
+
+    private void recalc(List<Task> original) {
+        if (original == null) {
+            return;
+        }
+        List<Task> sorted = sortTasksUseCase.execute(original, currentSortType, currentSortOrder);
+
+        if (currentFilter != null) {
+            sorted = filterTasksUseCase.execute(sorted, currentFilter);
+        }
+        tasks.setValue(sorted);
     }
 
     public void completeTask(Task task, boolean isDone) {
-        executor.execute(() -> {
-            completeTaskUseCase.execute(task, isDone);
-            // todo сортировка после отметки сбрасывается
-            // кнопка отменить фильтрацию не работает
-        });
+        executor.execute(() -> completeTaskUseCase.execute(task, isDone));
     }
-
 
     public void sort(SortType type) {
-        executor.execute(() -> {
-            List<Task> list = getAllTasksUseCase.execute();
+        if (type == currentSortType) {
+            currentSortOrder = (currentSortOrder == SortOrder.ASC)
+                    ? SortOrder.DESC
+                    : SortOrder.ASC;
+        } else {
+            currentSortType = type;
+            currentSortOrder = SortOrder.ASC;
+        }
 
-            if (type == currentSortType) {
-                currentSortOrder = (currentSortOrder == SortOrder.ASC)
-                        ? SortOrder.DESC
-                        : SortOrder.ASC;
-                // todo сортировка не сочетается с фильтрацией???
-            } else {
-                currentSortType = type;
-                currentSortOrder = SortOrder.ASC;
-            }
-
-            list = sortTasksUseCase.execute(list, currentSortType, currentSortOrder);
-            tasks.postValue(list);
-        });
+        List<Task> original = source.getValue();
+        if (original != null) {
+            recalc(original);
+        }
     }
 
-    // todo сделать визуализацию по возрастанию или по убыванию
     public void applyFilter(TaskFilter filter) {
-        if (filter.getPriority() == null && filter.getDifficulty() == null && filter.getDeadlineBefore() == null) {
-            currentFilter = null;
-        } else {
-            currentFilter = filter;
-        }
-        List<Task> current = tasks.getValue();
-        if (current != null) {
-            List<Task> filtered = currentFilter != null
-                    ? filterTasksUseCase.execute(current, currentFilter)
-                    : current;
-            tasks.setValue(filtered);
+        currentFilter = filter.isEmpty() ? null : filter;
+        List<Task> original = source.getValue();
+        if (original != null) {
+            recalc(original);
         }
     }
 

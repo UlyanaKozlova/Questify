@@ -14,6 +14,12 @@ public class TaskFilter {
         this.deadlineBefore = deadlineBefore;
     }
 
+    public boolean isEmpty() {
+        return priority == null
+                && difficulty == null
+                && deadlineBefore == null;
+    }
+
     public Priority getPriority() {
         return priority;
     }
@@ -21,6 +27,7 @@ public class TaskFilter {
     public Difficulty getDifficulty() {
         return difficulty;
     }
+
     public Long getDeadlineBefore() {
         return deadlineBefore;
     }
