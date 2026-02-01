@@ -3,12 +3,8 @@ package com.example.questify.data.repository;
 import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.UserDao;
 import com.example.questify.data.local.entity.UserEntity;
-import com.example.questify.data.mapper.ClothingMapper;
 import com.example.questify.data.mapper.UserMapper;
 import com.example.questify.domain.model.User;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -31,19 +27,16 @@ public class UserRepository {
     }
 
 
-    public User getUserByGlobalId(String globalId) {
-        return UserMapper.toDomain(userDao.getUser(globalId));
+    public User getUser() {
+        return UserMapper.toDomain(userDao.getUser());
     }
 
-    public List<User> getNeedingSync() {
-        return userDao.getNeedingSync()
-                .stream()
-                .map(UserMapper::toDomain)
-                .collect(Collectors.toList());
+    public User getUserToSync() {
+        return UserMapper.toDomain(userDao.getUserToSync());
     }
 
     public void deleteProgress() {
-        UserEntity userEntity = userDao.getUser(session.getUserGlobalId());
+        UserEntity userEntity = userDao.getUser();
         userEntity.level = 0;
         userEntity.coins = 0;
         userEntity.updatedAt = System.currentTimeMillis();
@@ -53,7 +46,7 @@ public class UserRepository {
     }
 
     public void ensureLocalUserExists() {
-        if (userDao.getUser(session.getUserGlobalId()) == null) {
+        if (userDao.getUser() == null) {
             UserEntity userEntity = new UserEntity();
             userEntity.globalId = session.getUserGlobalId();
             userEntity.username = "LocalUser";

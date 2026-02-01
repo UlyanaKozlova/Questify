@@ -7,9 +7,7 @@ import com.example.questify.data.local.entity.PetEntity;
 import com.example.questify.data.mapper.PetMapper;
 import com.example.questify.domain.model.Pet;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -28,7 +26,7 @@ public class PetRepository {
         this.clothingRepository = clothingRepository;
     }
 
-    public Pet getPetForUser() {
+    public Pet getPet() {
         return PetMapper.toDomain(petDao.getPet());
     }
 
@@ -51,11 +49,12 @@ public class PetRepository {
         return PetMapper.toDomain(petDao.getPetByGlobalId(globalId));
     }
 
-    public List<Pet> getNeedingSync() {
-        return petDao.getNeedingSync()
-                .stream()
-                .map(PetMapper::toDomain)
-                .collect(Collectors.toList());
+    public Pet getPetToSync() {
+        return PetMapper.toDomain(petDao.getPetToSync());
+    }
+
+    public String getCurrentClothingGlobalId() {
+        return petDao.getPet().currentClothingGlobalId;
     }
 
     public void ensureLocalPetExists() {

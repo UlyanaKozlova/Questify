@@ -53,7 +53,7 @@ public class PetClothingRefRepository {
     public void ensureLocalClothingExists() {
         if (petClothingRefDao.getAll().isEmpty()) {
             PetClothingRefEntity petClothingRefEntity = new PetClothingRefEntity();
-            petClothingRefEntity.petGlobalId = petRepository.getPetForUser().getGlobalId();
+            petClothingRefEntity.petGlobalId = petRepository.getPet().getGlobalId();
             petClothingRefEntity.clothingGlobalId = clothingRepository.getDefaultGlobalId();
             petClothingRefDao.insert(petClothingRefEntity);
         }

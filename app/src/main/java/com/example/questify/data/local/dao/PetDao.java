@@ -8,9 +8,6 @@ import androidx.room.Update;
 
 import com.example.questify.data.local.entity.PetEntity;
 
-import java.util.List;
-
-
 @Dao
 public interface PetDao {
 
@@ -27,6 +24,6 @@ public interface PetDao {
     @Query("SELECT * FROM pet WHERE globalId = :globalId LIMIT 1")
     PetEntity getPetByGlobalId(String globalId);
 
-    @Query("SELECT * FROM pet WHERE needsSync = 1")
-    List<PetEntity> getNeedingSync();
+    @Query("SELECT * FROM pet WHERE needsSync = 1 LIMIT 1")
+    PetEntity getPetToSync();
 }

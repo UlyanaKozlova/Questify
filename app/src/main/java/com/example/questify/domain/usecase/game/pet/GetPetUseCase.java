@@ -13,6 +13,6 @@ public class GetPetUseCase {
     }
 
     public Pet execute() {
-        return petRepository.getPetForUser();
+        return petRepository.getPet();
     }
 }
