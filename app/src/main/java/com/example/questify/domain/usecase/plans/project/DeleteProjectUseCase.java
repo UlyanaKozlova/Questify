@@ -3,20 +3,21 @@ package com.example.questify.domain.usecase.plans.project;
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.domain.model.Project;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
-public class GetProjectsUseCase {
-
+public class DeleteProjectUseCase {
     private final ProjectRepository projectRepository;
 
     @Inject
-    public GetProjectsUseCase(ProjectRepository projectRepository) {
+    public DeleteProjectUseCase(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
     }
 
-    public List<Project> execute() {
-        return projectRepository.getAll();
+    public boolean execute(Project project) {
+        if (projectRepository.getAll().isEmpty()) {
+            return false;
+        }
+        projectRepository.delete(project);
+        return true;
     }
 }

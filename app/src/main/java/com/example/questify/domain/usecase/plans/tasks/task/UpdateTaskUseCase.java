@@ -9,11 +9,11 @@ import javax.inject.Inject;
 
 public class UpdateTaskUseCase {
 
-    private final TaskRepository repository;
+    private final TaskRepository taskRepository;
 
     @Inject
-    public UpdateTaskUseCase(TaskRepository repository) {
-        this.repository = repository;
+    public UpdateTaskUseCase(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
     }
 
     public void execute(Task task,
@@ -32,8 +32,7 @@ public class UpdateTaskUseCase {
         task.setPriority(priority);
         task.setDifficulty(difficulty);
         task.setDone(isDone);
-        task.setUpdatedAt(System.currentTimeMillis());
 
-        repository.update(task);
+        taskRepository.update(task);
     }
 }

@@ -7,7 +7,7 @@ import com.example.questify.domain.model.Difficulty;
 import com.example.questify.domain.model.Priority;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.usecase.plans.project.CreateProjectUseCase;
-import com.example.questify.domain.usecase.plans.project.GetProjectsUseCase;
+import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.CreateTaskUseCase;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class TaskCreateViewModel extends ViewModel {
     private final CreateTaskUseCase createTaskUseCase;
-    private final GetProjectsUseCase getProjectsUseCase;
+    private final GetAllProjectsUseCase getAllProjectsUseCase;
     private final CreateProjectUseCase createProjectUseCase;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -29,10 +29,10 @@ public class TaskCreateViewModel extends ViewModel {
 
     @Inject
     public TaskCreateViewModel(CreateTaskUseCase createTaskUseCase,
-                               GetProjectsUseCase getProjectsUseCase,
+                               GetAllProjectsUseCase getAllProjectsUseCase,
                                CreateProjectUseCase createProjectUseCase) {
         this.createTaskUseCase = createTaskUseCase;
-        this.getProjectsUseCase = getProjectsUseCase;
+        this.getAllProjectsUseCase = getAllProjectsUseCase;
         this.createProjectUseCase = createProjectUseCase;
 
         loadProjects();
@@ -40,7 +40,7 @@ public class TaskCreateViewModel extends ViewModel {
 
     public void loadProjects() {
         executor.execute(() -> {
-            List<Project> list = getProjectsUseCase.execute();
+            List<Project> list = getAllProjectsUseCase.execute();
             projects.postValue(list);
         });
     }

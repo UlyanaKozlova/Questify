@@ -1,6 +1,9 @@
 package com.example.questify.domain.model;
 
 
+import java.util.Objects;
+import java.util.UUID;
+
 public class Project {
 
     private String globalId;
@@ -14,6 +17,23 @@ public class Project {
         this.userGlobalId = userGlobalId;
         this.projectName = projectName;
         this.updatedAt = updatedAt;
+    }
+
+    public Project(String projectName) {
+        this.globalId = UUID.randomUUID().toString();
+        this.projectName = projectName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return Objects.equals(userGlobalId, project.userGlobalId) && Objects.equals(projectName, project.projectName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userGlobalId, projectName);
     }
 
     public String getGlobalId() {

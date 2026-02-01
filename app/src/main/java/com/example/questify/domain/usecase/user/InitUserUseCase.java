@@ -6,14 +6,14 @@ import javax.inject.Inject;
 
 public class InitUserUseCase {
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
 
     @Inject
-    public InitUserUseCase(UserRepository repository) {
-        this.repository = repository;
+    public InitUserUseCase(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public void execute() {
-        repository.ensureLocalUserExists();
+        userRepository.ensureLocalUserExists();
     }
 }

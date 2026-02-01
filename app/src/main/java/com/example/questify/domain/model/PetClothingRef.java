@@ -1,6 +1,8 @@
 package com.example.questify.domain.model;
 
 
+import java.util.Objects;
+
 public class PetClothingRef {
 
     private String petGlobalId;
@@ -9,6 +11,19 @@ public class PetClothingRef {
     public PetClothingRef(String petGlobalId, String clothingGlobalId) {
         this.petGlobalId = petGlobalId;
         this.clothingGlobalId = clothingGlobalId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PetClothingRef that = (PetClothingRef) o;
+        return Objects.equals(petGlobalId, that.petGlobalId)
+                && Objects.equals(clothingGlobalId, that.clothingGlobalId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(petGlobalId, clothingGlobalId);
     }
 
     public String getPetGlobalId() {

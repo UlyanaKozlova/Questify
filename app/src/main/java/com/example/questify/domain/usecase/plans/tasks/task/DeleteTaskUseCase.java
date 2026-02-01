@@ -7,14 +7,14 @@ import javax.inject.Inject;
 
 public class DeleteTaskUseCase {
 
-    private final TaskRepository repository;
+    private final TaskRepository taskRepository;
 
     @Inject
-    public DeleteTaskUseCase(TaskRepository repository) {
-        this.repository = repository;
+    public DeleteTaskUseCase(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
     }
 
     public void execute(Task task) {
-        repository.delete(task);
+        taskRepository.delete(task);
     }
 }

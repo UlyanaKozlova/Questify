@@ -7,14 +7,14 @@ import javax.inject.Inject;
 
 public class GetTaskUseCase {
 
-    private final TaskRepository repository;
+    private final TaskRepository taskRepository;
 
     @Inject
-    public GetTaskUseCase(TaskRepository repository) {
-        this.repository = repository;
+    public GetTaskUseCase(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
     }
 
     public Task execute(String globalId) {
-        return repository.getByGlobalId(globalId);
+        return taskRepository.getByGlobalId(globalId);
     }
 }

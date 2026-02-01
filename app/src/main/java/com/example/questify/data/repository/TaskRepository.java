@@ -3,6 +3,7 @@ package com.example.questify.data.repository;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
+import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.TaskDao;
 import com.example.questify.data.local.entity.TaskEntity;
 import com.example.questify.data.mapper.TaskMapper;
@@ -16,14 +17,18 @@ import javax.inject.Inject;
 public class TaskRepository {
 
     private final TaskDao taskDao;
+    private final UserSession userSession;
 
     @Inject
-    public TaskRepository(TaskDao taskDao) {
+    public TaskRepository(TaskDao taskDao,
+                          UserSession userSession) {
         this.taskDao = taskDao;
+        this.userSession = userSession;
     }
 
     public void save(Task task) {
         TaskEntity entity = TaskMapper.toEntity(task);
+        entity.userGlobalId = userSession.getUserGlobalId();
         entity.updatedAt = System.currentTimeMillis();
         entity.needsSync = true;
         entity.isDeleted = false;
@@ -54,6 +59,7 @@ public class TaskRepository {
                 .map(TaskMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
     public LiveData<List<Task>> getAllLive() {
         return Transformations.map(taskDao.getAllLive(),
                 list -> list.stream()

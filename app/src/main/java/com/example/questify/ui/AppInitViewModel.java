@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.questify.domain.usecase.game.clothes.InitClothingUseCase;
 import com.example.questify.domain.usecase.game.pet.InitPetUseCase;
+import com.example.questify.domain.usecase.plans.project.InitProjectUseCase;
 import com.example.questify.domain.usecase.user.InitUserUseCase;
 
 import java.util.concurrent.ExecutorService;
@@ -19,12 +20,14 @@ public class AppInitViewModel extends ViewModel {
     @Inject
     public AppInitViewModel(InitUserUseCase initUserUseCase,
                             InitPetUseCase initPetUseCase,
-                            InitClothingUseCase initClothingUseCase) {
+                            InitClothingUseCase initClothingUseCase,
+                            InitProjectUseCase initProjectUseCase) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             initClothingUseCase.execute();
             initUserUseCase.execute();
             initPetUseCase.execute();
+            initProjectUseCase.execute();
         });
         executor.close();
     }

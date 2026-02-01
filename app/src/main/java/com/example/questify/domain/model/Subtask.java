@@ -1,6 +1,8 @@
 package com.example.questify.domain.model;
 
 
+import java.util.Objects;
+
 public class Subtask {
 
     private String globalId;
@@ -17,6 +19,19 @@ public class Subtask {
         this.isDone = isDone;
         this.subtaskName = subtaskName;
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Subtask subtask = (Subtask) o;
+        return Objects.equals(taskGlobalId, subtask.taskGlobalId)
+                && Objects.equals(subtaskName, subtask.subtaskName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskGlobalId, subtaskName);
     }
 
     public String getGlobalId() {

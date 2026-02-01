@@ -8,7 +8,11 @@ public class SubtaskMapper {
     public static Subtask toDomain(SubtaskEntity entity) {
         return entity == null
                 ? null
-                : new Subtask(entity.globalId, entity.taskGlobalId, entity.isDone, entity.subtaskName, entity.updatedAt);
+                : new Subtask(entity.globalId,
+                entity.taskGlobalId,
+                entity.isDone,
+                entity.subtaskName,
+                entity.updatedAt);
     }
 
     public static SubtaskEntity toEntity(Subtask model) {

@@ -1,5 +1,6 @@
 package com.example.questify.domain.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Task {
@@ -46,7 +47,6 @@ public class Task {
     }
 
     public Task(String projectGlobalId,
-                String userGlobalId,
                 String taskName,
                 String description,
                 Priority priority,
@@ -54,7 +54,6 @@ public class Task {
                 long deadline) {
         this.globalId = UUID.randomUUID().toString();
         this.projectGlobalId = projectGlobalId;
-        this.userGlobalId = userGlobalId;
         this.isDone = false;
         this.taskName = taskName;
         this.description = description;
@@ -65,6 +64,25 @@ public class Task {
     }
 
     public Task() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return isDone == task.isDone
+                && deadline == task.deadline
+                && Objects.equals(projectGlobalId, task.projectGlobalId)
+                && Objects.equals(userGlobalId, task.userGlobalId)
+                && Objects.equals(taskName, task.taskName)
+                && Objects.equals(description, task.description)
+                && priority == task.priority
+                && difficulty == task.difficulty;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(projectGlobalId, userGlobalId, isDone, taskName, description, priority, difficulty, deadline);
     }
 
     public String getGlobalId() {

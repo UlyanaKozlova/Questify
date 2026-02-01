@@ -8,12 +8,20 @@ import javax.inject.Inject;
 public class CreateProjectUseCase {
 
     private final ProjectRepository projectRepository;
+
     @Inject
     public CreateProjectUseCase(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
     }
 
-    public void execute(Project project) {
-        projectRepository.save(project);
+    public boolean execute(String projectName) {
+        Project newProject = new Project(projectName);
+        for (Project project : projectRepository.getAll()) {
+            if (project.equals(newProject)) {
+                return false;
+            }
+        }
+        projectRepository.save(newProject);
+        return true;
     }
 }
