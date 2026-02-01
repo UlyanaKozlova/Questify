@@ -23,6 +23,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 @AndroidEntryPoint
 public class TaskCreateFragment extends Fragment {
     private TaskCreateViewModel taskCreateViewModel;
@@ -91,12 +94,25 @@ public class TaskCreateFragment extends Fragment {
 
 
     private void saveTask() {
-        taskCreateViewModel.saveTask(inputTitle.getText().toString(),
+        taskCreateViewModel.saveTask(
+                inputTitle.getText().toString(),
                 inputDescription.getText().toString(),
-                Long.parseLong(inputDeadline.getText().toString()),
+                parseDate(inputDeadline.getText().toString()),
                 ((Project) spinnerProjects.getSelectedItem()).getProjectName(),
                 (Difficulty) spinnerDifficulty.getSelectedItem(),
-                (Priority) spinnerPriority.getSelectedItem());
+                (Priority) spinnerPriority.getSelectedItem()
+        );
+
         requireActivity().onBackPressed();
+    }
+
+    private long parseDate(String text) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy",
+                    Locale.getDefault());
+            return sdf.parse(text).getTime();
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }
