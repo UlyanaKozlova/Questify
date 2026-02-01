@@ -15,6 +15,7 @@ public class Project {
     private long updatedAt;
 
     public Project(String globalId, String userGlobalId, String projectName, long updatedAt) {
+        checkProjectName(projectName);
         this.globalId = globalId;
         this.userGlobalId = userGlobalId;
         this.projectName = projectName;
@@ -22,6 +23,7 @@ public class Project {
     }
 
     public Project(String projectName) {
+        checkProjectName(projectName);
         this.globalId = UUID.randomUUID().toString();
         this.projectName = projectName;
     }
@@ -37,10 +39,17 @@ public class Project {
     public int hashCode() {
         return Objects.hash(userGlobalId, projectName);
     }
+
     @NonNull
     @Override
     public String toString() {
         return projectName;
+    }
+
+    private void checkProjectName(String projectName) {
+        if (projectName.length() < 3) {
+            throw new IllegalArgumentException("Название проекта должно состоять не менее чем из 3 символов.");
+        }
     }
 
     public String getGlobalId() {
@@ -64,6 +73,7 @@ public class Project {
     }
 
     public void setProjectName(String projectName) {
+        checkProjectName(projectName);
         this.projectName = projectName;
     }
 

@@ -33,6 +33,8 @@ public class Task {
                 Difficulty difficulty,
                 long deadline,
                 long updatedAt) {
+        checkTaskName(taskName);
+        checkDeadline(deadline);
         this.localId = localId;
         this.globalId = globalId;
         this.projectGlobalId = projectGlobalId;
@@ -52,6 +54,8 @@ public class Task {
                 Priority priority,
                 Difficulty difficulty,
                 long deadline) {
+        checkTaskName(taskName);
+        checkDeadline(deadline);
         this.globalId = UUID.randomUUID().toString();
         this.projectGlobalId = projectGlobalId;
         this.isDone = false;
@@ -83,6 +87,17 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(projectGlobalId, userGlobalId, isDone, taskName, description, priority, difficulty, deadline);
+    }
+
+    private void checkTaskName(String taskName) {
+        if (taskName.length() < 3) {
+            throw new IllegalArgumentException("Название задачи должно состоять не менее чем из 3 символов");
+        }
+    }
+    private void checkDeadline(Long deadline) {
+        if (deadline < System.currentTimeMillis()) {
+            throw new IllegalArgumentException("Дедлайн задачи должен быть не раньше даты, в которую создается задача.");
+        }
     }
 
     public String getGlobalId() {
@@ -122,6 +137,7 @@ public class Task {
     }
 
     public void setTaskName(String taskName) {
+        checkTaskName(taskName);
         this.taskName = taskName;
     }
 
@@ -154,6 +170,7 @@ public class Task {
     }
 
     public void setDeadline(long deadline) {
+        checkDeadline(deadline);
         this.deadline = deadline;
     }
 
