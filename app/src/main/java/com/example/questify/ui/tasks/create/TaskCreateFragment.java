@@ -16,6 +16,7 @@ import android.widget.EditText;
 import com.example.questify.R;
 import com.example.questify.domain.model.Difficulty;
 import com.example.questify.domain.model.Priority;
+import com.example.questify.domain.model.Project;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -24,11 +25,11 @@ import android.widget.ArrayAdapter;
 
 @AndroidEntryPoint
 public class TaskCreateFragment extends Fragment {
-    private TaskCreateViewModel viewModel;
+    private TaskCreateViewModel taskCreateViewModel;
     private EditText inputTitle;
     private EditText inputDescription;
     private EditText inputDeadline;
-    private EditText inputNewProject;
+    private Spinner spinnerProjects;
     private Spinner spinnerDifficulty;
     private Spinner spinnerPriority;
 
@@ -42,36 +43,47 @@ public class TaskCreateFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        taskCreateViewModel = new ViewModelProvider(this).get(TaskCreateViewModel.class);
+
+        inputTitle = view.findViewById(R.id.taskName);
+
+        inputDescription = view.findViewById(R.id.inputDescription);
+
+        inputDeadline = view.findViewById(R.id.inputDeadline);
+
+
         spinnerDifficulty = view.findViewById(R.id.spinnerDifficulty);
         ArrayAdapter<Difficulty> difficultyAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                Difficulty.values()
-        );
+                Difficulty.values());
         difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDifficulty.setAdapter(difficultyAdapter);
         spinnerDifficulty.setSelection(Difficulty.MEDIUM.ordinal());
+
 
         spinnerPriority = view.findViewById(R.id.spinnerPriority);
         ArrayAdapter<Priority> priorityAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                Priority.values()
-        );
+                Priority.values());
         priorityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPriority.setAdapter(priorityAdapter);
         spinnerPriority.setSelection(Priority.MEDIUM.ordinal());
 
-        inputTitle = view.findViewById(R.id.taskName);
-        inputDescription = view.findViewById(R.id.inputDescription);
-        inputDeadline = view.findViewById(R.id.inputDeadline);
-        inputNewProject = view.findViewById(R.id.inputNewProject);
-        // todo список проектов просто
-
+        spinnerProjects = view.findViewById(R.id.spinnerProjects);
+        taskCreateViewModel.projects.observe(getViewLifecycleOwner(), list -> {
+            ArrayAdapter<Project> adapter = new ArrayAdapter<>(
+                    requireContext(),
+                    android.R.layout.simple_spinner_item,
+                    list);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerProjects.setAdapter(adapter);
+            spinnerProjects.setSelection(0);
+        });
         Button buttonCancel = view.findViewById(R.id.buttonCancel);
         Button buttonSave = view.findViewById(R.id.buttonSave);
 
-        viewModel = new ViewModelProvider(this).get(TaskCreateViewModel.class);
 
         buttonCancel.setOnClickListener(v -> requireActivity().onBackPressed());
         buttonSave.setOnClickListener(v -> saveTask());
@@ -79,10 +91,10 @@ public class TaskCreateFragment extends Fragment {
 
 
     private void saveTask() {
-        viewModel.saveTask(inputTitle.getText().toString(),
+        taskCreateViewModel.saveTask(inputTitle.getText().toString(),
                 inputDescription.getText().toString(),
                 Long.parseLong(inputDeadline.getText().toString()),
-                inputNewProject.getText().toString(),
+                ((Project) spinnerProjects.getSelectedItem()).getProjectName(),
                 (Difficulty) spinnerDifficulty.getSelectedItem(),
                 (Priority) spinnerPriority.getSelectedItem());
         requireActivity().onBackPressed();

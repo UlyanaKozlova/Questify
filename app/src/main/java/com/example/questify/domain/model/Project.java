@@ -1,6 +1,8 @@
 package com.example.questify.domain.model;
 
 
+import androidx.annotation.NonNull;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -34,6 +36,11 @@ public class Project {
     @Override
     public int hashCode() {
         return Objects.hash(userGlobalId, projectName);
+    }
+    @NonNull
+    @Override
+    public String toString() {
+        return projectName;
     }
 
     public String getGlobalId() {

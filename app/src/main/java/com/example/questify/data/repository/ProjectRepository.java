@@ -1,6 +1,9 @@
 package com.example.questify.data.repository;
 
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+
 import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.ProjectDao;
 import com.example.questify.data.local.entity.ProjectEntity;
@@ -46,8 +49,9 @@ public class ProjectRepository {
     }
 
     public void deleteAll() {
-        for (ProjectEntity projectEntity : projectDao.getAll()) {
-            projectDao.delete(projectEntity);
+        List<ProjectEntity> projectEntities = projectDao.getAll();
+        for (int i = 1; i < projectEntities.size(); i++) {
+            projectDao.delete(projectEntities.get(i));
         }
     }
 
@@ -56,6 +60,13 @@ public class ProjectRepository {
                 .stream()
                 .map(ProjectMapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    public LiveData<List<Project>> getAllLive() {
+        return Transformations.map(projectDao.getAllLive(),
+                list -> list.stream()
+                        .map(ProjectMapper::toDomain)
+                        .collect(Collectors.toList()));
     }
 
     public Project getByGlobalId(String globalId) {
@@ -68,6 +79,7 @@ public class ProjectRepository {
                 .map(ProjectMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
     public void ensureLocalProjectExists() {
         if (projectDao.getAll().isEmpty()) {
             ProjectEntity projectEntity = new ProjectEntity();
@@ -80,5 +92,9 @@ public class ProjectRepository {
 
             projectDao.insert(projectEntity);
         }
+    }
+
+    public Project getByProjectName(String projectName) {
+        return ProjectMapper.toDomain(projectDao.getByProjectName(projectName));
     }
 }

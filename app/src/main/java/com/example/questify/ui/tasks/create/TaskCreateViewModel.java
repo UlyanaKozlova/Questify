@@ -1,12 +1,11 @@
 package com.example.questify.ui.tasks.create;
 
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.domain.model.Difficulty;
 import com.example.questify.domain.model.Priority;
 import com.example.questify.domain.model.Project;
-import com.example.questify.domain.usecase.plans.project.CreateProjectUseCase;
 import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.CreateTaskUseCase;
 
@@ -21,41 +20,27 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class TaskCreateViewModel extends ViewModel {
     private final CreateTaskUseCase createTaskUseCase;
-    private final GetAllProjectsUseCase getAllProjectsUseCase;
-    private final CreateProjectUseCase createProjectUseCase;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-
-    private final MutableLiveData<List<Project>> projects = new MutableLiveData<>();
+    public final LiveData<List<Project>> projects;
 
     @Inject
     public TaskCreateViewModel(CreateTaskUseCase createTaskUseCase,
-                               GetAllProjectsUseCase getAllProjectsUseCase,
-                               CreateProjectUseCase createProjectUseCase) {
+                               GetAllProjectsUseCase getAllProjectsUseCase) {
         this.createTaskUseCase = createTaskUseCase;
-        this.getAllProjectsUseCase = getAllProjectsUseCase;
-        this.createProjectUseCase = createProjectUseCase;
-
-        loadProjects();
-    }
-
-    public void loadProjects() {
-        executor.execute(() -> {
-            List<Project> list = getAllProjectsUseCase.execute();
-            projects.postValue(list);
-        });
+        this.projects = getAllProjectsUseCase.executeLive();
     }
 
     public void saveTask(String taskName,
                          String description,
                          Long deadline,
-                         String projectGlobalId,
+                         String projectName,
                          Difficulty difficulty,
                          Priority priority) {
         executor.execute(() -> createTaskUseCase
                 .execute(taskName,
                         description,
                         deadline,
-                        projectGlobalId,
+                        projectName,
                         difficulty,
                         priority));
     }

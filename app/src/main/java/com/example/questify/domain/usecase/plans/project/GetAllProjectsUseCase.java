@@ -1,5 +1,7 @@
 package com.example.questify.domain.usecase.plans.project;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.domain.model.Project;
 
@@ -18,5 +20,8 @@ public class GetAllProjectsUseCase {
 
     public List<Project> execute() {
         return projectRepository.getAll();
+    }
+    public LiveData<List<Project>> executeLive() {
+        return projectRepository.getAllLive();
     }
 }
