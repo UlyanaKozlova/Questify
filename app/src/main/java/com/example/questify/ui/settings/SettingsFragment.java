@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -21,6 +23,11 @@ public class SettingsFragment extends Fragment {
 
     private static final String POSITIVE_RESPONSE = "Да";
     private static final String NEGATIVE_RESPONSE = "Отмена";
+
+    private ActivityResultLauncher<String> createJsonLauncher;
+    private ActivityResultLauncher<String> createIcsLauncher;
+    private ActivityResultLauncher<String> createStatisticsJsonLauncher;
+    private ActivityResultLauncher<String> createStatisticsPngLauncher;
 
     private SettingsViewModel settingsViewModel;
 
@@ -39,7 +46,59 @@ public class SettingsFragment extends Fragment {
 
         Button buttonReset = view.findViewById(R.id.buttonResetProgress);
         Button buttonDeleteCompleted = view.findViewById(R.id.buttonDeleteCompleted);
-        Button buttonExport = view.findViewById(R.id.buttonExportTasks);
+        Button buttonExportJson = view.findViewById(R.id.buttonExportJson);
+        Button buttonExportIcs = view.findViewById(R.id.buttonExportIcs);
+        Button buttonExportStatisticsToJson = view.findViewById(R.id.buttonExportStatisticsToJson);
+        Button buttonExportStatisticsToPng = view.findViewById(R.id.buttonExportStatisticsToPng);
+
+        createJsonLauncher = registerForActivityResult(
+                new ActivityResultContracts.CreateDocument("application/json"),
+                uri -> {
+                    if (uri != null) {
+                        settingsViewModel.exportToJson(requireContext(), uri);
+                    }
+                }
+        );
+
+        createIcsLauncher = registerForActivityResult(
+                new ActivityResultContracts.CreateDocument("text/calendar"),
+                uri -> {
+                    if (uri != null) {
+                        settingsViewModel.exportToIcs(requireContext(), uri);
+                    }
+                }
+        );
+
+        createStatisticsJsonLauncher = registerForActivityResult(
+                new ActivityResultContracts.CreateDocument("application/json"),
+                uri -> {
+                    if (uri != null) {
+                        settingsViewModel.exportStatisticsToJson(requireContext(), uri);
+                    }
+                }
+        );
+
+        createStatisticsPngLauncher = registerForActivityResult(
+                new ActivityResultContracts.CreateDocument("image/png"),
+                uri -> {
+                    if (uri != null) {
+                        settingsViewModel.exportStatisticsToPng(requireContext(), uri);
+                    }
+                }
+        );
+
+        buttonExportJson.setOnClickListener(v ->
+                createJsonLauncher.launch("tasks.json"));
+
+        buttonExportIcs.setOnClickListener(v ->
+                createIcsLauncher.launch("deadlines.ics"));
+
+        buttonExportStatisticsToJson.setOnClickListener(v ->
+                createStatisticsJsonLauncher.launch("statistics.json"));
+
+        buttonExportStatisticsToPng.setOnClickListener(v ->
+                createStatisticsPngLauncher.launch("statistics.png"));
+
 
         buttonReset.setOnClickListener(v -> showConfirmDialog(
                 "Сброс прогресса",
@@ -52,10 +111,6 @@ public class SettingsFragment extends Fragment {
                 "Удалить все выполненные задачи?",
                 () -> settingsViewModel.deleteCompletedTasks()
         ));
-
-        buttonExport.setOnClickListener(v ->
-                settingsViewModel.exportTasks()
-        );
     }
 
     private void showConfirmDialog(String title, String message, Runnable onConfirm) {

@@ -20,10 +20,28 @@
         android:text="@string/deleteCompletedButton" />
 
     <Button
-        android:id="@+id/buttonExportTasks"
+        android:id="@+id/buttonExportJson"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/ExportTasksButton" />
+        android:text="Экспорт задач (JSON)" />
+
+    <Button
+        android:id="@+id/buttonExportIcs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Экспорт дедлайнов (.ics)" />
+
+    <Button
+        android:id="@+id/buttonExportStatisticsToJson"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Экспорт статистики json" />
+
+    <Button
+        android:id="@+id/buttonExportStatisticsToPng"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Экспорт статистики png" />
+
 
 </LinearLayout>

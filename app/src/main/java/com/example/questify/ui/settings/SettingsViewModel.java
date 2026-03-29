@@ -1,9 +1,15 @@
 package com.example.questify.ui.settings;
 
+import android.content.Context;
+import android.net.Uri;
+
 import androidx.lifecycle.ViewModel;
 
 
-import com.example.questify.domain.usecase.plans.tasks.exp.ExportTasksUseCase;
+import com.example.questify.domain.usecase.plans.tasks.exp.ExportStatisticsToJsonUseCase;
+import com.example.questify.domain.usecase.plans.tasks.exp.ExportStatisticsToPngUseCase;
+import com.example.questify.domain.usecase.plans.tasks.exp.ExportToIcsUseCase;
+import com.example.questify.domain.usecase.plans.tasks.exp.ExportToJsonUseCase;
 import com.example.questify.domain.usecase.user.DeleteCompletedTasksUseCase;
 import com.example.questify.domain.usecase.user.DeleteProgressUseCase;
 
@@ -19,17 +25,26 @@ public class SettingsViewModel extends ViewModel {
 
     private final DeleteProgressUseCase deleteProgressUseCase;
     private final DeleteCompletedTasksUseCase deleteCompletedTasksUseCase;
-    private final ExportTasksUseCase exportTasksUseCase;
-
+    private final ExportToJsonUseCase exportToJsonUseCase;
+    private final ExportToIcsUseCase exportToIcsUseCase;
+    private final ExportStatisticsToPngUseCase exportStatisticsToPngUseCase;
+    private final ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Inject
     public SettingsViewModel(DeleteProgressUseCase deleteProgressUseCase,
                              DeleteCompletedTasksUseCase deleteCompletedTasksUseCase,
-                             ExportTasksUseCase exportTasksUseCase) {
+                             ExportToJsonUseCase exportToJsonUseCase,
+                             ExportToIcsUseCase exportToIcsUseCase,
+                             ExportStatisticsToPngUseCase exportStatisticsToPngUseCase,
+                             ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase) {
         this.deleteProgressUseCase = deleteProgressUseCase;
         this.deleteCompletedTasksUseCase = deleteCompletedTasksUseCase;
-        this.exportTasksUseCase = exportTasksUseCase;
+        this.exportToJsonUseCase = exportToJsonUseCase;
+        this.exportToIcsUseCase = exportToIcsUseCase;
+        this.exportStatisticsToPngUseCase = exportStatisticsToPngUseCase;
+        this.exportStatisticsToJsonUseCase = exportStatisticsToJsonUseCase;
+
     }
 
     public void resetProgress() {
@@ -40,7 +55,19 @@ public class SettingsViewModel extends ViewModel {
         executor.execute(deleteCompletedTasksUseCase::execute);
     }
 
-    public void exportTasks() {
-        executor.execute(exportTasksUseCase::execute);
+    public void exportToJson(Context context, Uri uri) {
+        executor.execute(() -> exportToJsonUseCase.execute(context, uri));
+    }
+
+    public void exportToIcs(Context context, Uri uri) {
+        executor.execute(() -> exportToIcsUseCase.execute(context, uri));
+    }
+
+    public void exportStatisticsToPng(Context context, Uri uri) {
+        executor.execute(() -> exportStatisticsToPngUseCase.execute(context, uri));
+    }
+
+    public void exportStatisticsToJson(Context context, Uri uri) {
+        executor.execute(() -> exportStatisticsToJsonUseCase.execute(context, uri));
     }
 }
