@@ -40,7 +40,7 @@ public class TaskListViewModel extends ViewModel {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private TaskFilter currentFilter = null;
+    private TaskFilter currentFilter = new TaskFilter(null, null, null, null);
     private SortType currentSortType = SortType.DEADLINE;
     private SortOrder currentSortOrder = SortOrder.ASC;
 
@@ -49,6 +49,10 @@ public class TaskListViewModel extends ViewModel {
 
     public LiveData<List<Task>> getTasks() {
         return tasks;
+    }
+
+    public TaskFilter getCurrentFilter() {
+        return currentFilter;
     }
 
     @Inject
@@ -99,7 +103,7 @@ public class TaskListViewModel extends ViewModel {
     }
 
     public void applyFilter(TaskFilter filter) {
-        currentFilter = filter.isEmpty() ? null : filter;
+        currentFilter = filter;
         List<Task> original = source.getValue();
         if (original != null) {
             recalc(original);

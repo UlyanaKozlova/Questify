@@ -1,18 +1,17 @@
 package com.example.questify.ui.tasks.list.filter;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.questify.R;
 import com.example.questify.domain.model.enums.Difficulty;
@@ -41,6 +40,7 @@ public class TaskFilterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         TaskListViewModel taskListViewModel =
                 new ViewModelProvider(requireActivity()).get(TaskListViewModel.class);
+        TaskFilter filter = taskListViewModel.getCurrentFilter();
 
 
         Spinner spinnerPriority = view.findViewById(R.id.spinnerPriority);
@@ -68,6 +68,7 @@ public class TaskFilterFragment extends Fragment {
                 difficultyItems);
         spinnerDifficulty.setAdapter(difficultyAdapter);
 
+
         Spinner spinnerStatus = view.findViewById(R.id.spinnerStatus);
         String[] statusItems = new String[TaskStatus.values().length];
         for (int i = 0; i < TaskStatus.values().length; i++) {
@@ -82,6 +83,33 @@ public class TaskFilterFragment extends Fragment {
         spinnerStatus.setSelection(0);
 
         EditText inputDeadline = view.findViewById(R.id.inputDeadline);
+
+        if (filter != null) {
+            if (filter.getPriority() != null) {
+                spinnerPriority.setSelection(filter.getPriority().ordinal() + 1);
+            } else {
+                spinnerPriority.setSelection(0);
+            }
+
+            if (filter.getDifficulty() != null) {
+                spinnerDifficulty.setSelection(filter.getDifficulty().ordinal() + 1);
+            } else {
+                spinnerDifficulty.setSelection(0);
+            }
+
+            if (filter.getIsDone() == null) {
+                spinnerStatus.setSelection(0);
+            } else if (filter.getIsDone()) {
+                spinnerStatus.setSelection(1);
+            } else {
+                spinnerStatus.setSelection(2);
+            }
+
+            if (filter.getDeadlineBefore() != null) {
+                inputDeadline.setText(String.valueOf(filter.getDeadlineBefore()));
+            }
+        }
+
         view.findViewById(R.id.buttonReset).setOnClickListener(v -> {
             taskListViewModel.applyFilter(new TaskFilter(
                     null,
