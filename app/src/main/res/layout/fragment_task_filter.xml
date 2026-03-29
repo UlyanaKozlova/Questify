@@ -43,12 +43,24 @@
         android:layout_marginBottom="16dp" />
 
     <EditText
-        android:id="@+id/inputDeadline"
+        android:id="@+id/inputStartDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="@string/deadlineButton"
-        android:inputType="number" />
+        android:clickable="true"
+        android:cursorVisible="false"
+        android:focusable="true"
+        android:hint="@string/hintStartDate"
+        android:padding="12dp" />
+
+    <EditText
+        android:id="@+id/inputEndDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:cursorVisible="false"
+        android:focusable="true"
+        android:hint="@string/hintEndDate"
+        android:padding="12dp" />
 
     <Button
         android:id="@+id/buttonApply"

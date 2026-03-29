@@ -25,6 +25,8 @@
     <string name="deleteCompletedButton">Удалить выполненные задачи</string>
     <string name="ExportTasksButton">Экспортировать задачи</string>
     <string name="status">Статус</string>
+    <string name="hintStartDate">Выберите дату начала интервала</string>
+    <string name="hintEndDate">Выберите дату окончания интервала</string>
     <string-array name="sort_options">
         <item>Сортировка</item>
         <item>По дедлайну</item>

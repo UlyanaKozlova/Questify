@@ -19,7 +19,8 @@ public class FilterTasksUseCase {
                 .filter(task ->
                         filter.getDifficulty() == null || task.getDifficulty() == filter.getDifficulty())
                 .filter(task ->
-                        filter.getDeadlineBefore() == null || task.getDeadline() <= filter.getDeadlineBefore())
+                        (filter.getStartDate() == null || task.getDeadline() >= filter.getStartDate()) &&
+                                (filter.getEndDate() == null || task.getDeadline() <= filter.getEndDate()))
                 .filter(task ->
                         filter.getIsDone() == null || task.isDone() == filter.getIsDone())
                 .collect(Collectors.toList());

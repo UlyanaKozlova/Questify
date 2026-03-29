@@ -6,21 +6,20 @@ import com.example.questify.domain.model.enums.Priority;
 public class TaskFilter {
     private final Priority priority;
     private final Difficulty difficulty;
-    private final Long deadlineBefore;
+    private final Long startDate;
+    private final Long endDate;
     private final Boolean isDone;
 
-    public TaskFilter(Priority priority, Difficulty difficulty, Long deadlineBefore, Boolean isDone) {
+    public TaskFilter(Priority priority,
+                      Difficulty difficulty,
+                      Long startDate,
+                      Long endDate,
+                      Boolean isDone) {
         this.priority = priority;
         this.difficulty = difficulty;
-        this.deadlineBefore = deadlineBefore;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.isDone = isDone;
-    }
-
-    public boolean isEmpty() {
-        return priority == null
-                && difficulty == null
-                && deadlineBefore == null
-                && isDone == null;
     }
 
     public Priority getPriority() {
@@ -31,8 +30,12 @@ public class TaskFilter {
         return difficulty;
     }
 
-    public Long getDeadlineBefore() {
-        return deadlineBefore;
+    public Long getStartDate() {
+        return startDate;
+    }
+
+    public Long getEndDate() {
+        return endDate;
     }
 
     public Boolean getIsDone() {

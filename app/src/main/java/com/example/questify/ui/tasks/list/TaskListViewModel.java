@@ -40,7 +40,12 @@ public class TaskListViewModel extends ViewModel {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private TaskFilter currentFilter = new TaskFilter(null, null, null, null);
+    private TaskFilter currentFilter = new TaskFilter(
+            null,
+            null,
+            null,
+            null,
+            null);
     private SortType currentSortType = SortType.DEADLINE;
     private SortOrder currentSortOrder = SortOrder.ASC;
 

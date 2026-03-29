@@ -1,5 +1,6 @@
 package com.example.questify.ui.tasks.list.filter;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +21,17 @@ import com.example.questify.domain.model.enums.TaskStatus;
 import com.example.questify.domain.usecase.plans.tasks.filter.TaskFilter;
 import com.example.questify.ui.tasks.list.TaskListViewModel;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class TaskFilterFragment extends Fragment {
+
     private static final String ALL = "Все";
 
     @Nullable
@@ -38,65 +44,71 @@ public class TaskFilterFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        TaskListViewModel taskListViewModel =
-                new ViewModelProvider(requireActivity()).get(TaskListViewModel.class);
-        TaskFilter filter = taskListViewModel.getCurrentFilter();
 
+        TaskListViewModel viewModel =
+                new ViewModelProvider(requireActivity()).get(TaskListViewModel.class);
+
+        TaskFilter filter = viewModel.getCurrentFilter();
 
         Spinner spinnerPriority = view.findViewById(R.id.spinnerPriority);
         String[] priorityItems = new String[Priority.values().length + 1];
         priorityItems[0] = ALL;
         IntStream.range(0, Priority.values().length)
-                .forEach(i ->
-                        priorityItems[i + 1] = Priority.values()[i].name());
-        ArrayAdapter<String> priorityAdapter = new ArrayAdapter<>(
+                .forEach(i -> priorityItems[i + 1] = Priority.values()[i].name());
+
+        spinnerPriority.setAdapter(new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                priorityItems);
-        spinnerPriority.setAdapter(priorityAdapter);
+                priorityItems
+        ));
 
 
         Spinner spinnerDifficulty = view.findViewById(R.id.spinnerDifficulty);
         String[] difficultyItems = new String[Difficulty.values().length + 1];
         difficultyItems[0] = ALL;
+
         IntStream.range(0, Difficulty.values().length)
-                .forEach(i ->
-                        difficultyItems[i + 1] = Difficulty.values()[i].name());
-        ArrayAdapter<String> difficultyAdapter = new ArrayAdapter<>(
+                .forEach(i -> difficultyItems[i + 1] = Difficulty.values()[i].name());
+
+        spinnerDifficulty.setAdapter(new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                difficultyItems);
-        spinnerDifficulty.setAdapter(difficultyAdapter);
+                difficultyItems
+        ));
 
 
         Spinner spinnerStatus = view.findViewById(R.id.spinnerStatus);
         String[] statusItems = new String[TaskStatus.values().length];
+
         for (int i = 0; i < TaskStatus.values().length; i++) {
             statusItems[i] = TaskStatus.values()[i].toString();
         }
-        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(
+
+        spinnerStatus.setAdapter(new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
                 statusItems
-        );
-        spinnerStatus.setAdapter(statusAdapter);
-        spinnerStatus.setSelection(0);
+        ));
 
-        EditText inputDeadline = view.findViewById(R.id.inputDeadline);
+
+        EditText inputStartDate = view.findViewById(R.id.inputStartDate);
+        EditText inputEndDate = view.findViewById(R.id.inputEndDate);
+
+        inputStartDate.setOnClickListener(v -> openDatePicker(inputStartDate));
+        inputEndDate.setOnClickListener(v -> openDatePicker(inputEndDate));
+
 
         if (filter != null) {
-            if (filter.getPriority() != null) {
-                spinnerPriority.setSelection(filter.getPriority().ordinal() + 1);
-            } else {
-                spinnerPriority.setSelection(0);
-            }
-
-            if (filter.getDifficulty() != null) {
-                spinnerDifficulty.setSelection(filter.getDifficulty().ordinal() + 1);
-            } else {
-                spinnerDifficulty.setSelection(0);
-            }
-
+            spinnerPriority.setSelection(
+                    filter.getPriority() != null
+                            ? filter.getPriority().ordinal() + 1
+                            : 0
+            );
+            spinnerDifficulty.setSelection(
+                    filter.getDifficulty() != null
+                            ? filter.getDifficulty().ordinal() + 1
+                            : 0
+            );
             if (filter.getIsDone() == null) {
                 spinnerStatus.setSelection(0);
             } else if (filter.getIsDone()) {
@@ -105,63 +117,98 @@ public class TaskFilterFragment extends Fragment {
                 spinnerStatus.setSelection(2);
             }
 
-            if (filter.getDeadlineBefore() != null) {
-                inputDeadline.setText(String.valueOf(filter.getDeadlineBefore()));
+            if (filter.getStartDate() != null) {
+                inputStartDate.setText(parseLongToDate(filter.getStartDate()));
+            }
+
+            if (filter.getEndDate() != null) {
+                inputEndDate.setText(parseLongToDate(filter.getEndDate()));
             }
         }
 
+
         view.findViewById(R.id.buttonReset).setOnClickListener(v -> {
-            taskListViewModel.applyFilter(new TaskFilter(
-                    null,
-                    null,
-                    null,
-                    null));
+            viewModel.applyFilter(new TaskFilter(null, null, null, null, null));
             spinnerPriority.setSelection(0);
             spinnerDifficulty.setSelection(0);
             spinnerStatus.setSelection(0);
-            inputDeadline.setText("");
+            inputStartDate.setText("");
+            inputEndDate.setText("");
         });
+
 
         view.findViewById(R.id.buttonApply).setOnClickListener(v -> {
-            String selectedPriority = (String) spinnerPriority.getSelectedItem();
-            Priority priority = selectedPriority.equals(ALL)
-                    ? null
-                    : Priority.valueOf(selectedPriority);
 
-            String selectedDifficulty = (String) spinnerDifficulty.getSelectedItem();
-            Difficulty difficulty = selectedDifficulty.equals(ALL)
+            Priority priority = spinnerPriority.getSelectedItem().equals(ALL)
                     ? null
-                    : Difficulty.valueOf(selectedDifficulty);
+                    : Priority.valueOf((String) spinnerPriority.getSelectedItem());
 
-            String selectedStatus = (String) spinnerStatus.getSelectedItem();
-            TaskStatus status = TaskStatus.fromString(selectedStatus);
+            Difficulty difficulty = spinnerDifficulty.getSelectedItem().equals(ALL)
+                    ? null
+                    : Difficulty.valueOf((String) spinnerDifficulty.getSelectedItem());
+
+            TaskStatus status = TaskStatus.fromString(
+                    (String) spinnerStatus.getSelectedItem()
+            );
 
             Boolean isDone = status.getIsDone();
-
-            Long deadline = null;
-            try {
-                String text = inputDeadline.getText().toString().trim();
-                if (!text.isEmpty()) {
-                    deadline = Long.parseLong(text);
-                }
-            } catch (Exception ignored) {
-            }// todo плюс норм даты при добавлении
-
-
-            taskListViewModel.applyFilter(new TaskFilter(
+            Long startDate = parseDateToLong(inputStartDate.getText().toString().trim());
+            Long endDate = parseDateToLong(inputEndDate.getText().toString().trim());
+            if (startDate != null && endDate != null && startDate > endDate) {
+                inputStartDate.setError("Начальная дата позже конечной");
+                return;
+            }
+            viewModel.applyFilter(new TaskFilter(
                     priority,
                     difficulty,
-                    deadline,
-                    isDone));
-            requireActivity()
-                    .getSupportFragmentManager()
-                    .popBackStack();
+                    startDate,
+                    endDate,
+                    isDone
+            ));
+            requireActivity().getSupportFragmentManager().popBackStack();
         });
-
         view.findViewById(R.id.buttonBack).setOnClickListener(v ->
-                requireActivity()
-                        .getSupportFragmentManager()
-                        .popBackStack()
+                requireActivity().getSupportFragmentManager().popBackStack()
         );
+    }
+
+    private Long parseDateToLong(String text) {
+        if (text == null || text.isEmpty()) {
+            return null;
+        }
+        try {
+            return Objects
+                    .requireNonNull(new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(text))
+                    .getTime();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String parseLongToDate(Long millis) {
+        if (millis == null) {
+            return "";
+        }
+        return new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(millis);
+    }
+
+    private void openDatePicker(EditText field) {
+        Calendar calendar = Calendar.getInstance();
+
+        Long existing = parseDateToLong(field.getText().toString());
+        if (existing != null) {
+            calendar.setTimeInMillis(existing);
+        }
+
+        new DatePickerDialog(
+                requireContext(),
+                (view, year, month, day) -> {
+                    calendar.set(year, month, day);
+                    field.setText(parseLongToDate(calendar.getTimeInMillis()));
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        ).show();
     }
 }
