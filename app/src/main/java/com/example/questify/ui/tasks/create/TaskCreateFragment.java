@@ -14,8 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.questify.R;
-import com.example.questify.domain.model.Difficulty;
-import com.example.questify.domain.model.Priority;
+import com.example.questify.domain.model.enums.Difficulty;
+import com.example.questify.domain.model.enums.Priority;
 import com.example.questify.domain.model.Project;
 
 import dagger.hilt.android.AndroidEntryPoint;

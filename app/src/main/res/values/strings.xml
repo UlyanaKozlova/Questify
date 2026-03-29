@@ -24,6 +24,7 @@
     <string name="deleteProgressButton">Сбросить прогресс</string>
     <string name="deleteCompletedButton">Удалить выполненные задачи</string>
     <string name="ExportTasksButton">Экспортировать задачи</string>
+    <string name="status">Статус</string>
     <string-array name="sort_options">
         <item>Сортировка</item>
         <item>По дедлайну</item>

@@ -2,8 +2,8 @@ package com.example.questify.data.mapper;
 
 import com.example.questify.data.local.entity.TaskEntity;
 import com.example.questify.domain.model.Task;
-import com.example.questify.domain.model.Priority;
-import com.example.questify.domain.model.Difficulty;
+import com.example.questify.domain.model.enums.Priority;
+import com.example.questify.domain.model.enums.Difficulty;
 
 public class TaskMapper {
 

@@ -20,7 +20,8 @@ public class FilterTasksUseCase {
                         filter.getDifficulty() == null || task.getDifficulty() == filter.getDifficulty())
                 .filter(task ->
                         filter.getDeadlineBefore() == null || task.getDeadline() <= filter.getDeadlineBefore())
+                .filter(task ->
+                        filter.getIsDone() == null || task.isDone() == filter.getIsDone())
                 .collect(Collectors.toList());
-        // todo добавить isDone
     }
 }

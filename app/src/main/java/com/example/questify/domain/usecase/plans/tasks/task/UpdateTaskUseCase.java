@@ -2,8 +2,8 @@ package com.example.questify.domain.usecase.plans.tasks.task;
 
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.data.repository.TaskRepository;
-import com.example.questify.domain.model.Difficulty;
-import com.example.questify.domain.model.Priority;
+import com.example.questify.domain.model.enums.Difficulty;
+import com.example.questify.domain.model.enums.Priority;
 import com.example.questify.domain.model.Task;
 
 import javax.inject.Inject;

@@ -2,8 +2,8 @@ package com.example.questify.domain.usecase.plans.tasks.imp;
 
 import android.util.Log;
 
-import com.example.questify.domain.model.Difficulty;
-import com.example.questify.domain.model.Priority;
+import com.example.questify.domain.model.enums.Difficulty;
+import com.example.questify.domain.model.enums.Priority;
 import com.example.questify.domain.usecase.plans.tasks.task.CreateTaskUseCase;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

@@ -15,8 +15,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.example.questify.R;
-import com.example.questify.domain.model.Difficulty;
-import com.example.questify.domain.model.Priority;
+import com.example.questify.domain.model.enums.Difficulty;
+import com.example.questify.domain.model.enums.Priority;
+import com.example.questify.domain.model.enums.TaskStatus;
 import com.example.questify.domain.usecase.plans.tasks.filter.TaskFilter;
 import com.example.questify.ui.tasks.list.TaskListViewModel;
 
@@ -67,15 +68,29 @@ public class TaskFilterFragment extends Fragment {
                 difficultyItems);
         spinnerDifficulty.setAdapter(difficultyAdapter);
 
+        Spinner spinnerStatus = view.findViewById(R.id.spinnerStatus);
+        String[] statusItems = new String[TaskStatus.values().length];
+        for (int i = 0; i < TaskStatus.values().length; i++) {
+            statusItems[i] = TaskStatus.values()[i].toString();
+        }
+        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                statusItems
+        );
+        spinnerStatus.setAdapter(statusAdapter);
+        spinnerStatus.setSelection(0);
 
         EditText inputDeadline = view.findViewById(R.id.inputDeadline);
         view.findViewById(R.id.buttonReset).setOnClickListener(v -> {
             taskListViewModel.applyFilter(new TaskFilter(
                     null,
                     null,
+                    null,
                     null));
             spinnerPriority.setSelection(0);
             spinnerDifficulty.setSelection(0);
+            spinnerStatus.setSelection(0);
             inputDeadline.setText("");
         });
 
@@ -90,6 +105,11 @@ public class TaskFilterFragment extends Fragment {
                     ? null
                     : Difficulty.valueOf(selectedDifficulty);
 
+            String selectedStatus = (String) spinnerStatus.getSelectedItem();
+            TaskStatus status = TaskStatus.fromString(selectedStatus);
+
+            Boolean isDone = status.getIsDone();
+
             Long deadline = null;
             try {
                 String text = inputDeadline.getText().toString().trim();
@@ -103,7 +123,8 @@ public class TaskFilterFragment extends Fragment {
             taskListViewModel.applyFilter(new TaskFilter(
                     priority,
                     difficulty,
-                    deadline));
+                    deadline,
+                    isDone));
             requireActivity()
                     .getSupportFragmentManager()
                     .popBackStack();

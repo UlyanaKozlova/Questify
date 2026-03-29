@@ -36,6 +36,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp" />
 
+    <Spinner
+        android:id="@+id/spinnerStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
     <EditText
         android:id="@+id/inputDeadline"
         android:layout_width="match_parent"

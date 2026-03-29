@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.questify.domain.model.Difficulty;
-import com.example.questify.domain.model.Priority;
+import com.example.questify.domain.model.enums.Difficulty;
+import com.example.questify.domain.model.enums.Priority;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;

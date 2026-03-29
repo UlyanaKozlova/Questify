@@ -1,4 +1,4 @@
-package com.example.questify.domain.model;
+package com.example.questify.domain.model.enums;
 
 public enum Priority {
     VERY_HIGH("very-high", 5),

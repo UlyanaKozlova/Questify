@@ -1,5 +1,8 @@
 package com.example.questify.domain.model;
 
+import com.example.questify.domain.model.enums.Difficulty;
+import com.example.questify.domain.model.enums.Priority;
+
 import java.util.Objects;
 import java.util.UUID;
 
