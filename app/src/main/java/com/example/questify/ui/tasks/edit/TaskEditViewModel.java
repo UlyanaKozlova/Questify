@@ -6,11 +6,14 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.questify.domain.model.Difficulty;
 import com.example.questify.domain.model.Priority;
+import com.example.questify.domain.model.Project;
 import com.example.questify.domain.model.Task;
+import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.DeleteTaskUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.GetTaskUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.UpdateTaskUseCase;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,6 +32,8 @@ public class TaskEditViewModel extends ViewModel {
     private final MutableLiveData<Task> task = new MutableLiveData<>();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    public final LiveData<List<Project>> projects;
+
 
     public LiveData<Task> getTask() {
         return task;
@@ -37,10 +42,12 @@ public class TaskEditViewModel extends ViewModel {
     @Inject
     public TaskEditViewModel(GetTaskUseCase getTaskUseCase,
                              UpdateTaskUseCase updateTaskUseCase,
-                             DeleteTaskUseCase deleteTaskUseCase) {
+                             DeleteTaskUseCase deleteTaskUseCase,
+                             GetAllProjectsUseCase getAllProjectsUseCase) {
         this.getTaskUseCase = getTaskUseCase;
         this.updateTaskUseCase = updateTaskUseCase;
         this.deleteTaskUseCase = deleteTaskUseCase;
+        this.projects = getAllProjectsUseCase.executeLive();
     }
 
     public void loadTask(String globalId) {
@@ -54,7 +61,7 @@ public class TaskEditViewModel extends ViewModel {
     public void saveTask(String name,
                          String description,
                          long deadline,
-                         String projectId,
+                         String projectName,
                          Priority priority,
                          Difficulty difficulty,
                          boolean isDone) {
@@ -67,11 +74,10 @@ public class TaskEditViewModel extends ViewModel {
                 name,
                 description,
                 deadline,
-                projectId,
+                projectName,
                 priority,
                 difficulty,
                 isDone));
-
     }
 
 

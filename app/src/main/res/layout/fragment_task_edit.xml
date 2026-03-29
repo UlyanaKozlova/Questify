@@ -67,11 +67,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/inputProject"
+        <Spinner
+            android:id="@+id/spinnerProjects"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/projectName" />
+            android:paddingTop="12dp" />
 
         <Button
             android:id="@+id/buttonDelete"

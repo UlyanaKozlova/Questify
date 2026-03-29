@@ -94,6 +94,7 @@ public class Task {
             throw new IllegalArgumentException("Название задачи должно состоять не менее чем из 3 символов");
         }
     }
+
     private void checkDeadline(Long deadline) {
         if (deadline < System.currentTimeMillis()) {
             throw new IllegalArgumentException("Дедлайн задачи должен быть не раньше даты, в которую создается задача.");
