@@ -1,5 +1,7 @@
 package com.example.questify.data.repository;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.UserDao;
 import com.example.questify.data.local.entity.UserEntity;
@@ -29,6 +31,13 @@ public class UserRepository {
 
     public User getUser() {
         return UserMapper.toDomain(userDao.getUser());
+    }
+
+    public LiveData<User> getUserLive() {
+        return androidx.lifecycle.Transformations.map(
+                userDao.getUserLive(),
+                UserMapper::toDomain
+        );
     }
 
     public User getUserToSync() {

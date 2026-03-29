@@ -27,4 +27,8 @@ public class GetUserUseCase {
             // todo
         }
     }
+
+    public androidx.lifecycle.LiveData<User> executeLive() {
+        return userRepository.getUserLive();
+    }
 }

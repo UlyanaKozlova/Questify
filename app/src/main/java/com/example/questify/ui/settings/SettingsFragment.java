@@ -8,6 +8,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -17,6 +18,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class SettingsFragment extends Fragment {
+
+    private static final String POSITIVE_RESPONSE = "Да";
+    private static final String NEGATIVE_RESPONSE = "Отмена";
 
     private SettingsViewModel settingsViewModel;
 
@@ -37,11 +41,29 @@ public class SettingsFragment extends Fragment {
         Button buttonDeleteCompleted = view.findViewById(R.id.buttonDeleteCompleted);
         Button buttonExport = view.findViewById(R.id.buttonExportTasks);
 
-        buttonReset.setOnClickListener(v ->
-                settingsViewModel.resetProgress());
-        buttonDeleteCompleted.setOnClickListener(v ->
-                settingsViewModel.deleteCompletedTasks());
+        buttonReset.setOnClickListener(v -> showConfirmDialog(
+                "Сброс прогресса",
+                "Вы уверены, что хотите удалить весь прогресс?",
+                () -> settingsViewModel.resetProgress()
+        ));
+
+        buttonDeleteCompleted.setOnClickListener(v -> showConfirmDialog(
+                "Удаление задач",
+                "Удалить все выполненные задачи?",
+                () -> settingsViewModel.deleteCompletedTasks()
+        ));
+
         buttonExport.setOnClickListener(v ->
-                settingsViewModel.exportTasks());
+                settingsViewModel.exportTasks()
+        );
+    }
+
+    private void showConfirmDialog(String title, String message, Runnable onConfirm) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(POSITIVE_RESPONSE, (dialog, which) -> onConfirm.run())
+                .setNegativeButton(NEGATIVE_RESPONSE, null)
+                .show();
     }
 }

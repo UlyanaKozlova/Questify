@@ -19,7 +19,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class PetFragment extends Fragment {
+
     private PetViewModel petViewModel;
+
     private TextView textCoins;
     private TextView textLevel;
 
@@ -33,21 +35,28 @@ public class PetFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
         textCoins = view.findViewById(R.id.textCoins);
         textLevel = view.findViewById(R.id.textLevel);
+
         Button buttonSettings = view.findViewById(R.id.buttonSettings);
-        petViewModel = new ViewModelProvider(this).get(PetViewModel.class);
+
+        petViewModel = new ViewModelProvider(requireActivity()).get(PetViewModel.class);
+
         buttonSettings.setOnClickListener(v ->
                 requireActivity()
                         .getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragmentContainer, new SettingsFragment())
                         .addToBackStack(null)
-                        .commit());
+                        .commit()
+        );
+
         petViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
             if (user == null) {
                 return;
             }
+
             textCoins.setText("Coins: " + user.getCoins());
             textLevel.setText("Level: " + user.getLevel());
         });

@@ -1,5 +1,6 @@
 package com.example.questify.data.local.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -22,4 +23,7 @@ public interface UserDao {
 
     @Query("SELECT * FROM users WHERE needsSync = 1  LIMIT 1")
     UserEntity getUserToSync();
+
+    @Query("SELECT * FROM users LIMIT 1")
+    LiveData<UserEntity> getUserLive();
 }
