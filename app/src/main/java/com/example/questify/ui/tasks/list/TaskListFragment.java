@@ -88,7 +88,6 @@ public class TaskListFragment extends Fragment {
             @Override
             public void onTaskChecked(Task task, boolean isChecked) {
                 taskListViewModel.completeTask(task, isChecked);
-                //todo почему не меняется
             }
         });
 
@@ -128,7 +127,6 @@ public class TaskListFragment extends Fragment {
                 .replace(R.id.fragmentContainer, new TaskCreateFragment())
                 .addToBackStack(null)
                 .commit());
-        // todo навигация??
 
 
         buttonImport.setOnClickListener(v ->

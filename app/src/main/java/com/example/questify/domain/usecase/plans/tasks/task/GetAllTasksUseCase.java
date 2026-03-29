@@ -23,5 +23,5 @@ public class GetAllTasksUseCase {
     }
     public LiveData<List<Task>> executeLive() {
         return taskRepository.getAllLive();
-    } // todo не круто
+    }
 }

@@ -26,7 +26,6 @@ public class PetViewModel extends ViewModel {
             User newUser = getUserUseCase.execute();
             user.postValue(newUser);
         });
-        // todo норм дата
     }
 
     public LiveData<User> getUser() {

@@ -1,37 +1,35 @@
 package com.example.questify.ui.tasks.create;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-
 import com.example.questify.R;
+import com.example.questify.domain.model.Project;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
-import com.example.questify.domain.model.Project;
+import com.example.questify.util.DatePickerUtils;
+import com.example.questify.util.DateUtils;
+
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import android.widget.Spinner;
-import android.widget.ArrayAdapter;
-
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 @AndroidEntryPoint
 public class TaskCreateFragment extends Fragment {
-    private TaskCreateViewModel taskCreateViewModel;
+
+    private TaskCreateViewModel viewModel;
+
     private EditText inputTitle;
     private EditText inputDescription;
     private EditText inputDeadline;
+
     private Spinner spinnerProjects;
     private Spinner spinnerDifficulty;
     private Spinner spinnerPriority;
@@ -46,73 +44,61 @@ public class TaskCreateFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        taskCreateViewModel = new ViewModelProvider(this).get(TaskCreateViewModel.class);
+
+        viewModel = new ViewModelProvider(this).get(TaskCreateViewModel.class);
 
         inputTitle = view.findViewById(R.id.taskName);
-
         inputDescription = view.findViewById(R.id.inputDescription);
-
         inputDeadline = view.findViewById(R.id.inputDeadline);
 
+        DatePickerUtils.attach(inputDeadline, requireContext());
 
         spinnerDifficulty = view.findViewById(R.id.spinnerDifficulty);
-        ArrayAdapter<Difficulty> difficultyAdapter = new ArrayAdapter<>(
+        spinnerDifficulty.setAdapter(new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                Difficulty.values());
-        difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDifficulty.setAdapter(difficultyAdapter);
+                Difficulty.values()
+        ));
         spinnerDifficulty.setSelection(Difficulty.MEDIUM.ordinal());
 
-
         spinnerPriority = view.findViewById(R.id.spinnerPriority);
-        ArrayAdapter<Priority> priorityAdapter = new ArrayAdapter<>(
+        spinnerPriority.setAdapter(new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                Priority.values());
-        priorityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerPriority.setAdapter(priorityAdapter);
+                Priority.values()
+        ));
         spinnerPriority.setSelection(Priority.MEDIUM.ordinal());
 
         spinnerProjects = view.findViewById(R.id.spinnerProjects);
-        taskCreateViewModel.projects.observe(getViewLifecycleOwner(), list -> {
+        viewModel.projects.observe(getViewLifecycleOwner(), list -> {
             ArrayAdapter<Project> adapter = new ArrayAdapter<>(
                     requireContext(),
                     android.R.layout.simple_spinner_item,
-                    list);
+                    list
+            );
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerProjects.setAdapter(adapter);
-            spinnerProjects.setSelection(0);
         });
-        Button buttonCancel = view.findViewById(R.id.buttonCancel);
-        Button buttonSave = view.findViewById(R.id.buttonSave);
 
+        view.findViewById(R.id.buttonCancel)
+                .setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher()
+                        .onBackPressed());
 
-        buttonCancel.setOnClickListener(v -> requireActivity().onBackPressed());
-        buttonSave.setOnClickListener(v -> saveTask());
+        view.findViewById(R.id.buttonSave)
+                .setOnClickListener(v -> saveTask());
     }
 
-
     private void saveTask() {
-        taskCreateViewModel.saveTask(
+        viewModel.saveTask(
                 inputTitle.getText().toString(),
                 inputDescription.getText().toString(),
-                parseDate(inputDeadline.getText().toString()),
+                DateUtils.parseToMillis(inputDeadline.getText().toString()),
                 ((Project) spinnerProjects.getSelectedItem()).getProjectName(),
                 (Difficulty) spinnerDifficulty.getSelectedItem(),
                 (Priority) spinnerPriority.getSelectedItem()
         );
 
-        requireActivity().onBackPressed();
-    }
-
-    private long parseDate(String text) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy",
-                    Locale.getDefault());
-            return sdf.parse(text).getTime();
-        } catch (Exception e) {
-            return 0;
-        }
+        requireActivity().getOnBackPressedDispatcher()
+                .onBackPressed();
     }
 }

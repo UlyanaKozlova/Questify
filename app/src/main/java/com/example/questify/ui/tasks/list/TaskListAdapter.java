@@ -71,8 +71,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         void bind(Task task) {
             title.setText(task.getTaskName());
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-            deadline.setText(sdf.format(new Date(task.getDeadline()))); // todo
+            deadline.setText( new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date(task.getDeadline())));
 
             checkBox.setOnCheckedChangeListener(null);
             checkBox.setChecked(task.isDone());
