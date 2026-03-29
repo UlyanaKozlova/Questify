@@ -60,6 +60,7 @@ public class TaskEditFragment extends Fragment {
         ));
 
         spinnerProjects = view.findViewById(R.id.spinnerProjects);
+
         viewModel.projects.observe(getViewLifecycleOwner(), list -> {
             ArrayAdapter<Project> adapter = new ArrayAdapter<>(
                     requireContext(),
@@ -67,6 +68,7 @@ public class TaskEditFragment extends Fragment {
                     list
             );
             spinnerProjects.setAdapter(adapter);
+
             viewModel.getTask().observe(getViewLifecycleOwner(), task -> {
                 if (task == null) return;
 
@@ -80,6 +82,7 @@ public class TaskEditFragment extends Fragment {
         });
 
         viewModel.loadTask(requireArguments().getString("taskGlobalId"));
+
         viewModel.getTask().observe(getViewLifecycleOwner(), task -> {
             if (task == null) return;
 
@@ -92,9 +95,16 @@ public class TaskEditFragment extends Fragment {
             spinnerDifficulty.setSelection(task.getDifficulty().ordinal());
         });
 
+        viewModel.getError().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
+            }
+        });
+
         view.findViewById(R.id.buttonCancel)
-                .setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher()
-                        .onBackPressed());
+                .setOnClickListener(v ->
+                        requireActivity().getOnBackPressedDispatcher().onBackPressed()
+                );
 
         view.findViewById(R.id.buttonSave)
                 .setOnClickListener(v -> {
@@ -107,15 +117,13 @@ public class TaskEditFragment extends Fragment {
                             (Difficulty) spinnerDifficulty.getSelectedItem(),
                             checkboxDone.isChecked()
                     );
-                    requireActivity().getOnBackPressedDispatcher()
-                            .onBackPressed();
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
 
         view.findViewById(R.id.buttonDelete)
                 .setOnClickListener(v -> {
                     viewModel.deleteTask();
-                    requireActivity().getOnBackPressedDispatcher()
-                            .onBackPressed();
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
     }
 }

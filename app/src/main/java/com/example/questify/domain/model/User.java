@@ -16,7 +16,6 @@ public class User {
                 String passwordHash,
                 int level,
                 long coins,
-                // todo хранить всего заработанных денег чтобы корректно считать уровень
                 long updatedAt) {
         this.globalId = globalId;
         this.username = username;

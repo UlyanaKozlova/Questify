@@ -21,7 +21,6 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
-
 @HiltViewModel
 public class TaskEditViewModel extends ViewModel {
 
@@ -30,13 +29,17 @@ public class TaskEditViewModel extends ViewModel {
     private final DeleteTaskUseCase deleteTaskUseCase;
 
     private final MutableLiveData<Task> task = new MutableLiveData<>();
+    private final MutableLiveData<String> error = new MutableLiveData<>();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     public final LiveData<List<Project>> projects;
 
-
     public LiveData<Task> getTask() {
         return task;
+    }
+
+    public LiveData<String> getError() {
+        return error;
     }
 
     @Inject
@@ -57,7 +60,6 @@ public class TaskEditViewModel extends ViewModel {
         });
     }
 
-
     public void saveTask(String name,
                          String description,
                          long deadline,
@@ -65,28 +67,33 @@ public class TaskEditViewModel extends ViewModel {
                          Priority priority,
                          Difficulty difficulty,
                          boolean isDone) {
-        Task taskToEdit = task.getValue();
-        if (taskToEdit == null) {
-            return;
-        }
-        executor.execute(() -> updateTaskUseCase.execute(
-                taskToEdit,
-                name,
-                description,
-                deadline,
-                projectName,
-                priority,
-                difficulty,
-                isDone));
-    }
 
+        Task taskToEdit = task.getValue();
+        if (taskToEdit == null) return;
+
+        executor.execute(() -> {
+            try {
+                updateTaskUseCase.execute(
+                        taskToEdit,
+                        name,
+                        description,
+                        deadline,
+                        projectName,
+                        priority,
+                        difficulty,
+                        isDone
+                );
+            } catch (IllegalArgumentException e) {
+                error.postValue(e.getMessage());
+            }
+        });
+    }
 
     public void deleteTask() {
-        Task task = this.task.getValue();
-        if (task != null) {
-            executor.execute(() ->
-                    deleteTaskUseCase.execute(task));
+        Task currentTask = task.getValue();
+        if (currentTask == null) {
+            return;
         }
+        executor.execute(() -> deleteTaskUseCase.execute(currentTask));
     }
 }
-

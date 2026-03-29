@@ -15,7 +15,6 @@ public class CompleteSubtaskUseCase {
 
     public void execute(Subtask subtask, boolean isDone) {
         subtask.setDone(isDone);
-        // todo монеты и уровни для субтасков
         subtaskRepository.update(subtask);
     }
 }

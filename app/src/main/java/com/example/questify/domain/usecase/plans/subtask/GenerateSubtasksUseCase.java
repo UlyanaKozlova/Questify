@@ -11,6 +11,6 @@ public class GenerateSubtasksUseCase {
     public GenerateSubtasksUseCase(SubtaskRepository subtaskRepository) {
         this.subtaskRepository = subtaskRepository;
     }
-    // todo как-то для задач добавить поле isSubtasksGenerated и создать
+    //  как-то для задач добавить поле isSubtasksGenerated и создать
     // менеджера которй их будет изредка проверять и если нужно генерировать
 }

@@ -139,15 +139,18 @@ public class TaskListFragment extends Fragment {
     }
 
     private String getFileName(Uri uri) {
-        Cursor cursor = requireContext().getContentResolver()
-                .query(uri, null, null, null, null);
-        if (cursor == null) {
-            return ""; // todo
+        try (Cursor cursor = requireContext()
+                .getContentResolver()
+                .query(uri, null, null, null, null)) {
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (index >= 0) {
+                    return cursor.getString(index);
+                }
+            }
         }
-        int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-        cursor.moveToFirst();
-        String name = cursor.getString(nameIndex);
-        cursor.close();
-        return name;
+        String fallback = uri.getLastPathSegment();
+        return fallback != null ? fallback : "";
     }
 }

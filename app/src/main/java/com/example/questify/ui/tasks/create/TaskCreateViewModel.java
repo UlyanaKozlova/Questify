@@ -1,6 +1,7 @@
 package com.example.questify.ui.tasks.create;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.domain.model.enums.Difficulty;
@@ -22,6 +23,15 @@ public class TaskCreateViewModel extends ViewModel {
     private final CreateTaskUseCase createTaskUseCase;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     public final LiveData<List<Project>> projects;
+    private final MutableLiveData<String> error = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> success = new MutableLiveData<>();
+
+    public LiveData<Boolean> getSuccess() {
+        return success;
+    }
+    public LiveData<String> getError() {
+        return error;
+    }
 
     @Inject
     public TaskCreateViewModel(CreateTaskUseCase createTaskUseCase,
@@ -36,12 +46,24 @@ public class TaskCreateViewModel extends ViewModel {
                          String projectName,
                          Difficulty difficulty,
                          Priority priority) {
-        executor.execute(() -> createTaskUseCase
-                .execute(taskName,
+        if (deadline == null) {
+            error.setValue("Выберите дату дедлайна");
+            return;
+        }
+        executor.execute(() -> {
+            try {
+                createTaskUseCase.execute(
+                        taskName,
                         description,
                         deadline,
                         projectName,
                         difficulty,
-                        priority));
+                        priority
+                );
+                success.postValue(true);
+            } catch (IllegalArgumentException e) {
+                error.postValue(e.getMessage());
+            }
+        });
     }
 }

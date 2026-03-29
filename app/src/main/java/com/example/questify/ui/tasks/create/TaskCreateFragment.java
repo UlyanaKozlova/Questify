@@ -47,6 +47,13 @@ public class TaskCreateFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(TaskCreateViewModel.class);
 
+        viewModel.getError().observe(getViewLifecycleOwner(), message ->
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show());
+        viewModel.getSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success != null && success) {
+                requireActivity().getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
         inputTitle = view.findViewById(R.id.taskName);
         inputDescription = view.findViewById(R.id.inputDescription);
         inputDeadline = view.findViewById(R.id.inputDeadline);
@@ -81,7 +88,8 @@ public class TaskCreateFragment extends Fragment {
         });
 
         view.findViewById(R.id.buttonCancel)
-                .setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher()
+                .setOnClickListener(v -> requireActivity()
+                        .getOnBackPressedDispatcher()
                         .onBackPressed());
 
         view.findViewById(R.id.buttonSave)
@@ -97,8 +105,5 @@ public class TaskCreateFragment extends Fragment {
                 (Difficulty) spinnerDifficulty.getSelectedItem(),
                 (Priority) spinnerPriority.getSelectedItem()
         );
-
-        requireActivity().getOnBackPressedDispatcher()
-                .onBackPressed();
     }
 }
