@@ -1,5 +1,6 @@
 package com.example.questify.domain.usecase.plans.tasks.imp;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.example.questify.domain.model.enums.Difficulty;
@@ -16,7 +17,7 @@ public class ImportTasksFromCsvUseCase extends ImportTasksUseCase {
     }
 
     @Override
-    protected void saveTasks(String content) {
+    protected void saveTasks(String content, Context context) {
         String[] lines = content.split("\n");
         for (int i = 1; i < lines.length; i++) {
             String[] parts = lines[i].split(",");
@@ -27,7 +28,8 @@ public class ImportTasksFromCsvUseCase extends ImportTasksUseCase {
                         Long.parseLong(parts[2]),
                         parts[3],
                         Difficulty.valueOf(parts[4]),
-                        Priority.valueOf(parts[5])
+                        Priority.valueOf(parts[5]),
+                        context
                 );
             } catch (Exception e) {
                 Log.e("IMPORT", "Error parsing CSV line: " + lines[i], e);

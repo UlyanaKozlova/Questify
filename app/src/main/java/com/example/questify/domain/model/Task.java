@@ -1,8 +1,12 @@
 package com.example.questify.domain.model;
 
+import android.content.Context;
+
+import com.example.questify.R;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
 
+import java.util.Calendar;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -35,9 +39,33 @@ public class Task {
                 Priority priority,
                 Difficulty difficulty,
                 long deadline,
+                long updatedAt,
+                Context context) {
+        checkTaskName(taskName, context);
+        checkDeadline(deadline, context);
+        this.localId = localId;
+        this.globalId = globalId;
+        this.projectGlobalId = projectGlobalId;
+        this.userGlobalId = userGlobalId;
+        this.isDone = isDone;
+        this.taskName = taskName;
+        this.description = description;
+        this.priority = priority;
+        this.difficulty = difficulty;
+        this.deadline = deadline;
+        this.updatedAt = updatedAt;
+    }
+    public Task(long localId,
+                String globalId,
+                String projectGlobalId,
+                String userGlobalId,
+                boolean isDone,
+                String taskName,
+                String description,
+                Priority priority,
+                Difficulty difficulty,
+                long deadline,
                 long updatedAt) {
-        checkTaskName(taskName);
-        checkDeadline(deadline);
         this.localId = localId;
         this.globalId = globalId;
         this.projectGlobalId = projectGlobalId;
@@ -56,9 +84,10 @@ public class Task {
                 String description,
                 Priority priority,
                 Difficulty difficulty,
-                long deadline) {
-        checkTaskName(taskName);
-        checkDeadline(deadline);
+                long deadline,
+                Context context) {
+        checkTaskName(taskName, context);
+        checkDeadline(deadline, context);
         this.globalId = UUID.randomUUID().toString();
         this.projectGlobalId = projectGlobalId;
         this.isDone = false;
@@ -92,15 +121,23 @@ public class Task {
         return Objects.hash(projectGlobalId, userGlobalId, isDone, taskName, description, priority, difficulty, deadline);
     }
 
-    private void checkTaskName(String taskName) {
+    private void checkTaskName(String taskName,
+                               Context context) {
         if (taskName.length() < 3) {
-            throw new IllegalArgumentException("Название задачи должно состоять не менее чем из 3 символов");
+            throw new IllegalArgumentException(context.getString(R.string.error_task_name_short));
         }
     }
 
-    private void checkDeadline(Long deadline) {
-        if (deadline < System.currentTimeMillis()) { // todo - сегодняшняя дата тоже не позволяет
-            throw new IllegalArgumentException("Дедлайн задачи должен быть не раньше даты, в которую создается задача.");
+    private void checkDeadline(Long deadline,
+                               Context context) {
+        Calendar todayStart = Calendar.getInstance();
+        todayStart.set(Calendar.HOUR_OF_DAY, 0);
+        todayStart.set(Calendar.MINUTE, 0);
+        todayStart.set(Calendar.SECOND, 0);
+        todayStart.set(Calendar.MILLISECOND, 0);
+        long todayStartMillis = todayStart.getTimeInMillis();
+        if (deadline < todayStartMillis) {
+            throw new IllegalArgumentException(context.getString(R.string.error_task_deadline_past));
         }
     }
 
@@ -118,6 +155,18 @@ public class Task {
 
     public void setProjectGlobalId(String projectGlobalId) {
         this.projectGlobalId = projectGlobalId;
+    }
+
+    public void setTaskName(String taskName,
+                            Context context) {
+        checkTaskName(taskName, context);
+        this.taskName = taskName;
+    }
+
+    public void setDeadline(long deadline,
+                            Context context) {
+        checkDeadline(deadline, context);
+        this.deadline = deadline;
     }
 
     public String getUserGlobalId() {
@@ -138,11 +187,6 @@ public class Task {
 
     public String getTaskName() {
         return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        checkTaskName(taskName);
-        this.taskName = taskName;
     }
 
     public String getDescription() {
@@ -171,11 +215,6 @@ public class Task {
 
     public long getDeadline() {
         return deadline;
-    }
-
-    public void setDeadline(long deadline) {
-        checkDeadline(deadline);
-        this.deadline = deadline;
     }
 
     public long getUpdatedAt() {

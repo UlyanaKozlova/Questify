@@ -1,5 +1,7 @@
 package com.example.questify.ui.tasks.edit;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -66,7 +68,8 @@ public class TaskEditViewModel extends ViewModel {
                          String projectName,
                          Priority priority,
                          Difficulty difficulty,
-                         boolean isDone) {
+                         boolean isDone,
+                         Context context) {
 
         Task taskToEdit = task.getValue();
         if (taskToEdit == null) return;
@@ -81,7 +84,8 @@ public class TaskEditViewModel extends ViewModel {
                         projectName,
                         priority,
                         difficulty,
-                        isDone
+                        isDone,
+                        context
                 );
             } catch (IllegalArgumentException e) {
                 error.postValue(e.getMessage());

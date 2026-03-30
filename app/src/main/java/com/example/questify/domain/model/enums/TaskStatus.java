@@ -1,37 +1,35 @@
 package com.example.questify.domain.model.enums;
 
+import android.content.Context;
+import com.example.questify.R;
+
 public enum TaskStatus {
-    ALL(null, "all"),
-    DONE(true, "done"),
-    NOT_DONE(false, "not-done");
+    ALL(null, R.string.task_status_all),
+    DONE(true, R.string.task_status_done),
+    NOT_DONE(false, R.string.task_status_not_done);
 
     private final Boolean isDone;
-    private final String value;
+    private final int stringResId;
 
-    TaskStatus(Boolean isDone, String value) {
+    TaskStatus(Boolean isDone, int stringResId) {
         this.isDone = isDone;
-        this.value = value;
+        this.stringResId = stringResId;
     }
 
     public Boolean getIsDone() {
         return isDone;
     }
 
-    public String getValue() {
-        return value;
+    public String getString(Context context) {
+        return context.getString(stringResId);
     }
 
-    @Override
-    public String toString() {
-        return value;
-    }
-
-    public static TaskStatus fromString(String value) {
+    public static TaskStatus fromString(String value, Context context) {
         for (TaskStatus status : TaskStatus.values()) {
-            if (status.value.equals(value)) {
+            if (status.getString(context).equals(value)) {
                 return status;
             }
         }
-        throw new IllegalArgumentException("Unknown status: " + value);
+        return ALL;
     }
 }

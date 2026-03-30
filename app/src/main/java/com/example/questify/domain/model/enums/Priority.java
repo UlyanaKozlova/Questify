@@ -1,22 +1,25 @@
 package com.example.questify.domain.model.enums;
 
-public enum Priority {
-    VERY_HIGH("very-high", 5),
-    HIGH("high", 4),
-    MEDIUM("medium", 3),
-    LOW("low", 2),
-    VERY_LOW("very-low", 1);
+import android.content.Context;
+import com.example.questify.R;
 
-    private final String priority;
+public enum Priority {
+    VERY_HIGH(R.string.priority_very_high, 5),
+    HIGH(R.string.priority_high, 4),
+    MEDIUM(R.string.priority_medium, 3),
+    LOW(R.string.priority_low, 2),
+    VERY_LOW(R.string.priority_very_low, 1);
+
+    private final int stringResId;
     private final int weight;
 
-    Priority(String priority, int weight) {
-        this.priority = priority;
+    Priority(int stringResId, int weight) {
+        this.stringResId = stringResId;
         this.weight = weight;
     }
 
-    public String getPriority() {
-        return priority;
+    public String getString(Context context) {
+        return context.getString(stringResId);
     }
 
     public int getWeight() {

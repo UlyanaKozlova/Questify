@@ -35,36 +35,35 @@
         <item>По сложности</item>
         <item>По обновлению</item>
     </string-array>
+    <string name="priority_very_high">Очень высокий</string>
+    <string name="priority_high">Высокий</string>
+    <string name="priority_medium">Средний</string>
+    <string name="priority_low">Низкий</string>
+    <string name="priority_very_low">Очень низкий</string>
 
+    <string name="difficulty_very_difficult">Очень сложная</string>
+    <string name="difficulty_difficult">Сложная</string>
+    <string name="difficulty_medium">Средняя</string>
+    <string name="difficulty_easy">Легкая</string>
+    <string name="difficulty_very_easy">Очень легкая</string>
 
-    <string name="project_create_title">Создать проект</string>
-    <string name="project_edit_title">Редактировать проект</string>
-    <string name="project_edit_title_default">Редактировать проект (только цвет)</string>
-    <string name="project_delete_title">Удаление проекта</string>
-    <string name="project_delete_message">Удалить проект "%1$s"?\n\nВсе задачи этого проекта будут перенесены в проект "%2$s"</string>
-    <string name="project_export_not_available">Экспорт будет доступен в следующей версии</string>
-    <string name="project_created">Проект создан</string>
-    <string name="project_updated">Проект обновлен</string>
-    <string name="project_deleted">Проект удален, задачи перенесены в стандартный проект</string>
-    <string name="project_delete_error_default">Нельзя удалить стандартный проект</string>
-    <string name="project_edit_error_name">Нельзя изменить название стандартного проекта</string>
-    <string name="project_name_exists">Проект с таким названием уже существует</string>
-    <string name="project_name_empty">Введите название проекта</string>
-    <string name="project_name_too_short">Название должно быть не менее 3 символов</string>
-    <string name="project_stats_loading">Загрузка...</string>
-    <string name="project_stats_format">Задач: %d | Выполнено: %d</string>
-    <string name="project_deleting">Удаление проекта...</string>
-    <string name="project_color_picker_title">Выберите цвет</string>
+    <string name="task_status_all">Все</string>
+    <string name="task_status_done">Выполненные</string>
+    <string name="task_status_not_done">Не выполненные</string>
 
-    <!-- Task related strings -->
-    <string name="task_completed">Задача выполнена!</string>
-    <string name="task_uncompleted">Задача отмечена как невыполненная</string>
-    <string name="task_deadline_prefix">Дедлайн: </string>
-    <string name="task_overdue_suffix"> (Просрочено)</string>
+    <string name="error_task_name_short">Название задачи должно состоять не менее чем из 3 символов</string>
+    <string name="error_task_deadline_past">Дедлайн задачи должен быть не раньше даты, в которую создается задача</string>
+    <string name="error_project_name_short">Название проекта должно состоять не менее чем из 3 символов</string>
 
-    <!-- Statistics strings -->
-    <string name="stats_tasks_count">Задач: %d | Выполнено: %d | Просрочено: %d</string>
-    <string name="stats_progress">Прогресс: %d%%</string>
+    <string name="filter_priority">Приоритет</string>
+    <string name="filter_difficulty">Сложность</string>
+    <string name="filter_deadline">Дедлайн до (timestamp)</string>
+
+    <string name="button_back">Назад</string>
+    <string name="button_apply">Применить</string>
+    <string name="button_reset">Сбросить</string>
+
+    <string name="hint_deadline">Дедлайн (timestamp)</string>
 
 
 </resources>

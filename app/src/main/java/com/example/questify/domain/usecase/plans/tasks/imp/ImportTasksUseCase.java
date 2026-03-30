@@ -24,7 +24,7 @@ public abstract class ImportTasksUseCase {
         executor.execute(() -> {
             try {
                 String content = readFile(context, uri);
-                saveTasks(content);
+                saveTasks(content, context);
             } catch (Exception e) {
                 Log.e("IMPORT", "Error reading file", e);
                 throw new RuntimeException("Error reading file");
@@ -32,7 +32,7 @@ public abstract class ImportTasksUseCase {
         });
     }
 
-    protected abstract void saveTasks(String content);
+    protected abstract void saveTasks(String content, Context context);
 
     private String readFile(Context context, Uri uri) throws IOException {
         InputStream inputStream = context.getContentResolver().openInputStream(uri);

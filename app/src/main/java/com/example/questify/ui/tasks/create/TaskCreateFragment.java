@@ -17,6 +17,7 @@ import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
 import com.example.questify.util.DatePickerUtils;
 import com.example.questify.util.DateUtils;
+import com.google.android.material.snackbar.Snackbar;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -52,8 +53,11 @@ public class TaskCreateFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(TaskCreateViewModel.class);
 
-        viewModel.getError().observe(getViewLifecycleOwner(), message ->
-                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show());
+        viewModel.getError().observe(getViewLifecycleOwner(), message -> {
+            if (message != null && !message.isEmpty()) {
+                Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show();
+            }
+        });
         viewModel.getSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success != null && success) {
                 requireActivity().getOnBackPressedDispatcher().onBackPressed();
@@ -116,18 +120,14 @@ public class TaskCreateFragment extends Fragment {
 
     private void saveTask() {
         Project selectedProject = (Project) spinnerProjects.getSelectedItem();
-        if (selectedProject == null) {
-            Toast.makeText(requireContext(), "Выберите проект", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         viewModel.saveTask(
                 inputTitle.getText().toString(),
                 inputDescription.getText().toString(),
                 DateUtils.parseToMillis(inputDeadline.getText().toString()),
                 selectedProject.getProjectName(),
                 (Difficulty) spinnerDifficulty.getSelectedItem(),
-                (Priority) spinnerPriority.getSelectedItem()
+                (Priority) spinnerPriority.getSelectedItem(),
+                requireContext()
         );
     }
 }

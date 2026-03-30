@@ -103,7 +103,7 @@ public class TaskFilterFragment extends Fragment {
                     ? null : Difficulty.valueOf((String) spinnerDifficulty.getSelectedItem());
 
             TaskStatus status = TaskStatus.fromString(
-                    (String) spinnerStatus.getSelectedItem());
+                    (String) spinnerStatus.getSelectedItem(), requireContext());
 
             Long start = DateUtils.parseToMillis(inputStartDate.getText().toString());
             Long end = DateUtils.parseToMillis(inputEndDate.getText().toString());

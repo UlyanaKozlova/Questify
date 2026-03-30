@@ -1,5 +1,6 @@
 package com.example.questify.domain.usecase.plans.tasks.imp;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.example.questify.domain.model.enums.Difficulty;
@@ -24,7 +25,7 @@ public class ImportTasksFromJsonUseCase extends ImportTasksUseCase {
     }
 
     @Override
-    protected void saveTasks(String content) {
+    protected void saveTasks(String content, Context context) {
         Gson gson = new Gson();
         Type type = new TypeToken<List<ImportedTaskDto>>() {
         }.getType();
@@ -37,7 +38,8 @@ public class ImportTasksFromJsonUseCase extends ImportTasksUseCase {
                         dto.deadlineMillis(),
                         dto.projectName,
                         Difficulty.valueOf(dto.difficulty.toUpperCase()),
-                        Priority.valueOf(dto.priority.toUpperCase())
+                        Priority.valueOf(dto.priority.toUpperCase()),
+                        context
                 );
             } catch (Exception e) {
                 Log.e("IMPORT", "Error creating task from JSON: " + dto.name, e);

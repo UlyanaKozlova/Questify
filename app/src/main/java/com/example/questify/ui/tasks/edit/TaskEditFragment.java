@@ -14,6 +14,7 @@ import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
 import com.example.questify.util.DatePickerUtils;
 import com.example.questify.util.DateUtils;
+import com.google.android.material.snackbar.Snackbar;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -95,9 +96,9 @@ public class TaskEditFragment extends Fragment {
             spinnerDifficulty.setSelection(task.getDifficulty().ordinal());
         });
 
-        viewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
+        viewModel.getError().observe(getViewLifecycleOwner(), message -> {
+            if (message != null && !message.isEmpty()) {
+                Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -115,7 +116,8 @@ public class TaskEditFragment extends Fragment {
                             ((Project) spinnerProjects.getSelectedItem()).getProjectName(),
                             (Priority) spinnerPriority.getSelectedItem(),
                             (Difficulty) spinnerDifficulty.getSelectedItem(),
-                            checkboxDone.isChecked()
+                            checkboxDone.isChecked(),
+                            requireContext()
                     );
                     requireActivity().getOnBackPressedDispatcher().onBackPressed();
                 });

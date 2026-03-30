@@ -1,5 +1,7 @@
 package com.example.questify.ui.projects;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -67,10 +69,10 @@ public class ProjectsViewModel extends ViewModel {
             projectStatsMap.postValue(new HashMap<>(statsCache));
         });
     }
-    public void createProject(String name, String color, OnProjectCreatedListener listener) {
+    public void createProject(String name, String color, OnProjectCreatedListener listener, Context context) {
         executor.execute(() -> {
             try {
-                Project newProject = new Project(name, color);
+                Project newProject = new Project(name, color, context);
                 boolean created = createProjectUseCase.execute(newProject);
                 if (listener != null) {
                     listener.onResult(created);
@@ -83,7 +85,11 @@ public class ProjectsViewModel extends ViewModel {
         });
     }
 
-    public void updateProject(Project project, String newName, String newColor, OnProjectUpdatedListener listener) {
+    public void updateProject(Project project,
+                              String newName,
+                              String newColor,
+                              OnProjectUpdatedListener listener,
+                              Context context) {
         executor.execute(() -> {
             try {
                 if (ProjectRepository.DEFAULT_PROJECT_NAME.equals(project.getProjectName())
@@ -93,7 +99,7 @@ public class ProjectsViewModel extends ViewModel {
                     }
                     return;
                 }
-                project.setProjectName(newName);
+                project.setProjectName(newName, context);
                 project.setColor(newColor);
                 updateProjectUseCase.execute(project);
                 if (listener != null) {

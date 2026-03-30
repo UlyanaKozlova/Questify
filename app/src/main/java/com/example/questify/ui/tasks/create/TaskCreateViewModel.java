@@ -1,5 +1,10 @@
 package com.example.questify.ui.tasks.create;
 
+import static android.content.ContentValues.TAG;
+
+import android.content.Context;
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -46,7 +51,8 @@ public class TaskCreateViewModel extends ViewModel {
                          Long deadline,
                          String projectName,
                          Difficulty difficulty,
-                         Priority priority) {
+                         Priority priority,
+                         Context context) {
         if (deadline == null) {
             error.setValue("Выберите дату дедлайна");
             return;
@@ -59,12 +65,15 @@ public class TaskCreateViewModel extends ViewModel {
                         deadline,
                         projectName,
                         difficulty,
-                        priority
+                        priority,
+                        context
                 );
                 success.postValue(true);
             } catch (IllegalArgumentException e) {
+                Log.e(TAG, "Validation error: " + e.getMessage());
                 error.postValue(e.getMessage());
             } catch (Exception e) {
+                Log.e(TAG, "Unexpected error", e);
                 error.postValue("Ошибка при сохранении задачи: " + e.getMessage());
             }
         });

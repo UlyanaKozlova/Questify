@@ -160,7 +160,8 @@ public class ProjectsFragment extends Fragment {
                         public void onError(String error) {
                             mainHandler.post(() -> showToast(error));
                         }
-                    });
+                    },
+                    requireContext());
         });
 
         builder.setNegativeButton("Отмена", null);
@@ -256,21 +257,20 @@ public class ProjectsFragment extends Fragment {
                 return;
             }
 
-            viewModel.updateProject(project, isDefault ? project.getProjectName() : newName, selectedColor.get(),
+            viewModel.updateProject(project,
+                    isDefault ? project.getProjectName() : newName,
+                    selectedColor.get(),
                     new ProjectsViewModel.OnProjectUpdatedListener() {
                         @Override
                         public void onSuccess() {
-                            mainHandler.post(() -> {
-                                showToast("Проект обновлен");
-                                Log.d("ProjectsFragment", "Project updated");
-                            });
                         }
 
                         @Override
                         public void onError(String error) {
                             mainHandler.post(() -> showToast(error));
                         }
-                    });
+                    },
+                    requireContext());
         });
 
         builder.setNegativeButton("Отмена", null);

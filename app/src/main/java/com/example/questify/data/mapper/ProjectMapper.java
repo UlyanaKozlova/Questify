@@ -5,7 +5,7 @@ import com.example.questify.domain.model.Project;
 
 public class ProjectMapper {
 
-    private static final String DEFAULT_COLOR = "#FF6200EE";
+    private static final String DEFAULT_COLOR = "#FF6200EE"; // todo
 
     public static Project toDomain(ProjectEntity entity) {
         return entity == null
