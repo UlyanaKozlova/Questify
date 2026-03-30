@@ -22,9 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SettingsFragment extends Fragment {
 
-    private static final String POSITIVE_RESPONSE = "Да";
-    private static final String NEGATIVE_RESPONSE = "Отмена";
-
     private ActivityResultLauncher<String> createJsonLauncher;
     private ActivityResultLauncher<String> createIcsLauncher;
     private ActivityResultLauncher<String> createStatisticsJsonLauncher;
@@ -109,17 +106,18 @@ public class SettingsFragment extends Fragment {
                 createStatisticsPngLauncher.launch("statistics.png"));
 
         buttonReset.setOnClickListener(v -> showConfirmDialog(
-                "Сброс прогресса",
-                "Вы уверены, что хотите удалить весь прогресс?",
+                getString(R.string.settings_reset_progress),
+                getString(R.string.settings_reset_progress_confirm),
                 () -> settingsViewModel.resetProgress()
         ));
 
         buttonDeleteCompleted.setOnClickListener(v -> showConfirmDialog(
-                "Удаление задач",
-                "Удалить все выполненные задачи?",
+                getString(R.string.settings_delete_completed),
+                getString(R.string.settings_delete_completed_confirm),
                 () -> settingsViewModel.deleteCompletedTasks()
         ));
     }
+
     private void showSnackbar(String message) {
         if (rootView != null) {
             Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
@@ -130,8 +128,8 @@ public class SettingsFragment extends Fragment {
         new AlertDialog.Builder(requireContext())
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(POSITIVE_RESPONSE, (dialog, which) -> onConfirm.run())
-                .setNegativeButton(NEGATIVE_RESPONSE, null)
+                .setPositiveButton(getString(R.string.settings_yes), (dialog, which) -> onConfirm.run())
+                .setNegativeButton(getString(R.string.settings_no), null)
                 .show();
     }
 }

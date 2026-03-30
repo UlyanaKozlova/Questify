@@ -2,13 +2,11 @@ package com.example.questify.ui.settings;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.questify.R;
 import com.example.questify.domain.usecase.plans.tasks.exp.ExportStatisticsToJsonUseCase;
 import com.example.questify.domain.usecase.plans.tasks.exp.ExportStatisticsToPngUseCase;
 import com.example.questify.domain.usecase.plans.tasks.exp.ExportToIcsUseCase;
@@ -25,8 +23,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class SettingsViewModel extends ViewModel {
-
-    private static final String TAG = "SettingsViewModel";
 
     private final DeleteProgressUseCase deleteProgressUseCase;
     private final DeleteCompletedTasksUseCase deleteCompletedTasksUseCase;

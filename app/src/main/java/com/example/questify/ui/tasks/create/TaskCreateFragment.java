@@ -121,7 +121,7 @@ public class TaskCreateFragment extends Fragment {
     private void saveTask() {
         Project selectedProject = (Project) spinnerProjects.getSelectedItem();
         if (selectedProject == null) {
-            Snackbar.make(requireView(), "Выберите проект", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(requireView(), getString(R.string.choose_project), Snackbar.LENGTH_LONG).show();
             return;
         }
 

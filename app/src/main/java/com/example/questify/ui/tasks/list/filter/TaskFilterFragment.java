@@ -14,6 +14,7 @@ import com.example.questify.domain.usecase.plans.tasks.filter.TaskFilter;
 import com.example.questify.ui.tasks.list.TaskListViewModel;
 import com.example.questify.util.DatePickerUtils;
 import com.example.questify.util.DateUtils;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.stream.IntStream;
 
@@ -21,15 +22,16 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class TaskFilterFragment extends Fragment {
+    private View rootView;
 
-    private static final String ALL = "Все";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_task_filter, container, false);
+        rootView = inflater.inflate(R.layout.fragment_task_filter, container, false);
+        return rootView;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class TaskFilterFragment extends Fragment {
         DatePickerUtils.attach(inputEndDate, requireContext());
 
         String[] priorityItems = new String[Priority.values().length + 1];
-        priorityItems[0] = ALL;
+        priorityItems[0] = getString(R.string.filter_all);
         IntStream.range(0, Priority.values().length)
                 .forEach(i -> priorityItems[i + 1] = Priority.values()[i].name());
         spinnerPriority.setAdapter(new ArrayAdapter<>(requireContext(),
@@ -59,7 +61,7 @@ public class TaskFilterFragment extends Fragment {
 
 
         String[] difficultyItems = new String[Difficulty.values().length + 1];
-        difficultyItems[0] = ALL;
+        difficultyItems[0] = getString(R.string.filter_all);
         IntStream.range(0, Difficulty.values().length)
                 .forEach(i -> difficultyItems[i + 1] = Difficulty.values()[i].name());
         spinnerDifficulty.setAdapter(new ArrayAdapter<>(requireContext(),
@@ -96,10 +98,10 @@ public class TaskFilterFragment extends Fragment {
         });
 
         view.findViewById(R.id.buttonApply).setOnClickListener(v -> {
-            Priority priority = spinnerPriority.getSelectedItem().equals(ALL)
+            Priority priority = spinnerPriority.getSelectedItem().equals(getString(R.string.filter_all))
                     ? null : Priority.valueOf((String) spinnerPriority.getSelectedItem());
 
-            Difficulty difficulty = spinnerDifficulty.getSelectedItem().equals(ALL)
+            Difficulty difficulty = spinnerDifficulty.getSelectedItem().equals(getString(R.string.filter_all))
                     ? null : Difficulty.valueOf((String) spinnerDifficulty.getSelectedItem());
 
             TaskStatus status = TaskStatus.fromString(
@@ -108,7 +110,7 @@ public class TaskFilterFragment extends Fragment {
             Long start = DateUtils.parseToMillis(inputStartDate.getText().toString());
             Long end = DateUtils.parseToMillis(inputEndDate.getText().toString());
             if (start != null && end != null && start > end) {
-                inputStartDate.setError("Начальная дата позже конечной");
+                Snackbar.make(rootView, getString(R.string.filter_error_start_after_end), Snackbar.LENGTH_LONG).show();
                 return;
             }
 

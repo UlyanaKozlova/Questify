@@ -1,5 +1,6 @@
 package com.example.questify.ui.projects.detail;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +61,7 @@ public class ProjectDetailFragment extends Fragment {
         Button buttonAddTask = view.findViewById(R.id.buttonAddTaskToProject);
 
         textTitle.setText(projectName);
+        buttonAddTask.setText(getString(R.string.project_add_task));
 
         adapter = new TasksInProjectAdapter(
                 task -> {
@@ -90,11 +92,11 @@ public class ProjectDetailFragment extends Fragment {
 
         viewModel.getProjectStatistics().observe(getViewLifecycleOwner(), stats -> {
             if (stats != null) {
-                textStats.setText(String.format("Задач: %d | Выполнено: %d | Просрочено: %d",
+                textStats.setText(getString(R.string.project_tasks_count,
                         stats.total, stats.completed, stats.overdue));
 
                 int percent = stats.getProgressPercent();
-                textProgress.setText(String.format("Прогресс: %d%%", percent));
+                textProgress.setText(getString(R.string.project_progress_percent, percent));
                 progressBar.setProgress(percent);
             }
         });
@@ -160,7 +162,7 @@ public class ProjectDetailFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
             Task task = tasks.get(position);
-            holder.bind(task, clickListener, checkListener, dateFormat);
+            holder.bind(task, clickListener, checkListener, dateFormat, holder.itemView.getContext());
         }
 
         @Override
@@ -181,15 +183,19 @@ public class ProjectDetailFragment extends Fragment {
             }
 
             void bind(Task task, OnTaskClickListener clickListener,
-                      OnTaskCheckListener checkListener, SimpleDateFormat dateFormat) {
+                      OnTaskCheckListener checkListener, SimpleDateFormat dateFormat,
+                      android.content.Context context) {
                 textTaskTitle.setText(task.getTaskName());
 
-                String deadlineText = "Дедлайн: " + dateFormat.format(new Date(task.getDeadline()));
-                if (!task.isDone() && task.getDeadline() < System.currentTimeMillis()) {
-                    textTaskDeadline.setTextColor(0xFFFF0000);
-                    deadlineText += " (Просрочено)";
+                String deadlineText = context.getString(R.string.task_deadline_prefix) +
+                        dateFormat.format(new Date(task.getDeadline()));
+
+                boolean isOverdue = !task.isDone() && task.getDeadline() < System.currentTimeMillis();
+                if (isOverdue) {
+                    textTaskDeadline.setTextColor(Color.RED);
+                    deadlineText += context.getString(R.string.task_overdue_suffix);
                 } else {
-                    textTaskDeadline.setTextColor(0xFF888888);
+                    textTaskDeadline.setTextColor(Color.parseColor("#FF888888"));
                 }
                 textTaskDeadline.setText(deadlineText);
 

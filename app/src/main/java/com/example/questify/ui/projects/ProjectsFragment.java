@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,10 +23,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.questify.R;
+import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.usecase.plans.project.GetProjectStatisticsUseCase;
 import com.example.questify.ui.projects.detail.ProjectDetailFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,18 +43,36 @@ public class ProjectsFragment extends Fragment {
     private ProjectsAdapter adapter;
     private RecyclerView recyclerProjects;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private View rootView;
+    private AlertDialog currentDialog;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_projects, container, false);
+        rootView = inflater.inflate(R.layout.fragment_projects, container, false);
+        return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(ProjectsViewModel.class);
+
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                showSnackbar(error);
+            }
+        });
+
+        viewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success != null && success) {
+                if (currentDialog != null && currentDialog.isShowing()) {
+                    currentDialog.dismiss();
+                    currentDialog = null;
+                }
+            }
+        });
 
         recyclerProjects = view.findViewById(R.id.recyclerProjects);
         recyclerProjects.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -113,12 +131,14 @@ public class ProjectsFragment extends Fragment {
 
     private void showCreateProjectDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Создать проект");
+        builder.setTitle(getString(R.string.project_create_title));
 
         View dialogView = LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_create_project, null);
 
         EditText inputName = dialogView.findViewById(R.id.inputProjectName);
+        inputName.setHint(getString(R.string.project_name_hint));
+
         View colorPicker = dialogView.findViewById(R.id.colorPicker);
         View selectedColorView = dialogView.findViewById(R.id.selectedColor);
 
@@ -126,13 +146,20 @@ public class ProjectsFragment extends Fragment {
         ((GradientDrawable) selectedColorView.getBackground()).setColor(Color.parseColor(selectedColor.get()));
 
         colorPicker.setOnClickListener(v -> {
-            String[] colors = {"#FF6200EE", "#F44336", "#4CAF50", "#FFC107", "#2196F3", "#9C27B0"};
-            String[] colorNames = {"Фиолетовый", "Красный", "Зеленый", "Желтый", "Синий", "Розовый"};
+            String[] colors = {
+                    getString(R.string.project_color_purple),
+                    getString(R.string.project_color_red),
+                    getString(R.string.project_color_green),
+                    getString(R.string.project_color_yellow),
+                    getString(R.string.project_color_blue),
+                    getString(R.string.project_color_pink)
+            };
+            String[] colorHex = {"#FF6200EE", "#F44336", "#4CAF50", "#FFC107", "#2196F3", "#9C27B0"};
 
             new AlertDialog.Builder(requireContext())
-                    .setTitle("Выберите цвет")
-                    .setItems(colorNames, (dialog, which) -> {
-                        selectedColor.set(colors[which]);
+                    .setTitle(getString(R.string.project_color_picker_title))
+                    .setItems(colors, (dialog, which) -> {
+                        selectedColor.set(colorHex[which]);
                         ((GradientDrawable) selectedColorView.getBackground())
                                 .setColor(Color.parseColor(selectedColor.get()));
                     })
@@ -141,31 +168,48 @@ public class ProjectsFragment extends Fragment {
 
         builder.setView(dialogView);
 
-        builder.setPositiveButton("Создать", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.project_create), null);
+        builder.setNegativeButton(getString(R.string.project_cancel), (dialog, which) -> currentDialog = null);
+
+        currentDialog = builder.create();
+        currentDialog.show();
+
+        currentDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String projectName = inputName.getText().toString().trim();
 
+            if (projectName.isEmpty()) {
+                showSnackbar(getString(R.string.project_name_empty));
+                return;
+            }
+            if (projectName.length() < 3) {
+                showSnackbar(getString(R.string.project_name_too_short));
+                return;
+            }
+
+            v.setEnabled(false);
 
             viewModel.createProject(projectName, selectedColor.get(),
                     new ProjectsViewModel.OnProjectCreatedListener() {
                         @Override
                         public void onResult(boolean success) {
                             mainHandler.post(() -> {
+                                v.setEnabled(true);
                                 if (!success) {
-                                    showToast("Проект с таким названием уже существует");
+                                    showSnackbar(getString(R.string.project_name_exists));
                                 }
                             });
                         }
 
                         @Override
                         public void onError(String error) {
-                            mainHandler.post(() -> showToast(error));
+                            mainHandler.post(() -> {
+                                v.setEnabled(true);
+                                showSnackbar(error);
+                            });
                         }
                     },
                     requireContext());
         });
-
-        builder.setNegativeButton("Отмена", null);
-        builder.show();
     }
 
     private void showProjectActionsDialog(Project project) {
@@ -174,14 +218,14 @@ public class ProjectsFragment extends Fragment {
         String[] actions;
         if (isDefault) {
             actions = new String[]{
-                    "Редактировать цвет",
-                    "Экспорт"
+                    getString(R.string.project_edit_color_only),
+                    getString(R.string.project_export)
             };
         } else {
             actions = new String[]{
-                    "Редактировать",
-                    "Удалить",
-                    "Экспорт"
+                    getString(R.string.project_edit),
+                    getString(R.string.project_delete),
+                    getString(R.string.project_export)
             };
         }
 
@@ -189,17 +233,13 @@ public class ProjectsFragment extends Fragment {
                 .setTitle(project.getProjectName())
                 .setItems(actions, (dialog, which) -> {
                     String action = actions[which];
-                    switch (action) {
-                        case "Редактировать":
-                        case "Редактировать цвет":
-                            showEditProjectDialog(project, isDefault);
-                            break;
-                        case "Удалить":
-                            showDeleteProjectDialog(project);
-                            break;
-                        case "Экспорт":
-                            showToast("Экспорт");
-                            break;
+                    if (action.equals(getString(R.string.project_edit)) ||
+                            action.equals(getString(R.string.project_edit_color_only))) {
+                        showEditProjectDialog(project, isDefault);
+                    } else if (action.equals(getString(R.string.project_delete))) {
+                        showDeleteProjectDialog(project);
+                    } else if (action.equals(getString(R.string.project_export))) {
+                        showSnackbar(getString(R.string.project_export));
                     }
                 })
                 .show();
@@ -208,13 +248,15 @@ public class ProjectsFragment extends Fragment {
     private void showEditProjectDialog(Project project, boolean isDefault) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(isDefault
-                ? "Редактировать проект цвет"
-                : "Редактировать проект");
+                ? getString(R.string.project_edit_only_color_title)
+                : getString(R.string.project_edit_title));
 
         View dialogView = LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_create_project, null);
 
         EditText inputName = dialogView.findViewById(R.id.inputProjectName);
+        inputName.setHint(getString(R.string.project_name_hint));
+
         View colorPicker = dialogView.findViewById(R.id.colorPicker);
         View selectedColorView = dialogView.findViewById(R.id.selectedColor);
 
@@ -231,13 +273,20 @@ public class ProjectsFragment extends Fragment {
                 .setColor(Color.parseColor(selectedColor.get()));
 
         colorPicker.setOnClickListener(v -> {
-            String[] colors = {"#FF6200EE", "#F44336", "#4CAF50", "#FFC107", "#2196F3", "#9C27B0"};
-            String[] colorNames = {"Фиолетовый", "Красный", "Зеленый", "Желтый", "Синий", "Розовый"};
+            String[] colors = {
+                    getString(R.string.project_color_purple),
+                    getString(R.string.project_color_red),
+                    getString(R.string.project_color_green),
+                    getString(R.string.project_color_yellow),
+                    getString(R.string.project_color_blue),
+                    getString(R.string.project_color_pink)
+            };
+            String[] colorHex = {"#FF6200EE", "#F44336", "#4CAF50", "#FFC107", "#2196F3", "#9C27B0"};
 
             new AlertDialog.Builder(requireContext())
-                    .setTitle("Выберите цвет")
-                    .setItems(colorNames, (dialog, which) -> {
-                        selectedColor.set(colors[which]);
+                    .setTitle(getString(R.string.project_color_picker_title))
+                    .setItems(colors, (dialog, which) -> {
+                        selectedColor.set(colorHex[which]);
                         ((GradientDrawable) selectedColorView.getBackground())
                                 .setColor(Color.parseColor(selectedColor.get()));
                     })
@@ -246,16 +295,25 @@ public class ProjectsFragment extends Fragment {
 
         builder.setView(dialogView);
 
-        builder.setPositiveButton("Сохранить", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.project_save), null);
+        builder.setNegativeButton(getString(R.string.project_cancel), (dialog, which) -> currentDialog = null);
+
+        currentDialog = builder.create();
+        currentDialog.show();
+
+        currentDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String newName = inputName.getText().toString().trim();
+
             if (!isDefault && newName.isEmpty()) {
-                showToast("Введите название проекта");
+                showSnackbar(getString(R.string.project_name_empty));
                 return;
             }
             if (!isDefault && newName.length() < 3) {
-                showToast("Название должно быть не менее 3 символов");
+                showSnackbar(getString(R.string.project_name_too_short));
                 return;
             }
+
+            v.setEnabled(false);
 
             viewModel.updateProject(project,
                     isDefault ? project.getProjectName() : newName,
@@ -263,29 +321,37 @@ public class ProjectsFragment extends Fragment {
                     new ProjectsViewModel.OnProjectUpdatedListener() {
                         @Override
                         public void onSuccess() {
+                            mainHandler.post(() -> {
+                                v.setEnabled(true);
+                                if (currentDialog != null && currentDialog.isShowing()) {
+                                    currentDialog.dismiss();
+                                    currentDialog = null;
+                                }
+                                showSnackbar(getString(R.string.project_updated));
+                            });
                         }
 
                         @Override
                         public void onError(String error) {
-                            mainHandler.post(() -> showToast(error));
+                            mainHandler.post(() -> {
+                                v.setEnabled(true);
+                                showSnackbar(error);
+                            });
                         }
                     },
                     requireContext());
         });
-
-        builder.setNegativeButton("Отмена", null);
-        builder.show();
     }
 
     private void showDeleteProjectDialog(Project project) {
         new AlertDialog.Builder(requireContext())
-                .setTitle("Удаление проекта")
-                .setMessage("Удалить проект \"" + project.getProjectName() + "\"?\n\n" +
-                        "Все задачи этого проекта будут перенесены в проект \"" +
-                        com.example.questify.data.repository.ProjectRepository.DEFAULT_PROJECT_NAME + "\"")
-                .setPositiveButton("Удалить", (dialog, which) -> {
+                .setTitle(getString(R.string.project_delete_title))
+                .setMessage(getString(R.string.project_delete_message,
+                        project.getProjectName(),
+                        ProjectRepository.DEFAULT_PROJECT_NAME))
+                .setPositiveButton(getString(R.string.project_delete), (dialog, which) -> {
                     ProgressDialog progressDialog = new ProgressDialog(requireContext());
-                    progressDialog.setMessage("Удаление проекта...");
+                    progressDialog.setMessage(getString(R.string.project_deleting));
                     progressDialog.setCancelable(false);
                     progressDialog.show();
 
@@ -294,7 +360,7 @@ public class ProjectsFragment extends Fragment {
                         public void onSuccess() {
                             mainHandler.post(() -> {
                                 progressDialog.dismiss();
-                                showToast("Проект удален, задачи перенесены в стандартный проект");
+                                showSnackbar(getString(R.string.project_deleted_success));
                             });
                         }
 
@@ -302,17 +368,28 @@ public class ProjectsFragment extends Fragment {
                         public void onError(String error) {
                             mainHandler.post(() -> {
                                 progressDialog.dismiss();
-                                showToast("Ошибка: " + error);
+                                showSnackbar(error);
                             });
                         }
-                    });
+                    }, requireContext());
                 })
-                .setNegativeButton("Отмена", null)
+                .setNegativeButton(getString(R.string.project_cancel), null)
                 .show();
     }
 
-    private void showToast(String message) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    private void showSnackbar(String message) {
+        if (rootView != null) {
+            Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (currentDialog != null && currentDialog.isShowing()) {
+            currentDialog.dismiss();
+            currentDialog = null;
+        }
     }
 
     private static class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ProjectViewHolder> {
@@ -391,7 +468,7 @@ public class ProjectsFragment extends Fragment {
                     colorView.setBackgroundColor(Color.parseColor("#FF6200EE"));
                 }
 
-                textStats.setText("Загрузка...");
+                textStats.setText(itemView.getContext().getString(R.string.project_stats_loading));
                 progressBar.setProgress(0);
 
                 itemView.setOnClickListener(v -> clickListener.onProjectClick(project));
@@ -399,7 +476,7 @@ public class ProjectsFragment extends Fragment {
             }
 
             void updateStats(int total, int completed, int percent) {
-                textStats.setText(String.format("Задач: %d | Выполнено: %d", total, completed));
+                textStats.setText(itemView.getContext().getString(R.string.project_stats_format, total, completed));
                 progressBar.setProgress(percent);
             }
         }

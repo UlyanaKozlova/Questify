@@ -103,4 +103,11 @@ public class ProjectRepository {
     public void ensureDefaultProjectExists() {
         getDefaultProject();
     }
+
+    public boolean isDefaultProject(Project project) {
+        if (project == null) {
+            return false;
+        }
+        return DEFAULT_PROJECT_NAME.equals(project.getProjectName());
+    }
 }
