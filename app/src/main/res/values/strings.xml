@@ -55,6 +55,11 @@
     <string name="error_task_deadline_past">Дедлайн задачи должен быть не раньше даты, в которую создается задача</string>
     <string name="error_project_name_short">Название проекта должно состоять не менее чем из 3 символов</string>
 
+    <string name="error_os_closed">Не удалось открыть файл для записи</string>
+    <string name="error_reading_file">Ошибка чтения файла</string>
+    <string name="error_wrong_format">Неправильный формат</string>
+
+
     <string name="filter_priority">Приоритет</string>
     <string name="filter_difficulty">Сложность</string>
     <string name="filter_deadline">Дедлайн до (timestamp)</string>

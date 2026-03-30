@@ -5,6 +5,7 @@ import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.domain.model.Task;
@@ -52,10 +53,15 @@ public class TaskListViewModel extends ViewModel {
     private final MediatorLiveData<List<Task>> tasks = new MediatorLiveData<>();
     private final LiveData<List<Task>> source;
 
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+
     public LiveData<List<Task>> getTasks() {
         return tasks;
     }
 
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
+    }
     public TaskFilter getCurrentFilter() {
         return currentFilter;
     }
@@ -88,7 +94,13 @@ public class TaskListViewModel extends ViewModel {
     }
 
     public void completeTask(Task task, boolean isDone) {
-        executor.execute(() -> completeTaskUseCase.execute(task, isDone));
+        executor.execute(() -> {
+            try {
+                completeTaskUseCase.execute(task, isDone);
+            } catch (Exception e) {
+                errorMessage.postValue(e.getMessage());
+            }
+        });
     }
 
     public void sort(SortType type) {
@@ -116,6 +128,12 @@ public class TaskListViewModel extends ViewModel {
     }
 
     public void importFromFile(Context context, Uri uri, String fileName) {
-        importFactory.get(fileName, createTaskUseCase).execute(context, uri);
+        executor.execute(() -> {
+            try {
+                importFactory.get(fileName, createTaskUseCase, context).execute(context, uri);
+            } catch (Exception e) {
+                errorMessage.postValue(e.getMessage());
+            }
+        });
     }
 }

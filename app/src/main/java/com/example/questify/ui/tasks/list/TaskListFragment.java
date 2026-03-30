@@ -27,7 +27,7 @@ import com.example.questify.domain.usecase.plans.tasks.sort.SortType;
 import com.example.questify.ui.tasks.create.TaskCreateFragment;
 import com.example.questify.ui.tasks.edit.TaskEditFragment;
 import com.example.questify.ui.tasks.list.filter.TaskFilterFragment;
-
+import com.google.android.material.snackbar.Snackbar;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -35,14 +35,15 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class TaskListFragment extends Fragment {
     private TaskListViewModel taskListViewModel;
     private ActivityResultLauncher<String> pickFileLauncher;
-
+    private View rootView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_task_list, container, false);
+        rootView = inflater.inflate(R.layout.fragment_task_list, container, false);
+        return rootView;
     }
 
     @Override
@@ -67,7 +68,6 @@ public class TaskListFragment extends Fragment {
             }
         });
 
-
         Button buttonAdd = view.findViewById(R.id.buttonAddTask);
 
         TaskListAdapter taskListAdapter = new TaskListAdapter(new TaskListAdapter.Listener() {
@@ -83,7 +83,6 @@ public class TaskListFragment extends Fragment {
                         .addToBackStack(null)
                         .commit();
             }
-
 
             @Override
             public void onTaskChecked(Task task, boolean isChecked) {
@@ -107,12 +106,16 @@ public class TaskListFragment extends Fragment {
             }
         });
 
-
         recyclerView.setAdapter(taskListAdapter);
 
         taskListViewModel = new ViewModelProvider(requireActivity()).get(TaskListViewModel.class);
         taskListViewModel.getTasks().observe(getViewLifecycleOwner(), taskListAdapter::submitList);
 
+        taskListViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                showSnackbar(error);
+            }
+        });
 
         buttonFilter.setOnClickListener(v -> requireActivity()
                 .getSupportFragmentManager()
@@ -128,9 +131,14 @@ public class TaskListFragment extends Fragment {
                 .addToBackStack(null)
                 .commit());
 
-
         buttonImport.setOnClickListener(v ->
                 pickFileLauncher.launch("*/*"));
+    }
+
+    private void showSnackbar(String message) {
+        if (rootView != null) {
+            Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override

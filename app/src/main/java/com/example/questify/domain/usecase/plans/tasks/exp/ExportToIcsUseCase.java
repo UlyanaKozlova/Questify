@@ -3,6 +3,7 @@ package com.example.questify.domain.usecase.plans.tasks.exp;
 import android.content.Context;
 import android.net.Uri;
 
+import com.example.questify.R;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.usecase.plans.tasks.task.GetAllTasksUseCase;
 
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 
 public class ExportToIcsUseCase {
 
+    private static final String UTC = "UTC";
     private final GetAllTasksUseCase getAllTasksUseCase;
 
     @Inject
@@ -32,7 +34,7 @@ public class ExportToIcsUseCase {
             builder.append("VERSION:2.0\n");
 
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.getDefault());
-            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            format.setTimeZone(TimeZone.getTimeZone(UTC));
 
             for (Task task : tasks) {
                 builder.append("BEGIN:VEVENT\n");
@@ -50,7 +52,7 @@ public class ExportToIcsUseCase {
 
             try (OutputStream os = context.getContentResolver().openOutputStream(uri)) {
                 if (os == null) {
-                    throw new IllegalStateException("Не удалось открыть поток для записи");
+                    throw new IllegalStateException(context.getString(R.string.error_os_closed));
                 }
                 os.write(builder.toString().getBytes());
                 os.flush();

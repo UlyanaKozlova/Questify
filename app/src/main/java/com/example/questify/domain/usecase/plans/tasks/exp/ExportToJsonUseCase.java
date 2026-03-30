@@ -3,6 +3,7 @@ package com.example.questify.domain.usecase.plans.tasks.exp;
 import android.content.Context;
 import android.net.Uri;
 
+import com.example.questify.R;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.usecase.plans.tasks.task.GetAllTasksUseCase;
 
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 
 public class ExportToJsonUseCase {
 
+    private static final String UTC = "UTC";
     private final GetAllTasksUseCase getAllTasksUseCase;
 
     @Inject
@@ -32,7 +34,7 @@ public class ExportToJsonUseCase {
             JSONArray array = new JSONArray();
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
-            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            format.setTimeZone(TimeZone.getTimeZone(UTC));
 
             for (Task task : tasks) {
                 JSONObject obj = new JSONObject();
@@ -49,7 +51,7 @@ public class ExportToJsonUseCase {
             }
             try (OutputStream os = context.getContentResolver().openOutputStream(uri)) {
                 if (os == null) {
-                    throw new IllegalStateException("Не удалось открыть файл для записи");
+                    throw new IllegalStateException(context.getString(R.string.error_os_closed));
                 }
                 os.write(array.toString(2).getBytes());
                 os.flush();

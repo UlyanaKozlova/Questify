@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.questify.R;
+import com.google.android.material.snackbar.Snackbar;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -30,19 +31,27 @@ public class SettingsFragment extends Fragment {
     private ActivityResultLauncher<String> createStatisticsPngLauncher;
 
     private SettingsViewModel settingsViewModel;
+    private View rootView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings, container, false);
+        rootView = inflater.inflate(R.layout.fragment_settings, container, false);
+        return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+
+        settingsViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                showSnackbar(error);
+            }
+        });
 
         Button buttonReset = view.findViewById(R.id.buttonResetProgress);
         Button buttonDeleteCompleted = view.findViewById(R.id.buttonDeleteCompleted);
@@ -99,7 +108,6 @@ public class SettingsFragment extends Fragment {
         buttonExportStatisticsToPng.setOnClickListener(v ->
                 createStatisticsPngLauncher.launch("statistics.png"));
 
-
         buttonReset.setOnClickListener(v -> showConfirmDialog(
                 "Сброс прогресса",
                 "Вы уверены, что хотите удалить весь прогресс?",
@@ -111,6 +119,11 @@ public class SettingsFragment extends Fragment {
                 "Удалить все выполненные задачи?",
                 () -> settingsViewModel.deleteCompletedTasks()
         ));
+    }
+    private void showSnackbar(String message) {
+        if (rootView != null) {
+            Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void showConfirmDialog(String title, String message, Runnable onConfirm) {
