@@ -1,6 +1,5 @@
 package com.example.questify.data.repository;
 
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
@@ -11,20 +10,21 @@ import com.example.questify.data.mapper.ProjectMapper;
 import com.example.questify.domain.model.Project;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class ProjectRepository {
-    private final static String DEFAULT = "default";
+    public static final String DEFAULT_PROJECT_NAME = "Без проекта";
+    public static final String DEFAULT_PROJECT_COLOR = "#FF6200EE";
 
     private final ProjectDao projectDao;
     private final UserSession userSession;
 
     @Inject
-    public ProjectRepository(ProjectDao projectDao,
-                             UserSession userSession) {
+    public ProjectRepository(ProjectDao projectDao, UserSession userSession) {
         this.projectDao = projectDao;
         this.userSession = userSession;
     }
@@ -38,14 +38,27 @@ public class ProjectRepository {
     }
 
     public void update(Project project) {
-        ProjectEntity entity = ProjectMapper.toEntity(project);
-        entity.updatedAt = System.currentTimeMillis();
-        entity.needsSync = true;
-        projectDao.update(entity);
+        ProjectEntity existing = projectDao.getByGlobalId(project.getGlobalId());
+        if (existing == null) {
+            save(project);
+            return;
+        }
+        existing.projectName = project.getProjectName();
+        existing.color = project.getColor();
+        existing.updatedAt = System.currentTimeMillis();
+        existing.needsSync = true;
+        projectDao.update(existing);
     }
 
     public void delete(Project project) {
-        projectDao.delete(ProjectMapper.toEntity(project));
+        Project defaultProject = getDefaultProject();
+        if (defaultProject != null && defaultProject.getGlobalId().equals(project.getGlobalId())) {
+            return;
+        }
+        ProjectEntity existing = projectDao.getByGlobalId(project.getGlobalId());
+        if (existing != null) {
+            projectDao.delete(existing);
+        }
     }
 
     public void deleteAll() {
@@ -73,28 +86,21 @@ public class ProjectRepository {
         return ProjectMapper.toDomain(projectDao.getByGlobalId(globalId));
     }
 
-    public List<Project> getNeedingSync() {
-        return projectDao.getNeedingSync()
-                .stream()
-                .map(ProjectMapper::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    public void ensureLocalProjectExists() {
-        if (projectDao.getAll().isEmpty()) {
-            ProjectEntity projectEntity = new ProjectEntity();
-            projectEntity.globalId = UUID.randomUUID().toString();
-            projectEntity.projectName = DEFAULT;
-            projectEntity.userGlobalId = userSession.getUserGlobalId();
-            projectEntity.updatedAt = System.currentTimeMillis();
-            projectEntity.isDeleted = false;
-            projectEntity.needsSync = true;
-
-            projectDao.insert(projectEntity);
-        }
-    }
-
     public Project getByProjectName(String projectName) {
         return ProjectMapper.toDomain(projectDao.getByProjectName(projectName));
+    }
+
+    public Project getDefaultProject() {
+        Project defaultProject = getByProjectName(DEFAULT_PROJECT_NAME);
+        if (defaultProject == null) {
+            defaultProject = new Project(DEFAULT_PROJECT_NAME, DEFAULT_PROJECT_COLOR);
+            save(defaultProject);
+            defaultProject = getByProjectName(DEFAULT_PROJECT_NAME);
+        }
+        return defaultProject;
+    }
+
+    public void ensureDefaultProjectExists() {
+        getDefaultProject();
     }
 }

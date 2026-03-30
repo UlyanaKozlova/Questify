@@ -21,6 +21,7 @@ public class GetAllProjectsUseCase {
     public List<Project> execute() {
         return projectRepository.getAll();
     }
+
     public LiveData<List<Project>> executeLive() {
         return projectRepository.getAllLive();
     }

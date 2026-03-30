@@ -15,13 +15,16 @@ public class CreateProjectUseCase {
     }
 
     public boolean execute(String projectName) {
-        Project newProject = new Project(projectName);
-        for (Project project : projectRepository.getAll()) {
-            if (project.equals(newProject)) {
+        return execute(new Project(projectName));
+    }
+
+    public boolean execute(Project project) {
+        for (Project existing : projectRepository.getAll()) {
+            if (existing.getProjectName().equals(project.getProjectName())) {
                 return false;
             }
         }
-        projectRepository.save(newProject);
+        projectRepository.save(project);
         return true;
     }
 }

@@ -13,9 +13,7 @@ public class UpdateProjectUseCase {
         this.projectRepository = projectRepository;
     }
 
-    public void execute(Project project,
-                        String projectName) {
-        project.setProjectName(projectName);
+    public void execute(Project project) {
         projectRepository.update(project);
     }
 }

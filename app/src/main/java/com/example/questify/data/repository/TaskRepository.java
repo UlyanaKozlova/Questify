@@ -78,4 +78,15 @@ public class TaskRepository {
                 .map(TaskMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    public List<Task> getTasksByProject(String projectGlobalId) {
+        return taskDao.getTasksByProject(projectGlobalId)
+                .stream()
+                .map(TaskMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public void moveTasksToProject(String fromProjectId, String toProjectId) {
+        taskDao.moveTasksToProject(fromProjectId, toProjectId);
+    }
 }

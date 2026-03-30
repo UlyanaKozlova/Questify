@@ -13,11 +13,7 @@ public class DeleteProjectUseCase {
         this.projectRepository = projectRepository;
     }
 
-    public boolean execute(Project project) {
-        if (projectRepository.getAll().isEmpty()) {
-            return false;
-        }
+    public void execute(Project project) {
         projectRepository.delete(project);
-        return true;
     }
 }

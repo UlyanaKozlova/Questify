@@ -6,11 +6,13 @@ import javax.inject.Inject;
 
 public class InitProjectUseCase {
     private final ProjectRepository projectRepository;
+
     @Inject
     public InitProjectUseCase(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
     }
+
     public void execute() {
-        projectRepository.ensureLocalProjectExists();
+        projectRepository.ensureDefaultProjectExists();
     }
 }

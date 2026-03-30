@@ -2,9 +2,10 @@ package com.example.questify.domain.usecase.plans.tasks.task;
 
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.data.repository.TaskRepository;
+import com.example.questify.domain.model.Project;
+import com.example.questify.domain.model.Task;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
-import com.example.questify.domain.model.Task;
 
 import javax.inject.Inject;
 
@@ -20,7 +21,7 @@ public class UpdateTaskUseCase {
         this.projectRepository = projectRepository;
     }
 
-    public void execute(Task task,
+    public void execute(Task taskToEdit,
                         String name,
                         String description,
                         long deadline,
@@ -28,14 +29,25 @@ public class UpdateTaskUseCase {
                         Priority priority,
                         Difficulty difficulty,
                         boolean isDone) {
-        task.setTaskName(name);
-        task.setDescription(description);
-        task.setDeadline(deadline);
-        task.setProjectGlobalId(projectRepository.getByProjectName(projectName).getGlobalId());
-        task.setPriority(priority);
-        task.setDifficulty(difficulty);
-        task.setDone(isDone);
+        Project project = projectRepository.getByProjectName(projectName);
+        if (project == null) {
+            project = new Project(projectName);
+            projectRepository.save(project);
+        }
+        taskToEdit.setTaskName(name);
+        taskToEdit.setDescription(description);
+        taskToEdit.setDeadline(deadline);
+        taskToEdit.setProjectGlobalId(project.getGlobalId());
+        taskToEdit.setPriority(priority);
+        taskToEdit.setDifficulty(difficulty);
+        taskToEdit.setDone(isDone);
+        taskToEdit.setUpdatedAt(System.currentTimeMillis());
+        taskRepository.update(taskToEdit);
+    }
 
-        taskRepository.update(task);
+    public void updateDoneStatus(Task taskToEdit, boolean isDone) {
+        taskToEdit.setDone(isDone);
+        taskToEdit.setUpdatedAt(System.currentTimeMillis());
+        taskRepository.update(taskToEdit);
     }
 }

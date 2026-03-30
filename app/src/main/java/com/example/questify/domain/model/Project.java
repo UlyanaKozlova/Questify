@@ -8,36 +8,43 @@ import java.util.UUID;
 
 public class Project {
 
+    private static final String DEFAULT_COLOR = "#FF6200EE";
     private String globalId;
     private String userGlobalId;
     private String projectName;
-
+    private String color;
     private long updatedAt;
 
-    public Project(String globalId, String userGlobalId, String projectName, long updatedAt) {
+    public Project(String globalId, String userGlobalId, String projectName, String color, long updatedAt) {
         checkProjectName(projectName);
         this.globalId = globalId;
         this.userGlobalId = userGlobalId;
         this.projectName = projectName;
+        this.color = color;
         this.updatedAt = updatedAt;
     }
 
-    public Project(String projectName) {
+    public Project(String projectName, String color) {
         checkProjectName(projectName);
         this.globalId = UUID.randomUUID().toString();
         this.projectName = projectName;
+        this.color = color;
+    }
+
+    public Project(String projectName) {
+        this(projectName, DEFAULT_COLOR);
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Project project = (Project) o;
-        return Objects.equals(userGlobalId, project.userGlobalId) && Objects.equals(projectName, project.projectName);
+        return Objects.equals(globalId, project.globalId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userGlobalId, projectName);
+        return Objects.hash(globalId);
     }
 
     @NonNull
@@ -75,6 +82,14 @@ public class Project {
     public void setProjectName(String projectName) {
         checkProjectName(projectName);
         this.projectName = projectName;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public long getUpdatedAt() {

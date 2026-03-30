@@ -37,4 +37,10 @@ public interface TaskDao {
     List<TaskEntity> getNeedingSync();
     @Query("SELECT * FROM tasks WHERE isDeleted = 0")
     LiveData<List<TaskEntity>> getAllLive();
+
+    @Query("SELECT * FROM tasks WHERE isDeleted = 0 AND projectGlobalId = :projectGlobalId")
+    List<TaskEntity> getTasksByProject(String projectGlobalId);
+
+    @Query("UPDATE tasks SET projectGlobalId = :toProjectId WHERE projectGlobalId = :fromProjectId")
+    void moveTasksToProject(String fromProjectId, String toProjectId);
 }

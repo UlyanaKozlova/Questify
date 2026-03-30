@@ -99,7 +99,7 @@ public class Task {
     }
 
     private void checkDeadline(Long deadline) {
-        if (deadline < System.currentTimeMillis()) {
+        if (deadline < System.currentTimeMillis()) { // todo - сегодняшняя дата тоже не позволяет
             throw new IllegalArgumentException("Дедлайн задачи должен быть не раньше даты, в которую создается задача.");
         }
     }

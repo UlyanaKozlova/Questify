@@ -16,6 +16,7 @@ public class ProjectEntity {
 
     public String userGlobalId;
     public String projectName;
+    public String color;
 
     public long updatedAt;
     public boolean isDeleted;

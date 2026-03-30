@@ -5,10 +5,18 @@ import com.example.questify.domain.model.Project;
 
 public class ProjectMapper {
 
+    private static final String DEFAULT_COLOR = "#FF6200EE";
+
     public static Project toDomain(ProjectEntity entity) {
         return entity == null
                 ? null
-                : new Project(entity.globalId, entity.userGlobalId, entity.projectName, entity.updatedAt);
+                : new Project(
+                entity.globalId,
+                entity.userGlobalId,
+                entity.projectName,
+                entity.color != null ? entity.color : DEFAULT_COLOR,
+                entity.updatedAt
+        );
     }
 
     public static ProjectEntity toEntity(Project model) {
@@ -20,7 +28,10 @@ public class ProjectMapper {
         entity.globalId = model.getGlobalId();
         entity.userGlobalId = model.getUserGlobalId();
         entity.projectName = model.getProjectName();
+        entity.color = model.getColor();
         entity.updatedAt = model.getUpdatedAt();
+        entity.isDeleted = false;
+        entity.needsSync = true;
 
         return entity;
     }
