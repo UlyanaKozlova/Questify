@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.questify.R;
 import com.example.questify.ui.settings.SettingsFragment;
+import com.example.questify.ui.shop.ShopFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -40,6 +41,7 @@ public class PetFragment extends Fragment {
         textLevel = view.findViewById(R.id.textLevel);
 
         Button buttonSettings = view.findViewById(R.id.buttonSettings);
+        Button buttonShop = view.findViewById(R.id.buttonShop);
 
         petViewModel = new ViewModelProvider(requireActivity()).get(PetViewModel.class);
 
@@ -48,6 +50,14 @@ public class PetFragment extends Fragment {
                         .getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragmentContainer, new SettingsFragment())
+                        .addToBackStack(null)
+                        .commit()
+        );
+        buttonShop.setOnClickListener(v ->
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer, new ShopFragment())
                         .addToBackStack(null)
                         .commit()
         );

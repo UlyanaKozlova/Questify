@@ -29,6 +29,7 @@ public class TaskCreateViewModel extends ViewModel {
     public LiveData<Boolean> getSuccess() {
         return success;
     }
+
     public LiveData<String> getError() {
         return error;
     }
@@ -63,6 +64,8 @@ public class TaskCreateViewModel extends ViewModel {
                 success.postValue(true);
             } catch (IllegalArgumentException e) {
                 error.postValue(e.getMessage());
+            } catch (Exception e) {
+                error.postValue("Ошибка при сохранении задачи: " + e.getMessage());
             }
         });
     }

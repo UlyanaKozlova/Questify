@@ -18,7 +18,6 @@ import com.example.questify.domain.model.enums.Priority;
 import com.example.questify.util.DatePickerUtils;
 import com.example.questify.util.DateUtils;
 
-
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -34,6 +33,8 @@ public class TaskCreateFragment extends Fragment {
     private Spinner spinnerDifficulty;
     private Spinner spinnerPriority;
 
+    private String preSelectedProjectGlobalId;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -45,6 +46,10 @@ public class TaskCreateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        if (getArguments() != null) {
+            preSelectedProjectGlobalId = getArguments().getString("preSelectedProjectGlobalId");
+        }
+
         viewModel = new ViewModelProvider(this).get(TaskCreateViewModel.class);
 
         viewModel.getError().observe(getViewLifecycleOwner(), message ->
@@ -54,6 +59,7 @@ public class TaskCreateFragment extends Fragment {
                 requireActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
+
         inputTitle = view.findViewById(R.id.taskName);
         inputDescription = view.findViewById(R.id.inputDescription);
         inputDeadline = view.findViewById(R.id.inputDeadline);
@@ -78,6 +84,7 @@ public class TaskCreateFragment extends Fragment {
 
         spinnerProjects = view.findViewById(R.id.spinnerProjects);
         viewModel.projects.observe(getViewLifecycleOwner(), list -> {
+            int currentPosition = spinnerProjects.getSelectedItemPosition();
             ArrayAdapter<Project> adapter = new ArrayAdapter<>(
                     requireContext(),
                     android.R.layout.simple_spinner_item,
@@ -85,6 +92,17 @@ public class TaskCreateFragment extends Fragment {
             );
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerProjects.setAdapter(adapter);
+            if (currentPosition >= 0 && currentPosition < list.size()) {
+                spinnerProjects.setSelection(currentPosition);
+            }
+            if (preSelectedProjectGlobalId != null && !list.isEmpty()) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getGlobalId().equals(preSelectedProjectGlobalId)) {
+                        spinnerProjects.setSelection(i);
+                        break;
+                    }
+                }
+            }
         });
 
         view.findViewById(R.id.buttonCancel)
@@ -97,11 +115,17 @@ public class TaskCreateFragment extends Fragment {
     }
 
     private void saveTask() {
+        Project selectedProject = (Project) spinnerProjects.getSelectedItem();
+        if (selectedProject == null) {
+            Toast.makeText(requireContext(), "Выберите проект", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         viewModel.saveTask(
                 inputTitle.getText().toString(),
                 inputDescription.getText().toString(),
                 DateUtils.parseToMillis(inputDeadline.getText().toString()),
-                ((Project) spinnerProjects.getSelectedItem()).getProjectName(),
+                selectedProject.getProjectName(),
                 (Difficulty) spinnerDifficulty.getSelectedItem(),
                 (Priority) spinnerPriority.getSelectedItem()
         );

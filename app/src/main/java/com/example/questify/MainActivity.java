@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.example.questify.ui.AppInitViewModel;
 import com.example.questify.ui.main.PetFragment;
+import com.example.questify.ui.projects.ProjectsFragment;
 import com.example.questify.ui.statistics.StatisticsFragment;
 import com.example.questify.ui.tasks.list.TaskListFragment;
 import com.example.questify.ui.calendar.CalendarFragment;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         navMap = new HashMap<>();
         navMap.put(R.id.nav_tasks, new TaskListFragment());
         navMap.put(R.id.nav_calendar, new CalendarFragment());
-        navMap.put(R.id.nav_shop, new ShopFragment());
+        navMap.put(R.id.nav_projects, new ProjectsFragment());
         navMap.put(R.id.nav_stats, new StatisticsFragment());
         navMap.put(R.id.nav_pet, new PetFragment());
     }

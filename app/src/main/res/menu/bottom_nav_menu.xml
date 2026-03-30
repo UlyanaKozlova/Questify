@@ -12,9 +12,9 @@
         android:title="@string/calendarMenuItem" />
 
     <item
-        android:id="@+id/nav_shop"
-        android:icon="@android:drawable/ic_dialog_map"
-        android:title="@string/shopMenuItem" />
+        android:id="@+id/nav_projects"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="@string/Projects" />
 
     <item
         android:id="@+id/nav_stats"
@@ -25,4 +25,5 @@
         android:id="@+id/nav_pet"
         android:icon="@android:drawable/btn_star_big_on"
         android:title="@string/petMenuItem" />
+
 </menu>

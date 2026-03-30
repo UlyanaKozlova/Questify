@@ -17,6 +17,19 @@
             android:text="@string/settingsButton" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/buttonShop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Магазин" />
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/petContainer"
         android:layout_width="match_parent"
