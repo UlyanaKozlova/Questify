@@ -129,7 +129,12 @@ public class Task {
     }
 
     private void checkDeadline(Long deadline,
-                               Context context) {
+                               Context context)
+{
+    if (deadline == null){
+        throw new IllegalArgumentException(context.getString(R.string.error_task_deadline_empty));
+
+    }
         Calendar todayStart = Calendar.getInstance();
         todayStart.set(Calendar.HOUR_OF_DAY, 0);
         todayStart.set(Calendar.MINUTE, 0);

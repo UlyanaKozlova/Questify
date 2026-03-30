@@ -120,6 +120,11 @@ public class TaskCreateFragment extends Fragment {
 
     private void saveTask() {
         Project selectedProject = (Project) spinnerProjects.getSelectedItem();
+        if (selectedProject == null) {
+            Snackbar.make(requireView(), "Выберите проект", Snackbar.LENGTH_LONG).show();
+            return;
+        }
+
         viewModel.saveTask(
                 inputTitle.getText().toString(),
                 inputDescription.getText().toString(),

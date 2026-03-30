@@ -21,8 +21,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class PetFragment extends Fragment {
 
-    private PetViewModel petViewModel;
-
     private TextView textCoins;
     private TextView textLevel;
 
@@ -43,7 +41,7 @@ public class PetFragment extends Fragment {
         Button buttonSettings = view.findViewById(R.id.buttonSettings);
         Button buttonShop = view.findViewById(R.id.buttonShop);
 
-        petViewModel = new ViewModelProvider(requireActivity()).get(PetViewModel.class);
+        PetViewModel petViewModel = new ViewModelProvider(requireActivity()).get(PetViewModel.class);
 
         buttonSettings.setOnClickListener(v ->
                 requireActivity()
@@ -67,8 +65,8 @@ public class PetFragment extends Fragment {
                 return;
             }
 
-            textCoins.setText("Coins: " + user.getCoins());
-            textLevel.setText("Level: " + user.getLevel());
+            textCoins.setText(getString(R.string.coins, user.getCoins()));
+            textLevel.setText(getString(R.string.level, user.getLevel()));
         });
     }
 }
