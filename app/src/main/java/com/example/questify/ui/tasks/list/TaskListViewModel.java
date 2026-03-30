@@ -8,7 +8,9 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.questify.domain.model.Project;
 import com.example.questify.domain.model.Task;
+import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.tasks.imp.ImportTasksUseCaseFactory;
 import com.example.questify.domain.usecase.plans.tasks.filter.FilterTasksUseCase;
 import com.example.questify.domain.usecase.plans.tasks.filter.TaskFilter;
@@ -40,8 +42,9 @@ public class TaskListViewModel extends ViewModel {
     FilterTasksUseCase filterTasksUseCase;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-
+    private final LiveData<List<Project>> projects;
     private TaskFilter currentFilter = new TaskFilter(
+            null,
             null,
             null,
             null,
@@ -65,18 +68,22 @@ public class TaskListViewModel extends ViewModel {
     public TaskFilter getCurrentFilter() {
         return currentFilter;
     }
-
+    public LiveData<List<Project>> getProjects() {
+        return projects;
+    }
     @Inject
     public TaskListViewModel(GetAllTasksUseCase getAllTasksUseCase,
                              CompleteTaskUseCase completeTaskUseCase,
                              ImportTasksUseCaseFactory importFactory,
-                             CreateTaskUseCase createTaskUseCase) {
+                             CreateTaskUseCase createTaskUseCase,
+                             GetAllProjectsUseCase getAllProjectsUseCase) {
 
         this.completeTaskUseCase = completeTaskUseCase;
         this.importFactory = importFactory;
         this.createTaskUseCase = createTaskUseCase;
 
         this.source = getAllTasksUseCase.executeLive();
+        this.projects = getAllProjectsUseCase.executeLive();
 
         tasks.addSource(source, this::recalc);
     }

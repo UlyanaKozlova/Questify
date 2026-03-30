@@ -9,17 +9,20 @@ public class TaskFilter {
     private final Long startDate;
     private final Long endDate;
     private final Boolean isDone;
+    private final String projectGlobalId;
 
     public TaskFilter(Priority priority,
                       Difficulty difficulty,
                       Long startDate,
                       Long endDate,
-                      Boolean isDone) {
+                      Boolean isDone,
+                      String projectGlobalId) {
         this.priority = priority;
         this.difficulty = difficulty;
         this.startDate = startDate;
         this.endDate = endDate;
         this.isDone = isDone;
+        this.projectGlobalId = projectGlobalId;
     }
 
     public Priority getPriority() {
@@ -40,5 +43,9 @@ public class TaskFilter {
 
     public Boolean getIsDone() {
         return isDone;
+    }
+
+    public String getProjectGlobalId() {
+        return projectGlobalId;
     }
 }

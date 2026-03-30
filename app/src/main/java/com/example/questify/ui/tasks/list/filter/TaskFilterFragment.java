@@ -1,29 +1,38 @@
 package com.example.questify.ui.tasks.list.filter;
 
 import android.os.Bundle;
-import android.view.*;
-import android.widget.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 
-import androidx.annotation.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.questify.R;
-import com.example.questify.domain.model.enums.*;
+import com.example.questify.domain.model.Project;
+import com.example.questify.domain.model.enums.Difficulty;
+import com.example.questify.domain.model.enums.Priority;
+import com.example.questify.domain.model.enums.TaskStatus;
 import com.example.questify.domain.usecase.plans.tasks.filter.TaskFilter;
 import com.example.questify.ui.tasks.list.TaskListViewModel;
 import com.example.questify.util.DatePickerUtils;
 import com.example.questify.util.DateUtils;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class TaskFilterFragment extends Fragment {
     private View rootView;
-
+    private TaskListViewModel viewModel;
 
     @Nullable
     @Override
@@ -36,15 +45,14 @@ public class TaskFilterFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
-        TaskListViewModel viewModel =
-                new ViewModelProvider(requireActivity()).get(TaskListViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(TaskListViewModel.class);
 
         TaskFilter filter = viewModel.getCurrentFilter();
 
         Spinner spinnerPriority = view.findViewById(R.id.spinnerPriority);
         Spinner spinnerDifficulty = view.findViewById(R.id.spinnerDifficulty);
         Spinner spinnerStatus = view.findViewById(R.id.spinnerStatus);
+        Spinner spinnerProject = view.findViewById(R.id.spinnerProject);
 
         EditText inputStartDate = view.findViewById(R.id.inputStartDate);
         EditText inputEndDate = view.findViewById(R.id.inputEndDate);
@@ -52,63 +60,143 @@ public class TaskFilterFragment extends Fragment {
         DatePickerUtils.attach(inputStartDate, requireContext());
         DatePickerUtils.attach(inputEndDate, requireContext());
 
-        String[] priorityItems = new String[Priority.values().length + 1];
-        priorityItems[0] = getString(R.string.filter_all);
-        IntStream.range(0, Priority.values().length)
-                .forEach(i -> priorityItems[i + 1] = Priority.values()[i].name());
-        spinnerPriority.setAdapter(new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, priorityItems));
-
-
-        String[] difficultyItems = new String[Difficulty.values().length + 1];
-        difficultyItems[0] = getString(R.string.filter_all);
-        IntStream.range(0, Difficulty.values().length)
-                .forEach(i -> difficultyItems[i + 1] = Difficulty.values()[i].name());
-        spinnerDifficulty.setAdapter(new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, difficultyItems));
-
-
-        String[] statusItems = new String[TaskStatus.values().length];
-        for (int i = 0; i < TaskStatus.values().length; i++) {
-            statusItems[i] = TaskStatus.values()[i].toString();
+        List<String> priorityItems = new ArrayList<>();
+        priorityItems.add(getString(R.string.filter_all));
+        for (Priority priority : Priority.values()) {
+            priorityItems.add(priority.getString(requireContext()));
         }
-        spinnerStatus.setAdapter(new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, statusItems));
+        ArrayAdapter<String> priorityAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                priorityItems);
+        spinnerPriority.setAdapter(priorityAdapter);
 
+        List<String> difficultyItems = new ArrayList<>();
+        difficultyItems.add(getString(R.string.filter_all));
+        for (Difficulty difficulty : Difficulty.values()) {
+            difficultyItems.add(difficulty.getString(requireContext()));
+        }
+        ArrayAdapter<String> difficultyAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                difficultyItems);
+        spinnerDifficulty.setAdapter(difficultyAdapter);
+
+        List<String> statusItems = new ArrayList<>();
+        for (TaskStatus status : TaskStatus.values()) {
+            statusItems.add(status.getString(requireContext()));
+        }
+        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                statusItems);
+        spinnerStatus.setAdapter(statusAdapter);
+
+        List<String> projectItems = new ArrayList<>();
+        projectItems.add(getString(R.string.filter_all_projects));
+
+        viewModel.getProjects().observe(getViewLifecycleOwner(), projects -> {
+            projectItems.clear();
+            projectItems.add(getString(R.string.filter_all_projects));
+            for (Project project : projects) {
+                projectItems.add(project.getProjectName());
+            }
+            ArrayAdapter<String> projectAdapter = new ArrayAdapter<>(
+                    requireContext(),
+                    android.R.layout.simple_spinner_item,
+                    projectItems);
+            spinnerProject.setAdapter(projectAdapter);
+
+            if (filter != null && filter.getProjectGlobalId() != null) {
+                for (int i = 0; i < projects.size(); i++) {
+                    if (projects.get(i).getGlobalId().equals(filter.getProjectGlobalId())) {
+                        spinnerProject.setSelection(i + 1);
+                        break;
+                    }
+                }
+            }
+        });
 
         if (filter != null) {
-            spinnerPriority.setSelection(filter.getPriority() != null ? filter.getPriority().ordinal() + 1 : 0);
-            spinnerDifficulty.setSelection(filter.getDifficulty() != null ? filter.getDifficulty().ordinal() + 1 : 0);
+            if (filter.getPriority() != null) {
+                int position = priorityItems.indexOf(filter.getPriority().getString(requireContext()));
+                spinnerPriority.setSelection(Math.max(position, 0));
+            } else {
+                spinnerPriority.setSelection(0);
+            }
 
-            if (filter.getIsDone() == null) spinnerStatus.setSelection(0);
-            else if (filter.getIsDone()) spinnerStatus.setSelection(1);
-            else spinnerStatus.setSelection(2);
+            if (filter.getDifficulty() != null) {
+                int position = difficultyItems.indexOf(filter.getDifficulty().getString(requireContext()));
+                spinnerDifficulty.setSelection(Math.max(position, 0));
+            } else {
+                spinnerDifficulty.setSelection(0);
+            }
+
+            if (filter.getIsDone() == null) {
+                spinnerStatus.setSelection(0);
+            } else if (filter.getIsDone()) {
+                spinnerStatus.setSelection(1);
+            } else {
+                spinnerStatus.setSelection(2);
+            }
 
             inputStartDate.setText(DateUtils.format(filter.getStartDate()));
             inputEndDate.setText(DateUtils.format(filter.getEndDate()));
-        }
-
-        view.findViewById(R.id.buttonReset).setOnClickListener(v -> {
-            viewModel.applyFilter(new TaskFilter(null, null, null, null, null));
+        } else {
             spinnerPriority.setSelection(0);
             spinnerDifficulty.setSelection(0);
             spinnerStatus.setSelection(0);
+        }
+
+        view.findViewById(R.id.buttonReset).setOnClickListener(v -> {
+            viewModel.applyFilter(new TaskFilter(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null)
+            );
+            spinnerPriority.setSelection(0);
+            spinnerDifficulty.setSelection(0);
+            spinnerStatus.setSelection(0);
+            spinnerProject.setSelection(0);
             inputStartDate.setText("");
             inputEndDate.setText("");
         });
 
         view.findViewById(R.id.buttonApply).setOnClickListener(v -> {
-            Priority priority = spinnerPriority.getSelectedItem().equals(getString(R.string.filter_all))
-                    ? null : Priority.valueOf((String) spinnerPriority.getSelectedItem());
+            Priority priority = null;
+            int priorityPos = spinnerPriority.getSelectedItemPosition();
+            if (priorityPos > 0) {
+                priority = Priority.values()[priorityPos - 1];
+            }
 
-            Difficulty difficulty = spinnerDifficulty.getSelectedItem().equals(getString(R.string.filter_all))
-                    ? null : Difficulty.valueOf((String) spinnerDifficulty.getSelectedItem());
+            Difficulty difficulty = null;
+            int difficultyPos = spinnerDifficulty.getSelectedItemPosition();
+            if (difficultyPos > 0) {
+                difficulty = Difficulty.values()[difficultyPos - 1];
+            }
 
-            TaskStatus status = TaskStatus.fromString(
-                    (String) spinnerStatus.getSelectedItem(), requireContext());
+            Boolean isDone = null;
+            int statusPos = spinnerStatus.getSelectedItemPosition();
+            if (statusPos > 0) {
+                TaskStatus status = TaskStatus.values()[statusPos - 1];
+                isDone = status.getIsDone();
+            }
+
+            String projectGlobalId = null;
+            int projectPos = spinnerProject.getSelectedItemPosition();
+            if (projectPos > 0) {
+                List<Project> projects = viewModel.getProjects().getValue();
+                if (projects != null && projectPos - 1 < projects.size()) {
+                    projectGlobalId = projects.get(projectPos - 1).getGlobalId();
+                }
+            }
 
             Long start = DateUtils.parseToMillis(inputStartDate.getText().toString());
             Long end = DateUtils.parseToMillis(inputEndDate.getText().toString());
+
             if (start != null && end != null && start > end) {
                 Snackbar.make(rootView, getString(R.string.filter_error_start_after_end), Snackbar.LENGTH_LONG).show();
                 return;
@@ -119,7 +207,8 @@ public class TaskFilterFragment extends Fragment {
                     difficulty,
                     start,
                     end,
-                    status.getIsDone()
+                    isDone,
+                    projectGlobalId
             ));
             requireActivity().getSupportFragmentManager().popBackStack();
         });

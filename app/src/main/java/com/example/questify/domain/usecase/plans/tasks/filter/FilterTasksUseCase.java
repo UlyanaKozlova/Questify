@@ -23,6 +23,8 @@ public class FilterTasksUseCase {
                                 (filter.getEndDate() == null || task.getDeadline() <= filter.getEndDate()))
                 .filter(task ->
                         filter.getIsDone() == null || task.isDone() == filter.getIsDone())
+                .filter(task -> filter.getProjectGlobalId() == null ||
+                        task.getProjectGlobalId().equals(filter.getProjectGlobalId()))
                 .collect(Collectors.toList());
     }
 }
