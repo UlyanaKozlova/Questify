@@ -2,6 +2,7 @@ package com.example.questify.domain.usecase.game.pet;
 
 import com.example.questify.data.repository.PetRepository;
 import com.example.questify.domain.model.Clothing;
+import com.example.questify.domain.model.Pet;
 
 import javax.inject.Inject;
 
@@ -15,7 +16,10 @@ public class ChangePetClothingUseCase {
     }
 
     public void execute(Clothing clothing) {
-        petRepository.getPet().setCurrentClothingGlobalId(clothing.getGlobalId());
-        petRepository.update(petRepository.getPet());
+        Pet pet = petRepository.getPet();
+        if (pet != null) {
+            pet.setCurrentClothingGlobalId(clothing.getGlobalId());
+            petRepository.update(pet);
+        }
     }
 }

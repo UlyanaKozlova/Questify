@@ -146,4 +146,22 @@
     <string name="settings_yes">Да</string>
     <string name="settings_no">Отмена</string>
 
+
+    <!--ShopFragment-->
+    <string name="shop_buy">Купить за %d монет</string>
+    <string name="shop_wear">Надеть</string>
+    <string name="shop_wearing">Надето</string>
+    <string name="shop_already_bought">Уже куплено</string>
+    <string name="shop_insufficient_coins">Недостаточно монет</string>
+    <string name="catInClothes">Питомец в одежде</string>
+    <string name="left">Влево</string>
+    <string name="right">Вправо</string>
+
+    <string name="shop_buy_format">Купить за %d монет</string>
+    <string name="shop_price_format">Цена: %d монет</string>
+    <string name="shop_price_insufficient_format">Цена: %d монет (недостаточно)</string>
+    <string name="shop_already_bought_error">Уже куплено</string>
+    <string name="shop_buy_first_error">Сначала купите этот предмет</string>
+    <string name="shop_wear_success">Одежда надета!</string>
+    <string name="shop_buy_success">Покупка успешна!</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.example.questify.data.repository;
 
+import android.util.Log;
+
 import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.PetDao;
 import com.example.questify.data.local.entity.PetEntity;
@@ -11,7 +13,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 public class PetRepository {
-
     private final PetDao petDao;
     private final UserSession userSession;
     private final ClothingRepository clothingRepository;
@@ -37,10 +38,14 @@ public class PetRepository {
     }
 
     public void update(Pet pet) {
-        PetEntity entity = PetMapper.toEntity(pet);
-        entity.updatedAt = System.currentTimeMillis();
-        entity.needsSync = true;
-        petDao.update(entity);
+        PetEntity existing = petDao.getPet();
+        if (existing == null) {
+            return;
+        }
+        existing.currentClothingGlobalId = pet.getCurrentClothingGlobalId();
+        existing.updatedAt = System.currentTimeMillis();
+        existing.needsSync = true;
+        petDao.update(existing);
     }
 
     public Pet getByGlobalId(String globalId) {
