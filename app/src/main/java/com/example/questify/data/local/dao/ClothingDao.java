@@ -22,7 +22,6 @@ public interface ClothingDao {
     @Delete
     void delete(ClothingEntity clothingEntity);
 
-
     @Query("SELECT * FROM clothing WHERE isDeleted = 0")
     List<ClothingEntity> getAll();
 
@@ -34,4 +33,7 @@ public interface ClothingDao {
 
     @Query("SELECT globalId FROM clothing WHERE name = 'default' LIMIT 1")
     String getDefaultGlobalId();
+
+    @Query("DELETE FROM clothing")
+    void deleteAll();
 }

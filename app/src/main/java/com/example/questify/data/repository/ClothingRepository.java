@@ -39,7 +39,6 @@ public class ClothingRepository {
         clothingDao.delete(ClothingMapper.toEntity(clothing));
     }
 
-
     public List<Clothing> getAll() {
         return clothingDao.getAll()
                 .stream()
@@ -68,6 +67,7 @@ public class ClothingRepository {
             clothingEntity.globalId = UUID.randomUUID().toString();
             clothingEntity.name = DEFAULT;
             clothingEntity.price = 0;
+            clothingEntity.imageResId = 0;
             clothingEntity.updatedAt = System.currentTimeMillis();
             clothingEntity.isDeleted = false;
             clothingEntity.needsSync = true;

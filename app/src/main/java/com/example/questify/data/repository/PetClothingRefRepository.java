@@ -1,7 +1,9 @@
 package com.example.questify.data.repository;
 
 import com.example.questify.data.local.dao.PetClothingRefDao;
+import com.example.questify.data.local.dao.PetDao;
 import com.example.questify.data.local.entity.PetClothingRefEntity;
+import com.example.questify.data.local.entity.PetEntity;
 import com.example.questify.data.mapper.PetClothingRefMapper;
 import com.example.questify.domain.model.PetClothingRef;
 
@@ -13,15 +15,15 @@ import javax.inject.Inject;
 public class PetClothingRefRepository {
 
     private final PetClothingRefDao petClothingRefDao;
-    private final PetRepository petRepository;
+    private final PetDao petDao;
     private final ClothingRepository clothingRepository;
 
     @Inject
     public PetClothingRefRepository(PetClothingRefDao petClothingRefDao,
-                                    PetRepository petRepository,
+                                    PetDao petDao,
                                     ClothingRepository clothingRepository) {
         this.petClothingRefDao = petClothingRefDao;
-        this.petRepository = petRepository;
+        this.petDao = petDao;
         this.clothingRepository = clothingRepository;
     }
 
@@ -32,7 +34,6 @@ public class PetClothingRefRepository {
     public void delete(PetClothingRefEntity petClothingRefEntity) {
         petClothingRefDao.delete(petClothingRefEntity);
     }
-
 
     public List<PetClothingRef> getAll() {
         return petClothingRefDao.getAll()
@@ -52,10 +53,18 @@ public class PetClothingRefRepository {
 
     public void ensureLocalClothingExists() {
         if (petClothingRefDao.getAll().isEmpty()) {
-            PetClothingRefEntity petClothingRefEntity = new PetClothingRefEntity();
-            petClothingRefEntity.petGlobalId = petRepository.getPet().getGlobalId();
-            petClothingRefEntity.clothingGlobalId = clothingRepository.getDefaultGlobalId();
-            petClothingRefDao.insert(petClothingRefEntity);
+            PetEntity pet = petDao.getPet();
+            if (pet != null) {
+                PetClothingRefEntity petClothingRefEntity = new PetClothingRefEntity();
+                petClothingRefEntity.petGlobalId = pet.globalId;
+                petClothingRefEntity.clothingGlobalId = clothingRepository.getDefaultGlobalId();
+                petClothingRefDao.insert(petClothingRefEntity);
+            }
         }
+    }
+
+    public void resetProgress() {
+        deleteAll();
+        ensureLocalClothingExists();
     }
 }

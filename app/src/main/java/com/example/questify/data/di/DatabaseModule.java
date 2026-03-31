@@ -60,8 +60,8 @@ public class DatabaseModule {
     }
 
     @Provides
-    public PetClothingRefDao petClothingRefDao(AppDatabase db) {
-        return db.petClothingCrossRefDao();
+    public PetClothingRefDao providePetClothingRefDao(AppDatabase db) {
+        return db.petClothingRefDao();
     }
 }
 

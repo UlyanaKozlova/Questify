@@ -1,6 +1,5 @@
 package com.example.questify.data.repository;
 
-
 import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.PetDao;
 import com.example.questify.data.local.entity.PetEntity;
@@ -30,7 +29,6 @@ public class PetRepository {
         return PetMapper.toDomain(petDao.getPet());
     }
 
-
     public void save(Pet pet) {
         PetEntity entity = PetMapper.toEntity(pet);
         entity.updatedAt = System.currentTimeMillis();
@@ -54,7 +52,8 @@ public class PetRepository {
     }
 
     public String getCurrentClothingGlobalId() {
-        return petDao.getPet().currentClothingGlobalId;
+        PetEntity pet = petDao.getPet();
+        return pet != null ? pet.currentClothingGlobalId : null;
     }
 
     public void ensureLocalPetExists() {
@@ -70,12 +69,14 @@ public class PetRepository {
         }
     }
 
-    public void deleteProgress() {
+    public void resetProgress() {
         PetEntity petEntity = petDao.getPet();
-        petEntity.currentClothingGlobalId = clothingRepository.getDefaultGlobalId();
-        petEntity.updatedAt = System.currentTimeMillis();
-        petEntity.isDeleted = false;
-        petEntity.needsSync = true;
-        petDao.update(petEntity);
+        if (petEntity != null) {
+            petEntity.currentClothingGlobalId = clothingRepository.getDefaultGlobalId();
+            petEntity.updatedAt = System.currentTimeMillis();
+            petEntity.isDeleted = false;
+            petEntity.needsSync = true;
+            petDao.update(petEntity);
+        }
     }
 }

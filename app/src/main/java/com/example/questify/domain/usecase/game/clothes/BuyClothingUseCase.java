@@ -7,34 +7,34 @@ import com.example.questify.domain.model.Clothing;
 import com.example.questify.domain.model.Pet;
 import com.example.questify.domain.model.PetClothingRef;
 import com.example.questify.domain.model.User;
-import com.example.questify.domain.usecase.game.pet.ChangePetClothingUseCase;
+
+import javax.inject.Inject;
 
 public class BuyClothingUseCase {
+
     private final UserRepository userRepository;
     private final PetRepository petRepository;
     private final PetClothingRefRepository petClothingRefRepository;
-    private final ChangePetClothingUseCase changePetClothingUseCase;
 
+    @Inject
     public BuyClothingUseCase(UserRepository userRepository,
                               PetRepository petRepository,
-                              PetClothingRefRepository petClothingRefRepository,
-                              ChangePetClothingUseCase changePetClothingUseCase) {
+                              PetClothingRefRepository petClothingRefRepository) {
         this.userRepository = userRepository;
         this.petRepository = petRepository;
         this.petClothingRefRepository = petClothingRefRepository;
-        this.changePetClothingUseCase = changePetClothingUseCase;
     }
 
     public boolean execute(Clothing clothing) {
         User user = userRepository.getUser();
         Pet pet = petRepository.getPet();
+
         if (user.getCoins() < clothing.getPrice()) {
             return false;
         }
+
         user.setCoins(user.getCoins() - clothing.getPrice());
         userRepository.update(user);
-
-        changePetClothingUseCase.execute(clothing);
 
         petClothingRefRepository.save(new PetClothingRef(pet.getGlobalId(), clothing.getGlobalId()));
         return true;

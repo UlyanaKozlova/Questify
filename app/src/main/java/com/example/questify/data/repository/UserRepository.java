@@ -43,17 +43,6 @@ public class UserRepository {
     public User getUserToSync() {
         return UserMapper.toDomain(userDao.getUserToSync());
     }
-
-    public void deleteProgress() {
-        UserEntity userEntity = userDao.getUser();
-        userEntity.level = 0;
-        userEntity.coins = 0;
-        userEntity.updatedAt = System.currentTimeMillis();
-        userEntity.isDeleted = false;
-        userEntity.needsSync = true;
-        userDao.update(userEntity);
-    }
-
     public void ensureLocalUserExists() {
         if (userDao.getUser() == null) {
             UserEntity userEntity = new UserEntity();
@@ -66,6 +55,16 @@ public class UserRepository {
             userEntity.isDeleted = false;
             userEntity.needsSync = true;
             userDao.insert(userEntity);
+        }
+    }
+
+    public void resetProgress() {
+        User user = getUser();
+        if (user != null) {
+            user.setLevel(1);
+            user.setCoins(0);
+            user.setUpdatedAt(System.currentTimeMillis());
+            update(user);
         }
     }
 }

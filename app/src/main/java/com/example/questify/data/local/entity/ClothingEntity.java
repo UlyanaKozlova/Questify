@@ -16,6 +16,7 @@ public class ClothingEntity {
 
     public String name;
     public int price;
+    public int imageResId;
 
     public long updatedAt;
     public boolean isDeleted;
