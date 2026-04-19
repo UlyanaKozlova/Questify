@@ -13,4 +13,6 @@
     <color name="task_deadline_overdue">#FFFF0000</color>
     <color name="task_deadline_normal">#FF888888</color>
     <color name="progress_background">#E0E0E0</color>
+
+    <color name="purple_500">#FF6200EE</color>
 </resources>

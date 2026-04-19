@@ -164,4 +164,12 @@
     <string name="shop_buy_first_error">Сначала купите этот предмет</string>
     <string name="shop_wear_success">Одежда надета!</string>
     <string name="shop_buy_success">Покупка успешна!</string>
+
+
+    <!--    CalendarFragment-->
+    <string name="calendar_title">Календарь</string>
+    <string name="calendar_tasks_for_day">Задачи на день:</string>
+    <string name="calendar_no_tasks">(нет задач)</string>
+    <string name="no_tasks">Нет задач</string>
+
 </resources>

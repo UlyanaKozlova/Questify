@@ -27,6 +27,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
+        coreLibraryDesugaringEnabled true
     }
 }
 
@@ -46,4 +48,6 @@ dependencies {
     implementation libs.hilt.android
     annotationProcessor libs.hilt.compiler
     implementation libs.gson
+    implementation libs.view
+    coreLibraryDesugaring libs.desugar.jdk.libs
 }
