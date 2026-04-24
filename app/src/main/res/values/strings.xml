@@ -172,4 +172,13 @@
     <string name="calendar_no_tasks">(нет задач)</string>
     <string name="no_tasks">Нет задач</string>
 
+
+    <!--    AuthActivity-->
+    <string name="without_auth">Войти без регистрации</string>
+    <string name="register">Регистрация</string>
+    <string name="log_in">Вход</string>
+    <string name="password">Пароль</string>
+    <string name="email">Email</string>
+    <string name="questify">Questify</string>
+
 </resources>

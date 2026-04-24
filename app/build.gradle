@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.hilt)
 }
-
+apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace = "com.example.questify"
@@ -50,4 +50,14 @@ dependencies {
     implementation libs.gson
     implementation libs.view
     coreLibraryDesugaring libs.desugar.jdk.libs
+
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+
+    implementation "androidx.work:work-runtime:2.9.0"
+    implementation "androidx.work:work-runtime-ktx:2.9.0"
+
 }
