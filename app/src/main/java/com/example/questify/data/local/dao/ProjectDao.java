@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
 import com.example.questify.data.local.entity.ProjectEntity;
-import com.example.questify.data.local.entity.TaskEntity;
 
 import java.util.List;
 
@@ -40,4 +40,17 @@ public interface ProjectDao {
 
     @Query("SELECT * FROM projects WHERE isDeleted = 0 AND projectName= :projectName LIMIT 1")
     ProjectEntity getByProjectName(String projectName);
+
+
+    @Query("UPDATE projects SET isDeleted = 1, needsSync = 1, updatedAt = :updatedAt WHERE globalId = :globalId")
+    void softDelete(String globalId, long updatedAt);
+
+    @Query("SELECT * FROM projects WHERE isDeleted = 1 AND needsSync = 1")
+    List<ProjectEntity> getSoftDeletedNeedingSync();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<ProjectEntity> entities);
+
+    @Update
+    void updateAll(List<ProjectEntity> entities);
 }

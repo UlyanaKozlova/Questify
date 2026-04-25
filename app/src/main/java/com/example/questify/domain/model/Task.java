@@ -237,4 +237,10 @@ public class Task {
     public void setLocalId(long localId) {
         this.localId = localId;
     }
+    public void setTaskNameWithoutValidation(String taskName) {
+        this.taskName = taskName;
+    }
+    public void setDeadlineWithoutValidation(long deadline) {
+        this.deadline = deadline;
+    }
 }

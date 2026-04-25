@@ -3,6 +3,7 @@ package com.example.questify.data.local.dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -34,6 +35,16 @@ public interface ClothingDao {
     @Query("SELECT globalId FROM clothing WHERE name = 'default' LIMIT 1")
     String getDefaultGlobalId();
 
-    @Query("DELETE FROM clothing")
-    void deleteAll();
+
+    @Query("UPDATE clothing SET isDeleted = 1, needsSync = 1, updatedAt = :updatedAt WHERE globalId = :globalId")
+    void softDelete(String globalId, long updatedAt);
+
+    @Query("SELECT * FROM clothing WHERE isDeleted = 1 AND needsSync = 1")
+    List<ClothingEntity> getSoftDeletedNeedingSync();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<ClothingEntity> entities);
+
+    @Update
+    void updateAll(List<ClothingEntity> entities);
 }

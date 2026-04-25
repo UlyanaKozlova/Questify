@@ -2,8 +2,6 @@ package com.example.questify.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,11 +9,13 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.questify.MainActivity;
 import com.example.questify.R;
 import com.example.questify.sync.AuthenticationManager;
 import com.example.questify.sync.SyncManager;
+import com.example.questify.ui.AppInitViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
@@ -34,20 +34,22 @@ public class AuthActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private Button btnLogin, btnRegister, btnAnonymous;
     private ProgressBar progressBar;
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        if (authManager.isAuthenticated()) {
-            navigateToMain();
-            return;
-        }
+        AppInitViewModel appInitViewModel = new ViewModelProvider(this).get(AppInitViewModel.class);
 
         initViews();
         setupListeners();
+
+        appInitViewModel.getIsInitialized().observe(this, isInitialized -> {
+            if (isInitialized) {
+                showAuthScreen();
+            }
+        });
     }
 
     private void initViews() {
@@ -65,6 +67,12 @@ public class AuthActivity extends AppCompatActivity {
         btnAnonymous.setOnClickListener(v -> anonymousLogin());
     }
 
+    private void showAuthScreen() {
+        if (authManager.isAuthenticated()) {
+            navigateToMain();
+        }
+    }
+
     private void login() {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
@@ -76,12 +84,11 @@ public class AuthActivity extends AppCompatActivity {
 
         setLoading(true);
         authManager.signInWithEmail(email, password)
-                .addOnSuccessListener(result -> syncAfterLogin())
+                .addOnSuccessListener(result -> navigateToMain())
                 .addOnFailureListener(e -> {
                     setLoading(false);
                     showError("Ошибка входа: " + e.getMessage());
                 });
-        // todo вынести поля
     }
 
     private void register() {
@@ -100,7 +107,7 @@ public class AuthActivity extends AppCompatActivity {
 
         setLoading(true);
         authManager.signUpWithEmail(email, password)
-                .addOnSuccessListener(result -> syncAfterLogin())
+                .addOnSuccessListener(result -> navigateToMain())
                 .addOnFailureListener(e -> {
                     setLoading(false);
                     showError("Ошибка регистрации: " + e.getMessage());
@@ -110,28 +117,14 @@ public class AuthActivity extends AppCompatActivity {
     private void anonymousLogin() {
         setLoading(true);
         authManager.signInAnonymously()
-                .addOnSuccessListener(result -> syncAfterLogin())
+                .addOnSuccessListener(result -> navigateToMain())
                 .addOnFailureListener(e -> {
                     setLoading(false);
                     showError("Ошибка входа: " + e.getMessage());
                 });
     }
 
-    private void syncAfterLogin() {
-        syncManager.syncAllFromCloud(() -> {
-            mainHandler.post(() -> {
-                setLoading(false);
-                navigateToMain();
-            });
-        });
-    }
-
     private void setLoading(boolean loading) {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            mainHandler.post(() -> setLoading(loading));
-            return;
-        }
-
         progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
         btnLogin.setEnabled(!loading);
         btnRegister.setEnabled(!loading);
@@ -139,10 +132,6 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void showError(String message) {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            mainHandler.post(() -> showError(message));
-            return;
-        }
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
     }
 

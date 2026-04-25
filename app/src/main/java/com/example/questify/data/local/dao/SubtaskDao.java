@@ -3,6 +3,7 @@ package com.example.questify.data.local.dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -33,6 +34,17 @@ public interface SubtaskDao {
     @Query("SELECT * FROM subtasks WHERE needsSync = 1")
     List<SubtaskEntity> getNeedingSync();
 
-    @Query("SELECT * FROM subtasks WHERE isDeleted = 0")
-    List<SubtaskEntity> getAllSubtasks();
+
+    @Query("UPDATE subtasks SET isDeleted = 1, needsSync = 1, updatedAt = :updatedAt WHERE globalId = :globalId")
+    void softDelete(String globalId, long updatedAt);
+
+    @Query("SELECT * FROM subtasks WHERE isDeleted = 1 AND needsSync = 1")
+    List<SubtaskEntity> getSoftDeletedNeedingSync();
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<SubtaskEntity> entities);
+
+    @Update
+    void updateAll(List<SubtaskEntity> entities);
 }

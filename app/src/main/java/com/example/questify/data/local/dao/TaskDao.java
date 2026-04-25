@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -27,14 +28,12 @@ public interface TaskDao {
     @Query("SELECT * FROM tasks WHERE isDeleted = 0")
     List<TaskEntity> getAll();
 
-    @Query("SELECT * FROM tasks WHERE projectGlobalId = :projectGlobalId AND isDeleted = 0")
-    List<TaskEntity> getTasksForProject(String projectGlobalId);
-
     @Query("SELECT * FROM tasks WHERE globalId = :globalId LIMIT 1")
     TaskEntity getByGlobalId(String globalId);
 
     @Query("SELECT * FROM tasks WHERE needsSync = 1")
     List<TaskEntity> getNeedingSync();
+
     @Query("SELECT * FROM tasks WHERE isDeleted = 0")
     LiveData<List<TaskEntity>> getAllLive();
 
@@ -43,4 +42,16 @@ public interface TaskDao {
 
     @Query("UPDATE tasks SET projectGlobalId = :toProjectId WHERE projectGlobalId = :fromProjectId")
     void moveTasksToProject(String fromProjectId, String toProjectId);
+
+
+    @Query("UPDATE tasks SET isDeleted = 1, needsSync = 1, updatedAt = :updatedAt WHERE globalId = :globalId")
+    void softDelete(String globalId, long updatedAt);
+    @Query("SELECT * FROM tasks WHERE isDeleted = 1 AND needsSync = 1")
+    List<TaskEntity> getSoftDeletedNeedingSync();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<TaskEntity> entities);
+
+    @Update
+    void updateAll(List<TaskEntity> entities);
 }
