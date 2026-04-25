@@ -67,4 +67,20 @@ public class PetClothingRefRepository {
         deleteAll();
         ensureLocalClothingExists();
     }
+
+    public List<PetClothingRef> getPetClothingRefForSync() {
+        return petClothingRefDao.getAll()
+                .stream()
+                .map(PetClothingRefMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public void saveFromSync(PetClothingRef ref) {
+        PetClothingRefEntity existing = petClothingRefDao.getByPetAndClothing(
+                ref.getPetGlobalId(), ref.getClothingGlobalId());
+        if (existing == null) {
+            PetClothingRefEntity entity = PetClothingRefMapper.toEntity(ref);
+            petClothingRefDao.insert(entity);
+        }
+    }
 }

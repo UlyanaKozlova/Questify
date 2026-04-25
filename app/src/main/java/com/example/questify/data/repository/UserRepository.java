@@ -28,7 +28,6 @@ public class UserRepository {
         userDao.update(userEntity);
     }
 
-
     public User getUser() {
         return UserMapper.toDomain(userDao.getUser());
     }
@@ -40,9 +39,6 @@ public class UserRepository {
         );
     }
 
-    public User getUserToSync() {
-        return UserMapper.toDomain(userDao.getUserToSync());
-    }
     public void ensureLocalUserExists() {
         if (userDao.getUser() == null) {
             UserEntity userEntity = new UserEntity();
@@ -65,6 +61,34 @@ public class UserRepository {
             user.setCoins(0);
             user.setUpdatedAt(System.currentTimeMillis());
             update(user);
+        }
+    }
+
+
+    public User getNeedingSync() {
+        return UserMapper.toDomain(userDao.getUserToSync());
+    }
+
+    public void saveOrUpdateFromSync(User user) {
+        UserEntity existing = userDao.getUser();
+        UserEntity entity = UserMapper.toEntity(user);
+        entity.updatedAt = System.currentTimeMillis();
+        entity.needsSync = false;
+        entity.isDeleted = false;
+
+        if (existing != null) {
+            entity.globalId = existing.globalId;
+            userDao.update(entity);
+        } else {
+            userDao.insert(entity);
+        }
+    }
+
+    public void clearSyncFlag() {
+        UserEntity entity = userDao.getUser();
+        if (entity != null) {
+            entity.needsSync = false;
+            userDao.update(entity);
         }
     }
 }

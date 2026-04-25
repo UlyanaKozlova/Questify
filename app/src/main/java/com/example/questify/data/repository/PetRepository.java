@@ -1,7 +1,5 @@
 package com.example.questify.data.repository;
 
-import android.util.Log;
-
 import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.PetDao;
 import com.example.questify.data.local.entity.PetEntity;
@@ -39,9 +37,7 @@ public class PetRepository {
 
     public void update(Pet pet) {
         PetEntity existing = petDao.getPet();
-        if (existing == null) {
-            return;
-        }
+        if (existing == null) return;
         existing.currentClothingGlobalId = pet.getCurrentClothingGlobalId();
         existing.updatedAt = System.currentTimeMillis();
         existing.needsSync = true;
@@ -50,10 +46,6 @@ public class PetRepository {
 
     public Pet getByGlobalId(String globalId) {
         return PetMapper.toDomain(petDao.getPetByGlobalId(globalId));
-    }
-
-    public Pet getPetToSync() {
-        return PetMapper.toDomain(petDao.getPetToSync());
     }
 
     public String getCurrentClothingGlobalId() {
@@ -82,6 +74,34 @@ public class PetRepository {
             petEntity.isDeleted = false;
             petEntity.needsSync = true;
             petDao.update(petEntity);
+        }
+    }
+
+    public Pet getNeedingSync() {
+        return PetMapper.toDomain(petDao.getPetToSync());
+    }
+
+    public void saveOrUpdateFromSync(Pet pet) {
+        PetEntity existing = petDao.getPet();
+        PetEntity entity = PetMapper.toEntity(pet);
+        entity.userGlobalId = userSession.getUserGlobalId();
+        entity.updatedAt = System.currentTimeMillis();
+        entity.needsSync = false;
+        entity.isDeleted = false;
+
+        if (existing != null) {
+            entity.localId = existing.localId;
+            petDao.update(entity);
+        } else {
+            petDao.insert(entity);
+        }
+    }
+
+    public void clearSyncFlag() {
+        PetEntity entity = petDao.getPet();
+        if (entity != null) {
+            entity.needsSync = false;
+            petDao.update(entity);
         }
     }
 }

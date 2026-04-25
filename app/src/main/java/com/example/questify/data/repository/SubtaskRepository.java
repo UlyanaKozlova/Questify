@@ -37,15 +37,18 @@ public class SubtaskRepository {
         subtaskDao.delete(SubtaskMapper.toEntity(subtask));
     }
 
-    public void deleteAll() {
-        for (SubtaskEntity subtaskEntity : subtaskDao.getAllSubtasks()) {
-            subtaskDao.delete(subtaskEntity);
-        }
-    }
 
     public Subtask getByGlobalId(String globalId) {
         return SubtaskMapper.toDomain(subtaskDao.getByGlobalId(globalId));
     }
+
+    public List<Subtask> getSubtasksForTask(String taskGlobalId) {
+        return subtaskDao.getSubtasksForTask(taskGlobalId)
+                .stream()
+                .map(SubtaskMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
 
     public List<Subtask> getNeedingSync() {
         return subtaskDao.getNeedingSync()
@@ -54,10 +57,26 @@ public class SubtaskRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<Subtask> getSubtasksForTask(String taskGlobalId) {
-        return subtaskDao.getSubtasksForTask(taskGlobalId)
-                .stream()
-                .map(SubtaskMapper::toDomain)
-                .collect(Collectors.toList());
+    public void saveOrUpdateFromSync(Subtask subtask) {
+        SubtaskEntity existing = subtaskDao.getByGlobalId(subtask.getGlobalId());
+        SubtaskEntity entity = SubtaskMapper.toEntity(subtask);
+        entity.updatedAt = System.currentTimeMillis();
+        entity.needsSync = false;
+        entity.isDeleted = false;
+
+        if (existing != null) {
+            entity.localId = existing.localId;
+            subtaskDao.update(entity);
+        } else {
+            subtaskDao.insert(entity);
+        }
+    }
+
+    public void clearSyncFlag(String globalId) {
+        SubtaskEntity entity = subtaskDao.getByGlobalId(globalId);
+        if (entity != null) {
+            entity.needsSync = false;
+            subtaskDao.update(entity);
+        }
     }
 }

@@ -61,13 +61,6 @@ public class ProjectRepository {
         }
     }
 
-    public void deleteAll() {
-        List<ProjectEntity> projectEntities = projectDao.getAll();
-        for (int i = 1; i < projectEntities.size(); i++) {
-            projectDao.delete(projectEntities.get(i));
-        }
-    }
-
     public List<Project> getAll() {
         return projectDao.getAll()
                 .stream()
@@ -105,9 +98,39 @@ public class ProjectRepository {
     }
 
     public boolean isDefaultProject(Project project) {
-        if (project == null) {
-            return false;
-        }
+        if (project == null) return false;
         return DEFAULT_PROJECT_NAME.equals(project.getProjectName());
+    }
+
+
+    public List<Project> getNeedingSync() {
+        return projectDao.getNeedingSync()
+                .stream()
+                .map(ProjectMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public void saveOrUpdateFromSync(Project project) {
+        ProjectEntity existing = projectDao.getByGlobalId(project.getGlobalId());
+        ProjectEntity entity = ProjectMapper.toEntity(project);
+        entity.userGlobalId = userSession.getUserGlobalId();
+        entity.updatedAt = System.currentTimeMillis();
+        entity.needsSync = false;
+        entity.isDeleted = false;
+
+        if (existing != null) {
+            entity.localId = existing.localId;
+            projectDao.update(entity);
+        } else {
+            projectDao.insert(entity);
+        }
+    }
+
+    public void clearSyncFlag(String globalId) {
+        ProjectEntity entity = projectDao.getByGlobalId(globalId);
+        if (entity != null) {
+            entity.needsSync = false;
+            projectDao.update(entity);
+        }
     }
 }

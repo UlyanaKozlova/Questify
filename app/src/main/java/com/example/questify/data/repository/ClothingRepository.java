@@ -50,13 +50,6 @@ public class ClothingRepository {
         return ClothingMapper.toDomain(clothingDao.getByGlobalId(globalId));
     }
 
-    public List<Clothing> getAllNeedingSync() {
-        return clothingDao.getNeedingSync()
-                .stream()
-                .map(ClothingMapper::toDomain)
-                .collect(Collectors.toList());
-    }
-
     public String getDefaultGlobalId() {
         return clothingDao.getDefaultGlobalId();
     }
@@ -72,6 +65,33 @@ public class ClothingRepository {
             clothingEntity.isDeleted = false;
             clothingEntity.needsSync = true;
             clothingDao.insert(clothingEntity);
+        }
+    }
+
+    public List<Clothing> getNeedingSync() {
+        return clothingDao.getNeedingSync()
+                .stream()
+                .map(ClothingMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+    public void saveOrUpdateFromSync(Clothing clothing) {
+        ClothingEntity existing = clothingDao.getByGlobalId(clothing.getGlobalId());
+        ClothingEntity entity = ClothingMapper.toEntity(clothing);
+        entity.updatedAt = System.currentTimeMillis();
+        entity.needsSync = false;
+        entity.isDeleted = false;
+        if (existing != null) {
+            entity.localId = existing.localId;
+            clothingDao.update(entity);
+        } else {
+            clothingDao.insert(entity);
+        }
+    }
+    public void clearSyncFlag(String globalId) {
+        ClothingEntity entity = clothingDao.getByGlobalId(globalId);
+        if (entity != null) {
+            entity.needsSync = false;
+            clothingDao.update(entity);
         }
     }
 }
