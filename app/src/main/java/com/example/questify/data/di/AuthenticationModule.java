@@ -5,6 +5,7 @@ import android.content.Context;
 import com.example.questify.sync.AuthenticationManager;
 import com.example.questify.sync.SyncManager;
 import com.example.questify.UserSession;
+import com.example.questify.data.repository.*;
 
 import javax.inject.Singleton;
 
@@ -30,22 +31,22 @@ public class AuthenticationModule {
     @Singleton
     public SyncManager provideSyncManager(
             @ApplicationContext Context context,
-            com.example.questify.data.local.dao.TaskDao taskDao,
-            com.example.questify.data.local.dao.ProjectDao projectDao,
-            com.example.questify.data.local.dao.SubtaskDao subtaskDao,
-            com.example.questify.data.local.dao.UserDao userDao,
-            com.example.questify.data.local.dao.PetDao petDao,
-            com.example.questify.data.local.dao.ClothingDao clothingDao,
-            com.example.questify.data.local.dao.PetClothingRefDao petClothingRefDao) {
+            TaskRepository taskRepository,
+            ProjectRepository projectRepository,
+            SubtaskRepository subtaskRepository,
+            UserRepository userRepository,
+            PetRepository petRepository,
+            ClothingRepository clothingRepository,
+            PetClothingRefRepository petClothingRefRepository) {
         return new SyncManager(
                 context,
-                taskDao,
-                projectDao,
-                subtaskDao,
-                userDao,
-                petDao,
-                clothingDao,
-                petClothingRefDao
+                taskRepository,
+                projectRepository,
+                subtaskRepository,
+                userRepository,
+                petRepository,
+                clothingRepository,
+                petClothingRefRepository
         );
     }
 }

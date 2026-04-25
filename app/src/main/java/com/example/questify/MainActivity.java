@@ -5,13 +5,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 
+import com.example.questify.sync.WorkManagerScheduler;
 import com.example.questify.ui.AppInitViewModel;
 import com.example.questify.ui.main.PetFragment;
 import com.example.questify.ui.projects.ProjectsFragment;
 import com.example.questify.ui.statistics.StatisticsFragment;
 import com.example.questify.ui.tasks.list.TaskListFragment;
 import com.example.questify.ui.calendar.CalendarFragment;
-import com.example.questify.ui.shop.ShopFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.fragment.app.Fragment;
@@ -19,18 +19,23 @@ import androidx.fragment.app.Fragment;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     private Map<Integer, Fragment> navMap;
+    @Inject
+    WorkManagerScheduler workManagerScheduler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
+        workManagerScheduler.schedulePeriodicSync(this);
         new ViewModelProvider(this).get(AppInitViewModel.class);
 
         initNavMap();
