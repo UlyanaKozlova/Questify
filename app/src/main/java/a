@@ -1,107 +1,159 @@
+локализация
 
-Clothing
-- long localId;
-- String globalId;
+- регистрация
+- сохранение в БД
+- синхронизация с БД
 
-- string name;
-- int price;
-
-- long updatedAt;
-- boolean isDeleted;
-- boolean needSync;
-
-Pet
-- long localId;
-- String globalId;
-
-- String userGlobalId;
-- String currentClothingGlobalId;
-
-- long updatedAt;
-- boolean isDeleted;
-- boolean needSync;
+- генерация подзадач
+- работа с подзадачами
 
 
-PetClothingCrossRef
-- String petGlobalId;
-- String clothingGlobalId
+-  статистика
+- экспорт в png - статистика
 
-
-
-Project
-- Long localId;
-- String globalId;
-
-- String userGlobalId;
-
-- String projectName;
-
-- long updatedAt;
-- boolean isDeleted;
-- boolean needSync;
-
-
-Task
-- Long localId;
-- String globalId;
-
-- String projectGlobalId;
-- String userGlobalId;
-
-- boolean isDone;
-- String taskName;
-- String description;
-- Priority priority;
-- Difficulty difficulty;
-- long deadline;
-
-- long updatedAt;
-- boolean isDeleted;
-- boolean needSync;
-
-
-Subtask
-- Long localId;
-- String globalId;
-
-- String taskGlobalId;
-
-- boolean isDone;
-- String subtaskName;
-
-- long updatedAt;
-- boolean isDeleted;
-- boolean needSync;
-
-
-User
-- String globalId;
-
-- String username;
-- String passwordHash;
-- int level;
-- Long coins;
-
-- long updatedAt;
-- boolean isDeleted;
-- boolean needSync;
+- советы продуктиваности
 
 
 
 
-public enum Difficulty {
-    VERY_DIFFICULT("very-difficult"),
-    DIFFICULT("difficult"),
-    MEDIUM("medium"),
-    EASY("easy"),
-    VERY_EASY("very-easy");
-    private final String difficulty;
-}
-public enum Priority {
-    VERY_HIGH("very-high"),
-    HIGH("high"),
-    MEDIUM("medium"),
-    LOW("low"),
-    VERY_LOW("very-low");
-    private final String priority;
-}
+
+
+-----------
+дизайн приложения
+рисунок кошки
+рисунки одежды
+комната для фона
+награды???????......
+
+
+
+
+9. Подключить Firebase Auth
+Добавить Firebase в проект.
+
+Реализовать:
+
+экран логина/регистрации (ui/auth),
+
+хранение userGlobalId (Firebase UID) локально.
+
+Все запросы в репозитории делать с учётом userGlobalId.
+
+10. Подключить Firestore и SyncManager
+Описать структуру коллекций в Firestore.
+
+Создать remote‑слой (Firebase источники).
+
+Реализовать SyncManager:
+
+выгрузка needsSync = true в Firestore,
+
+загрузка изменений с Firestore,
+
+обновление Room,
+
+стратегия конфликтов по updatedAt.
+
+Добавить:
+
+ручную кнопку «Синхронизировать»,
+
+автосинхронизацию при старте/логине.
+
+Если хочешь, можем взять следующий конкретный шаг (например, AppDatabase + тест вставки, или мапперы, или первый репозиторий) и я распишу его уже с кодом, чтобы ты просто вставляла и шла дальше. Что выберем первым из этого списка?
+
+
+
+
+
+
+
+
+
+
+
+
+2 base
+  создать новый профиль
+  получить текущий уровень пользователя
+  получить кол-во игровых монет
+
+
+
+3 tasks
+  создать новую задачу
+  получить проекты
+  создать проект
+
+  сгенерировать подзадачи
+  получить подзадачи
+  редактировпать подзадачи
+  отмечать выполненными
+  удалять
+
+
+  получить все задачи
+
+  фильтрация по приоритету
+  фильтрация по слложности
+  фильтрация по сроку выполнения
+
+  сортировка по дедлайну
+  сортировка по приоритету
+  сортировка по сложности
+
+  редактировать задачу
+  получить задачу
+  отметить выполненной
+    - поменять кол-во монет
+    - отметить задачу
+    - поменять уровень
+  удалить задачу
+  импорт
+    - из жсона
+    - из csv
+
+  экспорт в .ics
+
+
+4 calendar
+- (получить календарь на месяц с отмеченными задачами)
+
+
+
+5 game
+  получить данные о кошке GetPetUseCase
+  получить все варианты товаров
+  купить вешь BuyClothingUseCase
+  поменять одежду ChangePetClothingUseCase
+  получить список купленной одежды
+
+
+6 statistics
+  получить статистику (Количество созданных, выполненных и просроченных задач)
+  Графическое распределение задач по проектам.
+
+  экспорт статистики
+  совет продуктивности
+
+7 settings
+  сбросить прогресс
+  удалить все выполненные задачи
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

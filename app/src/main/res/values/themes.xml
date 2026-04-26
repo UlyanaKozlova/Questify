@@ -6,4 +6,8 @@
     </style>
 
     <style name="Theme.Questify" parent="Base.Theme.Questify" />
+    <style name="Theme.Questify.Splash" parent="Theme.Questify">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>
