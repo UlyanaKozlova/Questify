@@ -133,6 +133,11 @@
     <!--    TaskCreateFragmnet-->
     <string name="choose_project">Выберите проект</string>
 
+    <!--    TaskEditFragment subtasks-->
+    <string name="subtasks_header">Подзадачи</string>
+    <string name="subtask_add_hint">Добавить подзадачу</string>
+    <string name="subtask_edit_title">Изменить подзадачу</string>
+
 
     <!-- SettingsFragment -->
     <string name="settings_reset_progress">Сброс прогресса</string>
@@ -180,5 +185,6 @@
     <string name="password">Пароль</string>
     <string name="email">Email</string>
     <string name="questify">Questify</string>
+    <string name="delete_subtask_button">Удалить подзадачу</string>
 
 </resources>

@@ -5,16 +5,22 @@ import android.view.*;
 import android.widget.*;
 
 import androidx.annotation.*;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.questify.R;
 import com.example.questify.domain.model.Project;
+import com.example.questify.domain.model.Subtask;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
 import com.example.questify.util.DatePickerUtils;
 import com.example.questify.util.DateUtils;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -26,6 +32,7 @@ public class TaskEditFragment extends Fragment {
     private EditText inputName, inputDescription, inputDeadline;
     private Spinner spinnerPriority, spinnerDifficulty, spinnerProjects;
     private CheckBox checkboxDone;
+    private SubtaskListAdapter subtaskAdapter;
 
     @Nullable
     @Override
@@ -62,6 +69,7 @@ public class TaskEditFragment extends Fragment {
 
         spinnerProjects = view.findViewById(R.id.spinnerProjects);
 
+        setupSubtasksList(view);
         viewModel.projects.observe(getViewLifecycleOwner(), list -> {
             ArrayAdapter<Project> adapter = new ArrayAdapter<>(
                     requireContext(),
@@ -127,5 +135,63 @@ public class TaskEditFragment extends Fragment {
                     viewModel.deleteTask();
                     requireActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
+    }
+
+    private void setupSubtasksList(View view) {
+        subtaskAdapter = new SubtaskListAdapter(new SubtaskListAdapter.Callbacks() {
+            @Override
+            public void onToggle(Subtask subtask, boolean isDone) {
+                viewModel.toggleSubtask(subtask, isDone);
+            }
+
+            @Override
+            public void onDelete(Subtask subtask) {
+                viewModel.deleteSubtask(subtask);
+            }
+
+            @Override
+            public void onEditRequest(Subtask subtask) {
+                showEditSubtaskDialog(subtask);
+            }
+        });
+
+        RecyclerView recyclerView = view.findViewById(R.id.subtasksRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setAdapter(subtaskAdapter);
+        recyclerView.setNestedScrollingEnabled(false);
+
+        viewModel.getSubtasks().observe(getViewLifecycleOwner(), list ->
+                subtaskAdapter.submitList(list != null
+                        ? list
+                        : new ArrayList<>())
+        );
+
+        EditText newSubtaskInput = view.findViewById(R.id.newSubtaskInput);
+        view.findViewById(R.id.addSubtaskButton).setOnClickListener(v -> {
+            String text = newSubtaskInput.getText().toString().trim();
+            if (!text.isEmpty()) {
+                viewModel.addSubtask(text);
+                newSubtaskInput.setText("");
+                newSubtaskInput.clearFocus();
+            }
+        });
+    }
+
+    private void showEditSubtaskDialog(Subtask subtask) {
+        EditText input = new EditText(requireContext());
+        input.setText(subtask.getSubtaskName());
+        input.setSelection(input.getText().length());
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.subtask_edit_title)
+                .setView(input)
+                .setPositiveButton(R.string.saveButton, (dialog, which) -> {
+                    String newName = input.getText().toString().trim();
+                    if (!newName.isEmpty()) {
+                        viewModel.updateSubtask(subtask, newName);
+                    }
+                })
+                .setNegativeButton(R.string.cancelButton, null)
+                .show();
     }
 }

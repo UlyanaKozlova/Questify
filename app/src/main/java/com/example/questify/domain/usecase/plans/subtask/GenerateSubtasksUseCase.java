@@ -1,16 +1,29 @@
 package com.example.questify.domain.usecase.plans.subtask;
 
-import com.example.questify.data.repository.SubtaskRepository;
+import com.example.questify.data.ai.GeminiSubtaskGenerator;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 public class GenerateSubtasksUseCase {
-    private final SubtaskRepository subtaskRepository;
+
+    private final GeminiSubtaskGenerator generator;
+    private final CreateSubtaskUseCase createSubtaskUseCase;
 
     @Inject
-    public GenerateSubtasksUseCase(SubtaskRepository subtaskRepository) {
-        this.subtaskRepository = subtaskRepository;
+    public GenerateSubtasksUseCase(GeminiSubtaskGenerator generator,
+                                   CreateSubtaskUseCase createSubtaskUseCase) {
+        this.generator = generator;
+        this.createSubtaskUseCase = createSubtaskUseCase;
     }
-    //  как-то для задач добавить поле isSubtasksGenerated и создать
-    // менеджера которй их будет изредка проверять и если нужно генерировать
+
+    public void execute(String taskGlobalId, String taskName, String description) {
+        List<String> names = generator.generateSubtaskNames(taskName, description);
+        for (String name : names) {
+            if (name != null && !name.trim().isEmpty()) {
+                createSubtaskUseCase.execute(taskGlobalId, name.trim());
+            }
+        }
+    }
 }

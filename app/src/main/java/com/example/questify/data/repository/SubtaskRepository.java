@@ -27,7 +27,12 @@ public class SubtaskRepository {
     }
 
     public void update(Subtask subtask) {
+        SubtaskEntity existing = subtaskDao.getByGlobalId(subtask.getGlobalId());
+        if (existing == null) {
+            return;
+        }
         SubtaskEntity entity = SubtaskMapper.toEntity(subtask);
+        entity.localId = existing.localId;
         entity.updatedAt = System.currentTimeMillis();
         entity.needsSync = true;
         subtaskDao.update(entity);
