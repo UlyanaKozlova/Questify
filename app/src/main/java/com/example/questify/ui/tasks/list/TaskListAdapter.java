@@ -7,6 +7,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.questify.R;
@@ -22,6 +23,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
     public interface Listener {
         void onTaskClicked(Task task);
+
         void onTaskChecked(Task task, boolean isChecked);
     }
 
@@ -33,8 +35,9 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     }
 
     public void submitList(List<Task> newTasks) {
-        tasks = newTasks;
-        notifyDataSetChanged();
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new TaskDiffCallback(tasks, newTasks));
+        tasks = new ArrayList<>(newTasks);
+        result.dispatchUpdatesTo(this);
     }
 
     @NonNull
@@ -47,7 +50,20 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        holder.bind(tasks.get(position));
+        Task task = tasks.get(position);
+
+        holder.title.setText(task.getTaskName());
+        holder.deadline.setText(
+                new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date(task.getDeadline()))
+        );
+
+        holder.checkBox.setOnCheckedChangeListener(null);
+        holder.checkBox.setChecked(task.isDone());
+        holder.checkBox.setOnCheckedChangeListener((button, isChecked) ->
+                listener.onTaskChecked(task, isChecked)
+        );
+
+        holder.itemView.setOnClickListener(v -> listener.onTaskClicked(task));
     }
 
     @Override
@@ -55,11 +71,10 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         return tasks.size();
     }
 
-    class TaskViewHolder extends RecyclerView.ViewHolder {
-
-        TextView title;
-        TextView deadline;
-        CheckBox checkBox;
+    public static class TaskViewHolder extends RecyclerView.ViewHolder {
+        final TextView title;
+        final TextView deadline;
+        final CheckBox checkBox;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -67,19 +82,35 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             deadline = itemView.findViewById(R.id.textTaskDeadline);
             checkBox = itemView.findViewById(R.id.checkboxDone);
         }
+    }
 
-        void bind(Task task) {
-            title.setText(task.getTaskName());
+    private static class TaskDiffCallback extends DiffUtil.Callback {
+        private final List<Task> oldList;
+        private final List<Task> newList;
 
-            deadline.setText( new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date(task.getDeadline())));
+        TaskDiffCallback(List<Task> oldList, List<Task> newList) {
+            this.oldList = oldList;
+            this.newList = newList;
+        }
 
-            checkBox.setOnCheckedChangeListener(null);
-            checkBox.setChecked(task.isDone());
-            checkBox.setOnCheckedChangeListener((button, isChecked) ->
-                    listener.onTaskChecked(task, isChecked)
-            );
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
 
-            itemView.setOnClickListener(v -> listener.onTaskClicked(task));
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldPos, int newPos) {
+            return oldList.get(oldPos).getGlobalId().equals(newList.get(newPos).getGlobalId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldPos, int newPos) {
+            return oldList.get(oldPos).equals(newList.get(newPos));
         }
     }
 }

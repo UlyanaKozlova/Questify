@@ -78,7 +78,7 @@ public class AuthActivity extends AppCompatActivity {
         String password = etPassword.getText().toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.auth_fill_all_fields, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -87,7 +87,7 @@ public class AuthActivity extends AppCompatActivity {
                 .addOnSuccessListener(result -> navigateToMain())
                 .addOnFailureListener(e -> {
                     setLoading(false);
-                    showError("Ошибка входа: " + e.getMessage());
+                    showError(getString(R.string.auth_error_login, e.getMessage()));
                 });
     }
 
@@ -96,12 +96,12 @@ public class AuthActivity extends AppCompatActivity {
         String password = etPassword.getText().toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.auth_fill_all_fields, Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (password.length() < 6) {
-            Toast.makeText(this, "Пароль должен быть минимум 6 символов", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.auth_password_too_short, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -110,7 +110,7 @@ public class AuthActivity extends AppCompatActivity {
                 .addOnSuccessListener(result -> navigateToMain())
                 .addOnFailureListener(e -> {
                     setLoading(false);
-                    showError("Ошибка регистрации: " + e.getMessage());
+                    showError(getString(R.string.auth_error_register, e.getMessage()));
                 });
     }
 
@@ -120,7 +120,7 @@ public class AuthActivity extends AppCompatActivity {
                 .addOnSuccessListener(result -> navigateToMain())
                 .addOnFailureListener(e -> {
                     setLoading(false);
-                    showError("Ошибка входа: " + e.getMessage());
+                    showError(getString(R.string.auth_error_login, e.getMessage()));
                 });
     }
 

@@ -185,6 +185,10 @@
     <string name="password">Пароль</string>
     <string name="email">Email</string>
     <string name="questify">Questify</string>
+    <string name="auth_fill_all_fields">Заполните все поля</string>
+    <string name="auth_password_too_short">Пароль должен быть минимум 6 символов</string>
+    <string name="auth_error_login">Ошибка входа: %s</string>
+    <string name="auth_error_register">Ошибка регистрации: %s</string>
     <string name="delete_subtask_button">Удалить подзадачу</string>
 
 </resources>

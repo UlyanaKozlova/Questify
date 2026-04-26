@@ -88,7 +88,7 @@ public class SubtaskListAdapter extends RecyclerView.Adapter<SubtaskListAdapter.
         return subtasks.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         final CheckBox checkbox;
         final TextView title;
         final ImageButton deleteBtn;
