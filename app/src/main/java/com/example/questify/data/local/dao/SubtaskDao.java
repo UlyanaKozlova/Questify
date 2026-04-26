@@ -31,8 +31,11 @@ public interface SubtaskDao {
     @Query("SELECT * FROM subtasks WHERE globalId = :globalId LIMIT 1")
     SubtaskEntity getByGlobalId(String globalId);
 
-    @Query("SELECT * FROM subtasks WHERE needsSync = 1")
+    @Query("SELECT * FROM subtasks WHERE needsSync = 1 AND isDeleted = 0")
     List<SubtaskEntity> getNeedingSync();
+
+    @Query("DELETE FROM subtasks WHERE globalId = :globalId")
+    void deleteByGlobalId(String globalId);
 
 
     @Query("UPDATE subtasks SET isDeleted = 1, needsSync = 1, updatedAt = :updatedAt WHERE globalId = :globalId")

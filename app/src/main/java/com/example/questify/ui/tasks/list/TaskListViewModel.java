@@ -20,6 +20,7 @@ import com.example.questify.domain.usecase.plans.tasks.sort.SortType;
 import com.example.questify.domain.usecase.plans.tasks.task.CompleteTaskUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.CreateTaskUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.GetAllTasksUseCase;
+import com.example.questify.sync.SyncManager;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -35,6 +36,7 @@ public class TaskListViewModel extends ViewModel {
     private final CompleteTaskUseCase completeTaskUseCase;
     private final ImportTasksUseCaseFactory importFactory;
     private final CreateTaskUseCase createTaskUseCase;
+    private final SyncManager syncManager;
 
     @Inject
     SortTasksUseCase sortTasksUseCase;
@@ -76,11 +78,13 @@ public class TaskListViewModel extends ViewModel {
                              CompleteTaskUseCase completeTaskUseCase,
                              ImportTasksUseCaseFactory importFactory,
                              CreateTaskUseCase createTaskUseCase,
-                             GetAllProjectsUseCase getAllProjectsUseCase) {
+                             GetAllProjectsUseCase getAllProjectsUseCase,
+                             SyncManager syncManager) {
 
         this.completeTaskUseCase = completeTaskUseCase;
         this.importFactory = importFactory;
         this.createTaskUseCase = createTaskUseCase;
+        this.syncManager = syncManager;
 
         this.source = getAllTasksUseCase.executeLive();
         this.projects = getAllProjectsUseCase.executeLive();
@@ -104,6 +108,7 @@ public class TaskListViewModel extends ViewModel {
         executor.execute(() -> {
             try {
                 completeTaskUseCase.execute(task, isDone);
+                syncManager.scheduleSyncSoon();
             } catch (Exception e) {
                 errorMessage.postValue(e.getMessage());
             }

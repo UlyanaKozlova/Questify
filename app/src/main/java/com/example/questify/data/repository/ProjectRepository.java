@@ -55,10 +55,18 @@ public class ProjectRepository {
         if (defaultProject != null && defaultProject.getGlobalId().equals(project.getGlobalId())) {
             return;
         }
-        ProjectEntity existing = projectDao.getByGlobalId(project.getGlobalId());
-        if (existing != null) {
-            projectDao.delete(existing);
-        }
+        projectDao.softDelete(project.getGlobalId(), System.currentTimeMillis());
+    }
+
+    public List<Project> getDeletedNeedingSync() {
+        return projectDao.getSoftDeletedNeedingSync()
+                .stream()
+                .map(ProjectMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteByGlobalId(String globalId) {
+        projectDao.deleteByGlobalId(globalId);
     }
 
     public List<Project> getAll() {

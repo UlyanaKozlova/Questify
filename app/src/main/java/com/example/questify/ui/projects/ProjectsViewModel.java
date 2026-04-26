@@ -14,6 +14,7 @@ import com.example.questify.domain.usecase.plans.project.DeleteProjectWithTasksU
 import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.project.GetProjectStatisticsUseCase;
 import com.example.questify.domain.usecase.plans.project.UpdateProjectUseCase;
+import com.example.questify.sync.SyncManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ public class ProjectsViewModel extends ViewModel {
     private final DeleteProjectWithTasksUseCase deleteProjectWithTasksUseCase;
     private final GetProjectStatisticsUseCase getProjectStatisticsUseCase;
     private final ProjectRepository projectRepository;
+    private final SyncManager syncManager;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final MutableLiveData<Map<String, GetProjectStatisticsUseCase.ProjectStatistics>> projectStatsMap = new MutableLiveData<>();
@@ -62,13 +64,15 @@ public class ProjectsViewModel extends ViewModel {
                              UpdateProjectUseCase updateProjectUseCase,
                              DeleteProjectWithTasksUseCase deleteProjectWithTasksUseCase,
                              GetProjectStatisticsUseCase getProjectStatisticsUseCase,
-                             ProjectRepository projectRepository) {
+                             ProjectRepository projectRepository,
+                             SyncManager syncManager) {
         this.getAllProjectsUseCase = getAllProjectsUseCase;
         this.createProjectUseCase = createProjectUseCase;
         this.updateProjectUseCase = updateProjectUseCase;
         this.deleteProjectWithTasksUseCase = deleteProjectWithTasksUseCase;
         this.getProjectStatisticsUseCase = getProjectStatisticsUseCase;
         this.projectRepository = projectRepository;
+        this.syncManager = syncManager;
 
         executor.execute(projectRepository::ensureDefaultProjectExists);
     }
@@ -94,6 +98,7 @@ public class ProjectsViewModel extends ViewModel {
                 operationSuccess.postValue(created);
                 if (created) {
                     errorMessage.postValue(null);
+                    syncManager.scheduleSyncSoon();
                 }
                 if (listener != null) {
                     listener.onResult(created);
@@ -129,6 +134,7 @@ public class ProjectsViewModel extends ViewModel {
                 updateProjectUseCase.execute(project);
                 errorMessage.postValue(null);
                 operationSuccess.postValue(true);
+                syncManager.scheduleSyncSoon();
                 if (listener != null) {
                     listener.onSuccess();
                 }
@@ -158,6 +164,7 @@ public class ProjectsViewModel extends ViewModel {
                 deleteProjectWithTasksUseCase.execute(project);
                 errorMessage.postValue(null);
                 operationSuccess.postValue(true);
+                syncManager.scheduleSyncSoon();
                 if (listener != null) {
                     listener.onSuccess();
                 }

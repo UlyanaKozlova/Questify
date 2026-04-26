@@ -42,7 +42,18 @@ public class TaskRepository {
     }
 
     public void delete(Task task) {
-        taskDao.delete(TaskMapper.toEntity(task));
+        taskDao.softDelete(task.getGlobalId(), System.currentTimeMillis());
+    }
+
+    public List<Task> getDeletedNeedingSync() {
+        return taskDao.getSoftDeletedNeedingSync()
+                .stream()
+                .map(TaskMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteByGlobalId(String globalId) {
+        taskDao.deleteByGlobalId(globalId);
     }
 
     public List<Task> getAll() {
@@ -71,7 +82,7 @@ public class TaskRepository {
     }
 
     public void moveTasksToProject(String fromProjectId, String toProjectId) {
-        taskDao.moveTasksToProject(fromProjectId, toProjectId);
+        taskDao.moveTasksToProject(fromProjectId, toProjectId, System.currentTimeMillis());
     }
 
 

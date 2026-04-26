@@ -15,6 +15,7 @@ import com.example.questify.domain.usecase.game.pet.ChangePetClothingUseCase;
 import com.example.questify.domain.usecase.game.pet.GetAllBoughtClothesUseCase;
 import com.example.questify.domain.usecase.game.pet.GetCurrentClothingUseCase;
 import com.example.questify.domain.usecase.user.GetUserUseCase;
+import com.example.questify.sync.SyncManager;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -33,6 +34,7 @@ public class ShopViewModel extends ViewModel {
     private final BuyClothingUseCase buyClothingUseCase;
     private final ChangePetClothingUseCase changePetClothingUseCase;
     private final GetUserUseCase getUserUseCase;
+    private final SyncManager syncManager;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -65,13 +67,15 @@ public class ShopViewModel extends ViewModel {
                          GetCurrentClothingUseCase getCurrentClothingUseCase,
                          BuyClothingUseCase buyClothingUseCase,
                          ChangePetClothingUseCase changePetClothingUseCase,
-                         GetUserUseCase getUserUseCase) {
+                         GetUserUseCase getUserUseCase,
+                         SyncManager syncManager) {
         this.getAllClothesUseCase = getAllClothesUseCase;
         this.getAllBoughtClothesUseCase = getAllBoughtClothesUseCase;
         this.getCurrentClothingUseCase = getCurrentClothingUseCase;
         this.buyClothingUseCase = buyClothingUseCase;
         this.changePetClothingUseCase = changePetClothingUseCase;
         this.getUserUseCase = getUserUseCase;
+        this.syncManager = syncManager;
 
         loadData();
     }
@@ -177,6 +181,7 @@ public class ShopViewModel extends ViewModel {
                 user.postValue(currentUser);
 
                 error.postValue(null);
+                syncManager.scheduleSyncSoon();
             } else {
                 error.postValue(context.getString(R.string.shop_insufficient_coins));
             }
@@ -210,6 +215,7 @@ public class ShopViewModel extends ViewModel {
             user.postValue(currentUser);
 
             error.postValue(null);
+            syncManager.scheduleSyncSoon();
 
             Integer index = currentIndex.getValue();
             if (index != null) {

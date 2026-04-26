@@ -14,6 +14,7 @@ import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.DeleteTaskUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.GetTaskUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.UpdateTaskUseCase;
+import com.example.questify.sync.SyncManager;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -29,6 +30,7 @@ public class TaskEditViewModel extends ViewModel {
     private final GetTaskUseCase getTaskUseCase;
     private final UpdateTaskUseCase updateTaskUseCase;
     private final DeleteTaskUseCase deleteTaskUseCase;
+    private final SyncManager syncManager;
 
     private final MutableLiveData<Task> task = new MutableLiveData<>();
     private final MutableLiveData<String> error = new MutableLiveData<>();
@@ -48,10 +50,12 @@ public class TaskEditViewModel extends ViewModel {
     public TaskEditViewModel(GetTaskUseCase getTaskUseCase,
                              UpdateTaskUseCase updateTaskUseCase,
                              DeleteTaskUseCase deleteTaskUseCase,
-                             GetAllProjectsUseCase getAllProjectsUseCase) {
+                             GetAllProjectsUseCase getAllProjectsUseCase,
+                             SyncManager syncManager) {
         this.getTaskUseCase = getTaskUseCase;
         this.updateTaskUseCase = updateTaskUseCase;
         this.deleteTaskUseCase = deleteTaskUseCase;
+        this.syncManager = syncManager;
         this.projects = getAllProjectsUseCase.executeLive();
     }
 
@@ -87,6 +91,7 @@ public class TaskEditViewModel extends ViewModel {
                         isDone,
                         context
                 );
+                syncManager.scheduleSyncSoon();
             } catch (IllegalArgumentException e) {
                 error.postValue(e.getMessage());
             }
@@ -98,6 +103,9 @@ public class TaskEditViewModel extends ViewModel {
         if (currentTask == null) {
             return;
         }
-        executor.execute(() -> deleteTaskUseCase.execute(currentTask));
+        executor.execute(() -> {
+            deleteTaskUseCase.execute(currentTask);
+            syncManager.scheduleSyncSoon();
+        });
     }
 }

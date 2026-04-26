@@ -15,9 +15,14 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.Timestamp;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
@@ -39,6 +44,9 @@ public class SyncManager {
     private FirebaseAuth auth;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ScheduledExecutorService debounceExecutor = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> pendingSync;
+
     private final Context context;
 
     private final TaskRepository taskRepository;
@@ -83,6 +91,13 @@ public class SyncManager {
         } catch (Exception e) {
             firebaseInitialized = false;
         }
+    }
+
+    public synchronized void scheduleSyncSoon() {
+        if (pendingSync != null && !pendingSync.isDone()) {
+            pendingSync.cancel(false);
+        }
+        pendingSync = debounceExecutor.schedule(() -> syncAllToCloud(null), 3, TimeUnit.SECONDS);
     }
 
     private boolean isNotFirebaseReady() {
@@ -157,40 +172,55 @@ public class SyncManager {
         executor.execute(() -> {
             try {
                 WriteBatch batch = firestore.batch();
-                int totalChanges = 0;
 
-                totalChanges += addTasksToBatch(batch);
-                totalChanges += addProjectsToBatch(batch);
-                totalChanges += addSubtasksToBatch(batch);
-                totalChanges += addUserToBatch(batch);
-                totalChanges += addPetToBatch(batch);
-                totalChanges += addClothingToBatch(batch);
-                totalChanges += addPetClothingRefToBatch(batch);
+                List<String> taskIds = addTasksToBatch(batch);
+                List<String> projectIds = addProjectsToBatch(batch);
+                List<String> subtaskIds = addSubtasksToBatch(batch);
+                boolean userNeedsSync = addUserToBatch(batch);
+                boolean petNeedsSync = addPetToBatch(batch);
+                List<String> clothingIds = addClothingToBatch(batch);
+                addPetClothingRefToBatch(batch);
+
+                int totalChanges = taskIds.size() + projectIds.size() + subtaskIds.size()
+                        + clothingIds.size()
+                        + (userNeedsSync ? 1 : 0) + (petNeedsSync ? 1 : 0);
 
                 if (totalChanges > 0) {
                     Log.d(TAG, "Uploading " + totalChanges + " changes to cloud");
                     batch.commit().addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "All data synced to cloud successfully");
-                        if (onComplete != null) {
-                            onComplete.run();
-                        }
+                        executor.execute(() -> {
+                            for (String id : taskIds) {
+                                taskRepository.clearSyncFlag(id);
+                            }
+                            for (String id : projectIds) {
+                                projectRepository.clearSyncFlag(id);
+                            }
+                            for (String id : subtaskIds) {
+                                subtaskRepository.clearSyncFlag(id);
+                            }
+                            for (String id : clothingIds) {
+                                clothingRepository.clearSyncFlag(id);
+                            }
+                            if (userNeedsSync) {
+                                userRepository.clearSyncFlag();
+                            }
+                            if (petNeedsSync) {
+                                petRepository.clearSyncFlag();
+                            }
+                        });
+                        if (onComplete != null) onComplete.run();
                     }).addOnFailureListener(e -> {
                         Log.e(TAG, "Failed to sync to cloud", e);
-                        if (onComplete != null) {
-                            onComplete.run();
-                        }
+                        if (onComplete != null) onComplete.run();
                     });
                 } else {
                     Log.d(TAG, "No data to sync");
-                    if (onComplete != null) {
-                        onComplete.run();
-                    }
+                    if (onComplete != null) onComplete.run();
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Sync to cloud failed", e);
-                if (onComplete != null) {
-                    onComplete.run();
-                }
+                if (onComplete != null) onComplete.run();
             }
         });
     }
@@ -210,7 +240,13 @@ public class SyncManager {
                     Log.d(TAG, "Syncing " + querySnapshot.size() + " tasks from cloud");
                     for (var doc : querySnapshot.getDocuments()) {
                         TaskRemote remote = doc.toObject(TaskRemote.class);
-                        if (remote != null && !remote.isDeleted) {
+                        if (remote == null) {
+                            continue;
+                        }
+                        if (remote.isDeleted) {
+                            taskRepository.deleteByGlobalId(remote.globalId);
+                            Log.d(TAG, "Task deleted locally: " + remote.globalId);
+                        } else {
                             Task task = convertToTask(remote);
                             taskRepository.saveOrUpdateFromSync(task);
                             Log.d(TAG, "Task synced: " + remote.taskName);
@@ -243,7 +279,13 @@ public class SyncManager {
                     Log.d(TAG, "Syncing " + querySnapshot.size() + " projects from cloud");
                     for (var doc : querySnapshot.getDocuments()) {
                         ProjectRemote remote = doc.toObject(ProjectRemote.class);
-                        if (remote != null && !remote.isDeleted) {
+                        if (remote == null) {
+                            continue;
+                        }
+                        if (remote.isDeleted) {
+                            projectRepository.deleteByGlobalId(remote.globalId);
+                            Log.d(TAG, "Project deleted locally: " + remote.globalId);
+                        } else {
                             Project project = convertToProject(remote);
                             projectRepository.saveOrUpdateFromSync(project);
                             Log.d(TAG, "Project synced: " + remote.projectName);
@@ -275,7 +317,13 @@ public class SyncManager {
                     Log.d(TAG, "Syncing " + querySnapshot.size() + " subtasks from cloud");
                     for (var doc : querySnapshot.getDocuments()) {
                         SubtaskRemote remote = doc.toObject(SubtaskRemote.class);
-                        if (remote != null && !remote.isDeleted) {
+                        if (remote == null) {
+                            continue;
+                        }
+                        if (remote.isDeleted) {
+                            subtaskRepository.deleteByGlobalId(remote.globalId);
+                            Log.d(TAG, "Subtask deleted locally: " + remote.globalId);
+                        } else {
                             Subtask subtask = convertToSubtask(remote);
                             subtaskRepository.saveOrUpdateFromSync(subtask);
                             Log.d(TAG, "Subtask synced: " + remote.subtaskName);
@@ -422,9 +470,12 @@ public class SyncManager {
                 });
     }
 
-    private int addTasksToBatch(WriteBatch batch) {
+    private List<String> addTasksToBatch(WriteBatch batch) {
         List<Task> tasks = taskRepository.getNeedingSync();
-        Log.d(TAG, "Tasks needing sync: " + tasks.size());
+        List<Task> deletedTasks = taskRepository.getDeletedNeedingSync();
+        List<String> syncedIds = new ArrayList<>();
+        Log.d(TAG, "Tasks needing sync: " + tasks.size() + ", deleted: " + deletedTasks.size());
+
         for (Task task : tasks) {
             TaskRemote remote = new TaskRemote();
             remote.globalId = task.getGlobalId();
@@ -441,16 +492,30 @@ public class SyncManager {
 
             batch.set(firestore.collection(TASKS_COLLECTION)
                     .document(task.getGlobalId()), remote.toMap(), SetOptions.merge());
-
-            taskRepository.clearSyncFlag(task.getGlobalId());
+            syncedIds.add(task.getGlobalId());
             Log.d(TAG, "Added task to batch: " + task.getTaskName());
         }
-        return tasks.size();
+
+        for (Task task : deletedTasks) {
+            Map<String, Object> tombstone = new java.util.HashMap<>();
+            tombstone.put("isDeleted", true);
+            tombstone.put("updatedAt", new Timestamp(System.currentTimeMillis() / 1000, 0));
+
+            batch.set(firestore.collection(TASKS_COLLECTION)
+                    .document(task.getGlobalId()), tombstone, SetOptions.merge());
+            syncedIds.add(task.getGlobalId());
+            Log.d(TAG, "Added deleted task to batch: " + task.getGlobalId());
+        }
+
+        return syncedIds;
     }
 
-    private int addProjectsToBatch(WriteBatch batch) {
+    private List<String> addProjectsToBatch(WriteBatch batch) {
         List<Project> projects = projectRepository.getNeedingSync();
-        Log.d(TAG, "Projects needing sync: " + projects.size());
+        List<Project> deletedProjects = projectRepository.getDeletedNeedingSync();
+        List<String> syncedIds = new ArrayList<>();
+        Log.d(TAG, "Projects needing sync: " + projects.size() + ", deleted: " + deletedProjects.size());
+
         for (Project project : projects) {
             ProjectRemote remote = new ProjectRemote();
             remote.globalId = project.getGlobalId();
@@ -462,16 +527,30 @@ public class SyncManager {
 
             batch.set(firestore.collection(PROJECTS_COLLECTION)
                     .document(project.getGlobalId()), remote.toMap(), SetOptions.merge());
-
-            projectRepository.clearSyncFlag(project.getGlobalId());
+            syncedIds.add(project.getGlobalId());
             Log.d(TAG, "Added project to batch: " + project.getProjectName());
         }
-        return projects.size();
+
+        for (Project project : deletedProjects) {
+            Map<String, Object> tombstone = new java.util.HashMap<>();
+            tombstone.put("isDeleted", true);
+            tombstone.put("updatedAt", new Timestamp(System.currentTimeMillis() / 1000, 0));
+
+            batch.set(firestore.collection(PROJECTS_COLLECTION)
+                    .document(project.getGlobalId()), tombstone, SetOptions.merge());
+            syncedIds.add(project.getGlobalId());
+            Log.d(TAG, "Added deleted project to batch: " + project.getGlobalId());
+        }
+
+        return syncedIds;
     }
 
-    private int addSubtasksToBatch(WriteBatch batch) {
+    private List<String> addSubtasksToBatch(WriteBatch batch) {
         List<Subtask> subtasks = subtaskRepository.getNeedingSync();
-        Log.d(TAG, "Subtasks needing sync: " + subtasks.size());
+        List<Subtask> deletedSubtasks = subtaskRepository.getDeletedNeedingSync();
+        List<String> syncedIds = new ArrayList<>();
+        Log.d(TAG, "Subtasks needing sync: " + subtasks.size() + ", deleted: " + deletedSubtasks.size());
+
         for (Subtask subtask : subtasks) {
             SubtaskRemote remote = new SubtaskRemote();
             remote.globalId = subtask.getGlobalId();
@@ -483,14 +562,25 @@ public class SyncManager {
 
             batch.set(firestore.collection(SUBTASKS_COLLECTION)
                     .document(subtask.getGlobalId()), remote.toMap(), SetOptions.merge());
-
-            subtaskRepository.clearSyncFlag(subtask.getGlobalId());
+            syncedIds.add(subtask.getGlobalId());
             Log.d(TAG, "Added subtask to batch: " + subtask.getSubtaskName());
         }
-        return subtasks.size();
+
+        for (Subtask subtask : deletedSubtasks) {
+            Map<String, Object> tombstone = new java.util.HashMap<>();
+            tombstone.put("isDeleted", true);
+            tombstone.put("updatedAt", new Timestamp(System.currentTimeMillis() / 1000, 0));
+
+            batch.set(firestore.collection(SUBTASKS_COLLECTION)
+                    .document(subtask.getGlobalId()), tombstone, SetOptions.merge());
+            syncedIds.add(subtask.getGlobalId());
+            Log.d(TAG, "Added deleted subtask to batch: " + subtask.getGlobalId());
+        }
+
+        return syncedIds;
     }
 
-    private int addUserToBatch(WriteBatch batch) {
+    private boolean addUserToBatch(WriteBatch batch) {
         User user = userRepository.getNeedingSync();
         if (user != null) {
             UserRemote remote = new UserRemote();
@@ -505,14 +595,13 @@ public class SyncManager {
             batch.set(firestore.collection(USERS_COLLECTION)
                     .document(user.getGlobalId()), remote.toMap(), SetOptions.merge());
 
-            userRepository.clearSyncFlag();
             Log.d(TAG, "Added user to batch");
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
-    private int addPetToBatch(WriteBatch batch) {
+    private boolean addPetToBatch(WriteBatch batch) {
         Pet pet = petRepository.getNeedingSync();
         if (pet != null) {
             PetRemote remote = new PetRemote();
@@ -525,15 +614,15 @@ public class SyncManager {
             batch.set(firestore.collection(PETS_COLLECTION)
                     .document(pet.getGlobalId()), remote.toMap(), SetOptions.merge());
 
-            petRepository.clearSyncFlag();
             Log.d(TAG, "Added pet to batch");
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
-    private int addClothingToBatch(WriteBatch batch) {
+    private List<String> addClothingToBatch(WriteBatch batch) {
         List<Clothing> clothingList = clothingRepository.getNeedingSync();
+        List<String> syncedIds = new ArrayList<>();
         Log.d(TAG, "Clothing needing sync: " + clothingList.size());
         for (Clothing clothing : clothingList) {
             ClothingRemote remote = new ClothingRemote();
@@ -547,13 +636,13 @@ public class SyncManager {
             batch.set(firestore.collection(CLOTHING_COLLECTION)
                     .document(clothing.getGlobalId()), remote.toMap(), SetOptions.merge());
 
-            clothingRepository.clearSyncFlag(clothing.getGlobalId());
+            syncedIds.add(clothing.getGlobalId());
             Log.d(TAG, "Added clothing to batch: " + clothing.getName());
         }
-        return clothingList.size();
+        return syncedIds;
     }
 
-    private int addPetClothingRefToBatch(WriteBatch batch) {
+    private void addPetClothingRefToBatch(WriteBatch batch) {
         List<PetClothingRef> refs = petClothingRefRepository.getPetClothingRefForSync();
         Log.d(TAG, "Pet clothing refs total: " + refs.size());
         for (PetClothingRef ref : refs) {
@@ -566,7 +655,6 @@ public class SyncManager {
                     .document(docId), remote.toMap(), SetOptions.merge());
             Log.d(TAG, "Added pet clothing ref to batch: " + docId);
         }
-        return refs.size();
     }
 
     private Task convertToTask(TaskRemote remote) {

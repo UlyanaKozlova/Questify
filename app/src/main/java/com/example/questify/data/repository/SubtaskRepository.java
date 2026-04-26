@@ -34,7 +34,18 @@ public class SubtaskRepository {
     }
 
     public void delete(Subtask subtask) {
-        subtaskDao.delete(SubtaskMapper.toEntity(subtask));
+        subtaskDao.softDelete(subtask.getGlobalId(), System.currentTimeMillis());
+    }
+
+    public List<Subtask> getDeletedNeedingSync() {
+        return subtaskDao.getSoftDeletedNeedingSync()
+                .stream()
+                .map(SubtaskMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteByGlobalId(String globalId) {
+        subtaskDao.deleteByGlobalId(globalId);
     }
 
 

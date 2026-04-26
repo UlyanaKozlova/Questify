@@ -51,13 +51,16 @@ dependencies {
     implementation libs.view
     coreLibraryDesugaring libs.desugar.jdk.libs
 
-    implementation platform('com.google.firebase:firebase-bom:32.7.0')
-    implementation 'com.google.firebase:firebase-auth-ktx'
-    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
 
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
 
     implementation "androidx.work:work-runtime:2.9.0"
     implementation "androidx.work:work-runtime-ktx:2.9.0"
 
+    implementation("com.google.firebase:firebase-ai")
+    implementation("com.google.guava:guava:31.0.1-android")
+    implementation(libs.reactive.streams)
 }

@@ -12,6 +12,7 @@ import com.example.questify.domain.model.enums.Priority;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.CreateTaskUseCase;
+import com.example.questify.sync.SyncManager;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class TaskCreateViewModel extends ViewModel {
     private final CreateTaskUseCase createTaskUseCase;
+    private final SyncManager syncManager;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     public final LiveData<List<Project>> projects;
     private final MutableLiveData<String> error = new MutableLiveData<>();
@@ -39,8 +41,10 @@ public class TaskCreateViewModel extends ViewModel {
 
     @Inject
     public TaskCreateViewModel(CreateTaskUseCase createTaskUseCase,
-                               GetAllProjectsUseCase getAllProjectsUseCase) {
+                               GetAllProjectsUseCase getAllProjectsUseCase,
+                               SyncManager syncManager) {
         this.createTaskUseCase = createTaskUseCase;
+        this.syncManager = syncManager;
         this.projects = getAllProjectsUseCase.executeLive();
     }
 
@@ -63,6 +67,7 @@ public class TaskCreateViewModel extends ViewModel {
                         context
                 );
                 success.postValue(true);
+                syncManager.scheduleSyncSoon();
             } catch (Exception e) {
                 error.postValue(e.getMessage());
             }

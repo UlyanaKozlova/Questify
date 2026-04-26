@@ -32,8 +32,11 @@ public interface ProjectDao {
     @Query("SELECT * FROM projects WHERE globalId = :globalId LIMIT 1")
     ProjectEntity getByGlobalId(String globalId);
 
-    @Query("SELECT * FROM projects WHERE needsSync = 1")
+    @Query("SELECT * FROM projects WHERE needsSync = 1 AND isDeleted = 0")
     List<ProjectEntity> getNeedingSync();
+
+    @Query("DELETE FROM projects WHERE globalId = :globalId")
+    void deleteByGlobalId(String globalId);
 
     @Query("SELECT * FROM projects WHERE isDeleted = 0")
     LiveData<List<ProjectEntity>> getAllLive();

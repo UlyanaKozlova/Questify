@@ -13,6 +13,7 @@ import com.example.questify.domain.usecase.plans.tasks.exp.ExportToIcsUseCase;
 import com.example.questify.domain.usecase.plans.tasks.exp.ExportToJsonUseCase;
 import com.example.questify.domain.usecase.user.DeleteCompletedTasksUseCase;
 import com.example.questify.domain.usecase.user.DeleteProgressUseCase;
+import com.example.questify.sync.SyncManager;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,6 +27,7 @@ public class SettingsViewModel extends ViewModel {
 
     private final DeleteProgressUseCase deleteProgressUseCase;
     private final DeleteCompletedTasksUseCase deleteCompletedTasksUseCase;
+    private final SyncManager syncManager;
     private final ExportToJsonUseCase exportToJsonUseCase;
     private final ExportToIcsUseCase exportToIcsUseCase;
     private final ExportStatisticsToPngUseCase exportStatisticsToPngUseCase;
@@ -43,19 +45,22 @@ public class SettingsViewModel extends ViewModel {
                              ExportToJsonUseCase exportToJsonUseCase,
                              ExportToIcsUseCase exportToIcsUseCase,
                              ExportStatisticsToPngUseCase exportStatisticsToPngUseCase,
-                             ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase) {
+                             ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase,
+                             SyncManager syncManager) {
         this.deleteProgressUseCase = deleteProgressUseCase;
         this.deleteCompletedTasksUseCase = deleteCompletedTasksUseCase;
         this.exportToJsonUseCase = exportToJsonUseCase;
         this.exportToIcsUseCase = exportToIcsUseCase;
         this.exportStatisticsToPngUseCase = exportStatisticsToPngUseCase;
         this.exportStatisticsToJsonUseCase = exportStatisticsToJsonUseCase;
+        this.syncManager = syncManager;
     }
 
     public void resetProgress() {
         executor.execute(() -> {
             try {
                 deleteProgressUseCase.execute();
+                syncManager.scheduleSyncSoon();
             } catch (Exception e) {
                 errorMessage.postValue(e.getMessage());
             }
@@ -66,6 +71,7 @@ public class SettingsViewModel extends ViewModel {
         executor.execute(() -> {
             try {
                 deleteCompletedTasksUseCase.execute();
+                syncManager.scheduleSyncSoon();
             } catch (Exception e) {
                 errorMessage.postValue(e.getMessage());
             }

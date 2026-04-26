@@ -2,6 +2,7 @@ package com.example.questify.sync;
 
 import android.content.Context;
 
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -12,6 +13,8 @@ import javax.inject.Singleton;
 
 @Singleton
 public class WorkManagerScheduler {
+    private static final String SYNC_WORK_NAME = "questify_periodic_sync";
+
     @Inject
     public WorkManagerScheduler() {
     }
@@ -19,11 +22,13 @@ public class WorkManagerScheduler {
     public void schedulePeriodicSync(Context context) {
         PeriodicWorkRequest syncWorkRequest = new PeriodicWorkRequest.Builder(
                 SyncWorker.class,
-                1, TimeUnit.MINUTES)
-                .setInitialDelay(1, TimeUnit.MINUTES)
+                15, TimeUnit.MINUTES)
                 .build();
 
         WorkManager.getInstance(context)
-                .enqueue(syncWorkRequest);
+                .enqueueUniquePeriodicWork(
+                        SYNC_WORK_NAME,
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        syncWorkRequest);
     }
 }

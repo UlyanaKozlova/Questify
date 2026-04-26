@@ -8,6 +8,7 @@ import com.example.questify.domain.model.Task;
 import com.example.questify.domain.usecase.plans.project.GetProjectStatisticsUseCase;
 import com.example.questify.domain.usecase.plans.project.GetProjectTasksUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.UpdateTaskUseCase;
+import com.example.questify.sync.SyncManager;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -23,6 +24,7 @@ public class ProjectDetailViewModel extends ViewModel {
     private final GetProjectTasksUseCase getProjectTasksUseCase;
     private final GetProjectStatisticsUseCase getProjectStatisticsUseCase;
     private final UpdateTaskUseCase updateTaskUseCase;
+    private final SyncManager syncManager;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final MutableLiveData<List<Task>> tasks = new MutableLiveData<>();
@@ -31,10 +33,12 @@ public class ProjectDetailViewModel extends ViewModel {
     @Inject
     public ProjectDetailViewModel(GetProjectTasksUseCase getProjectTasksUseCase,
                                   GetProjectStatisticsUseCase getProjectStatisticsUseCase,
-                                  UpdateTaskUseCase updateTaskUseCase) {
+                                  UpdateTaskUseCase updateTaskUseCase,
+                                  SyncManager syncManager) {
         this.getProjectTasksUseCase = getProjectTasksUseCase;
         this.getProjectStatisticsUseCase = getProjectStatisticsUseCase;
         this.updateTaskUseCase = updateTaskUseCase;
+        this.syncManager = syncManager;
     }
 
     public LiveData<List<Task>> getProjectTasks() {
@@ -58,6 +62,7 @@ public class ProjectDetailViewModel extends ViewModel {
     public void updateTaskDone(Task task, boolean isDone) {
         executor.execute(() -> {
             updateTaskUseCase.updateDoneStatus(task, isDone);
+            syncManager.scheduleSyncSoon();
             loadProjectData(task.getProjectGlobalId());
         });
     }

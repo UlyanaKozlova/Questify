@@ -31,8 +31,11 @@ public interface TaskDao {
     @Query("SELECT * FROM tasks WHERE globalId = :globalId LIMIT 1")
     TaskEntity getByGlobalId(String globalId);
 
-    @Query("SELECT * FROM tasks WHERE needsSync = 1")
+    @Query("SELECT * FROM tasks WHERE needsSync = 1 AND isDeleted = 0")
     List<TaskEntity> getNeedingSync();
+
+    @Query("DELETE FROM tasks WHERE globalId = :globalId")
+    void deleteByGlobalId(String globalId);
 
     @Query("SELECT * FROM tasks WHERE isDeleted = 0")
     LiveData<List<TaskEntity>> getAllLive();
@@ -40,8 +43,8 @@ public interface TaskDao {
     @Query("SELECT * FROM tasks WHERE isDeleted = 0 AND projectGlobalId = :projectGlobalId")
     List<TaskEntity> getTasksByProject(String projectGlobalId);
 
-    @Query("UPDATE tasks SET projectGlobalId = :toProjectId WHERE projectGlobalId = :fromProjectId")
-    void moveTasksToProject(String fromProjectId, String toProjectId);
+    @Query("UPDATE tasks SET projectGlobalId = :toProjectId, needsSync = 1, updatedAt = :updatedAt WHERE projectGlobalId = :fromProjectId")
+    void moveTasksToProject(String fromProjectId, String toProjectId, long updatedAt);
 
 
     @Query("UPDATE tasks SET isDeleted = 1, needsSync = 1, updatedAt = :updatedAt WHERE globalId = :globalId")
