@@ -12,9 +12,10 @@ public class SubtaskEntity {
     public long localId;
 
     @NonNull
-    public String globalId;
+    public String globalId = "";
 
     public String taskGlobalId;
+    public String userGlobalId;
 
     public boolean isDone;
     public String subtaskName;

@@ -176,6 +176,12 @@ public class TaskEditViewModel extends ViewModel {
         });
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        executor.shutdownNow();
+    }
+
     private void refreshSubtasks() {
         if (currentTaskGlobalId == null) {
             return;

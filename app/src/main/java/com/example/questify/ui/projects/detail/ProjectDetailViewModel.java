@@ -41,6 +41,12 @@ public class ProjectDetailViewModel extends ViewModel {
         this.syncManager = syncManager;
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        executor.shutdownNow();
+    }
+
     public LiveData<List<Task>> getProjectTasks() {
         return tasks;
     }

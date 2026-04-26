@@ -139,6 +139,12 @@ public class TaskListViewModel extends ViewModel {
         }
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        executor.shutdownNow();
+    }
+
     public void importFromFile(Context context, Uri uri, String fileName) {
         executor.execute(() -> {
             try {

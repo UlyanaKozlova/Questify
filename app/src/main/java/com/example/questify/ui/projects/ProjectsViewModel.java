@@ -77,6 +77,12 @@ public class ProjectsViewModel extends ViewModel {
         executor.execute(projectRepository::ensureDefaultProjectExists);
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        executor.shutdownNow();
+    }
+
     public void loadProjectStatistics(String projectGlobalId) {
         executor.execute(() -> {
             try {

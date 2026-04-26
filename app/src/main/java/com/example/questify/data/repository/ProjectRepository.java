@@ -70,14 +70,14 @@ public class ProjectRepository {
     }
 
     public List<Project> getAll() {
-        return projectDao.getAll()
+        return projectDao.getAll(userSession.getUserGlobalId())
                 .stream()
                 .map(ProjectMapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     public LiveData<List<Project>> getAllLive() {
-        return Transformations.map(projectDao.getAllLive(),
+        return Transformations.map(projectDao.getAllLive(userSession.getUserGlobalId()),
                 list -> list.stream()
                         .map(ProjectMapper::toDomain)
                         .collect(Collectors.toList()));
@@ -88,7 +88,7 @@ public class ProjectRepository {
     }
 
     public Project getByProjectName(String projectName) {
-        return ProjectMapper.toDomain(projectDao.getByProjectName(projectName));
+        return ProjectMapper.toDomain(projectDao.getByProjectName(projectName, userSession.getUserGlobalId()));
     }
 
     public Project getDefaultProject() {

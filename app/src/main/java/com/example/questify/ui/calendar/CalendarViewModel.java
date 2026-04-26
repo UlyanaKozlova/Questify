@@ -7,6 +7,9 @@ import androidx.lifecycle.ViewModel;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.usecase.plans.tasks.task.GetAllTasksUseCase;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,6 +27,7 @@ public class CalendarViewModel extends ViewModel {
 
     private final MutableLiveData<List<Task>> allTasks = new MutableLiveData<>();
     private final MutableLiveData<List<Task>> tasksForSelectedDay = new MutableLiveData<>();
+    private final MutableLiveData<Set<LocalDate>> datesWithDeadlines = new MutableLiveData<>(new HashSet<>());
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
     @Inject
@@ -35,6 +39,10 @@ public class CalendarViewModel extends ViewModel {
         return tasksForSelectedDay;
     }
 
+    public LiveData<Set<LocalDate>> getDatesWithDeadlines() {
+        return datesWithDeadlines;
+    }
+
     public LiveData<String> getError() {
         return error;
     }
@@ -44,6 +52,15 @@ public class CalendarViewModel extends ViewModel {
             try {
                 List<Task> tasks = getAllTasksUseCase.execute();
                 allTasks.postValue(tasks);
+
+                Set<LocalDate> dates = new HashSet<>();
+                for (Task task : tasks) {
+                    LocalDate date = Instant.ofEpochMilli(task.getDeadline())
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    dates.add(date);
+                }
+                datesWithDeadlines.postValue(dates);
 
                 if (selectedDate != null) {
                     filterTasksForDate(selectedDate, tasks);

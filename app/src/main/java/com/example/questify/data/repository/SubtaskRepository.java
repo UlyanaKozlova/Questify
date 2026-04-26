@@ -1,5 +1,6 @@
 package com.example.questify.data.repository;
 
+import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.SubtaskDao;
 import com.example.questify.data.local.entity.SubtaskEntity;
 import com.example.questify.data.mapper.SubtaskMapper;
@@ -13,14 +14,17 @@ import javax.inject.Inject;
 public class SubtaskRepository {
 
     private final SubtaskDao subtaskDao;
+    private final UserSession userSession;
 
     @Inject
-    public SubtaskRepository(SubtaskDao subtaskDao) {
+    public SubtaskRepository(SubtaskDao subtaskDao, UserSession userSession) {
         this.subtaskDao = subtaskDao;
+        this.userSession = userSession;
     }
 
     public void save(Subtask subtask) {
         SubtaskEntity entity = SubtaskMapper.toEntity(subtask);
+        entity.userGlobalId = userSession.getUserGlobalId();
         entity.updatedAt = System.currentTimeMillis();
         entity.needsSync = true;
         subtaskDao.insert(entity);
@@ -76,6 +80,9 @@ public class SubtaskRepository {
     public void saveOrUpdateFromSync(Subtask subtask) {
         SubtaskEntity existing = subtaskDao.getByGlobalId(subtask.getGlobalId());
         SubtaskEntity entity = SubtaskMapper.toEntity(subtask);
+        if (entity.userGlobalId == null) {
+            entity.userGlobalId = userSession.getUserGlobalId();
+        }
         entity.updatedAt = System.currentTimeMillis();
         entity.needsSync = false;
         entity.isDeleted = false;

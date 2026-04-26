@@ -26,8 +26,8 @@ public interface ProjectDao {
     void delete(ProjectEntity projectEntity);
 
 
-    @Query("SELECT * FROM projects WHERE isDeleted = 0")
-    List<ProjectEntity> getAll();
+    @Query("SELECT * FROM projects WHERE isDeleted = 0 AND userGlobalId = :userGlobalId")
+    List<ProjectEntity> getAll(String userGlobalId);
 
     @Query("SELECT * FROM projects WHERE globalId = :globalId LIMIT 1")
     ProjectEntity getByGlobalId(String globalId);
@@ -38,11 +38,11 @@ public interface ProjectDao {
     @Query("DELETE FROM projects WHERE globalId = :globalId")
     void deleteByGlobalId(String globalId);
 
-    @Query("SELECT * FROM projects WHERE isDeleted = 0")
-    LiveData<List<ProjectEntity>> getAllLive();
+    @Query("SELECT * FROM projects WHERE isDeleted = 0 AND userGlobalId = :userGlobalId")
+    LiveData<List<ProjectEntity>> getAllLive(String userGlobalId);
 
-    @Query("SELECT * FROM projects WHERE isDeleted = 0 AND projectName= :projectName LIMIT 1")
-    ProjectEntity getByProjectName(String projectName);
+    @Query("SELECT * FROM projects WHERE isDeleted = 0 AND projectName = :projectName AND userGlobalId = :userGlobalId LIMIT 1")
+    ProjectEntity getByProjectName(String projectName, String userGlobalId);
 
 
     @Query("UPDATE projects SET isDeleted = 1, needsSync = 1, updatedAt = :updatedAt WHERE globalId = :globalId")

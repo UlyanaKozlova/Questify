@@ -57,6 +57,12 @@ public class TaskCreateViewModel extends ViewModel {
         this.projects = getAllProjectsUseCase.executeLive();
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        executor.shutdownNow();
+    }
+
     public void saveTask(String taskName,
                          String description,
                          Long deadline,

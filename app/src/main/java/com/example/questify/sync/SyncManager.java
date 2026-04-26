@@ -145,7 +145,7 @@ public class SyncManager {
 
         syncTasksFromCloud(userId, onTaskComplete);
         syncProjectsFromCloud(userId, onTaskComplete);
-        syncSubtasksFromCloud(onTaskComplete);
+        syncSubtasksFromCloud(userId, onTaskComplete);
         syncUserFromCloud(userId, onTaskComplete);
         syncPetFromCloud(userId, onTaskComplete);
         syncClothingFromCloud(onTaskComplete);
@@ -303,7 +303,7 @@ public class SyncManager {
                 });
     }
 
-    private void syncSubtasksFromCloud(Runnable onComplete) {
+    private void syncSubtasksFromCloud(String userId, Runnable onComplete) {
         if (firestore == null) {
             if (onComplete != null) {
                 onComplete.run();
@@ -312,6 +312,7 @@ public class SyncManager {
         }
 
         firestore.collection(SUBTASKS_COLLECTION)
+                .whereEqualTo("userGlobalId", userId)
                 .get()
                 .addOnSuccessListener(querySnapshot -> executor.execute(() -> {
                     Log.d(TAG, "Syncing " + querySnapshot.size() + " subtasks from cloud");
@@ -555,6 +556,7 @@ public class SyncManager {
             SubtaskRemote remote = new SubtaskRemote();
             remote.globalId = subtask.getGlobalId();
             remote.taskGlobalId = subtask.getTaskGlobalId();
+            remote.userGlobalId = subtask.getUserGlobalId();
             remote.isDone = subtask.isDone();
             remote.subtaskName = subtask.getSubtaskName();
             remote.updatedAt = new Timestamp(subtask.getUpdatedAt() / 1000, 0);
@@ -703,7 +705,7 @@ public class SyncManager {
     }
 
     private Subtask convertToSubtask(SubtaskRemote remote) {
-        return new Subtask(
+        Subtask subtask = new Subtask(
                 remote.globalId,
                 remote.taskGlobalId,
                 remote.isDone,
@@ -712,6 +714,8 @@ public class SyncManager {
                         ? remote.updatedAt.toDate().getTime()
                         : 0
         );
+        subtask.setUserGlobalId(remote.userGlobalId);
+        return subtask;
     }
 
     private User convertToUser(UserRemote remote) {

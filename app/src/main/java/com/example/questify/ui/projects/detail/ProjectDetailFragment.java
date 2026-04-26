@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -147,8 +148,30 @@ public class ProjectDetailFragment extends Fragment {
         }
 
         public void submitList(List<Task> newTasks) {
-            this.tasks = newTasks != null ? newTasks : new ArrayList<>();
-            notifyDataSetChanged();
+            List<Task> safe = newTasks != null ? newTasks : new ArrayList<>();
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return tasks.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return safe.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int o, int n) {
+                    return tasks.get(o).getGlobalId().equals(safe.get(n).getGlobalId());
+                }
+
+                @Override
+                public boolean areContentsTheSame(int o, int n) {
+                    return tasks.get(o).equals(safe.get(n));
+                }
+            });
+            tasks = safe;
+            result.dispatchUpdatesTo(this);
         }
 
         @NonNull
@@ -199,9 +222,8 @@ public class ProjectDetailFragment extends Fragment {
                 }
                 textTaskDeadline.setText(deadlineText);
 
-                checkboxDone.setChecked(task.isDone());
-
                 checkboxDone.setOnCheckedChangeListener(null);
+                checkboxDone.setChecked(task.isDone());
                 checkboxDone.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     checkListener.onTaskChecked(task, isChecked);
                 });

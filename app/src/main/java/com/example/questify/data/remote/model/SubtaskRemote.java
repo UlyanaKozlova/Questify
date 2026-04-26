@@ -14,6 +14,9 @@ public class SubtaskRemote {
     @PropertyName("taskGlobalId")
     public String taskGlobalId;
 
+    @PropertyName("userGlobalId")
+    public String userGlobalId;
+
     @PropertyName("isDone")
     public boolean isDone;
 
@@ -33,6 +36,7 @@ public class SubtaskRemote {
         Map<String, Object> map = new HashMap<>();
         map.put("globalId", globalId);
         map.put("taskGlobalId", taskGlobalId);
+        map.put("userGlobalId", userGlobalId);
         map.put("isDone", isDone);
         map.put("subtaskName", subtaskName);
         map.put("updatedAt", updatedAt);

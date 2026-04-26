@@ -7,6 +7,7 @@ public class Subtask {
 
     private String globalId;
     private String taskGlobalId;
+    private String userGlobalId;
 
     private boolean isDone;
     private String subtaskName;
@@ -48,6 +49,14 @@ public class Subtask {
 
     public void setTaskGlobalId(String taskGlobalId) {
         this.taskGlobalId = taskGlobalId;
+    }
+
+    public String getUserGlobalId() {
+        return userGlobalId;
+    }
+
+    public void setUserGlobalId(String userGlobalId) {
+        this.userGlobalId = userGlobalId;
     }
 
     public boolean isDone() {

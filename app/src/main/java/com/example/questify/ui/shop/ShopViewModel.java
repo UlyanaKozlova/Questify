@@ -80,6 +80,12 @@ public class ShopViewModel extends ViewModel {
         loadData();
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        executor.shutdownNow();
+    }
+
     private void loadData() {
         executor.execute(() -> {
             List<Clothing> clothes = getAllClothesUseCase.execute();
@@ -143,7 +149,7 @@ public class ShopViewModel extends ViewModel {
         if (bought == null || clothing == null) {
             return false;
         }
-        return bought.stream().anyMatch(c -> c.getGlobalId().equals(clothing.getGlobalId()));
+        return bought.stream().anyMatch(c -> c != null && c.getGlobalId() != null && c.getGlobalId().equals(clothing.getGlobalId()));
     }
 
     public boolean isCurrentClothing(Clothing clothing) {
@@ -151,7 +157,7 @@ public class ShopViewModel extends ViewModel {
         if (current == null || clothing == null) {
             return false;
         }
-        return current.getGlobalId().equals(clothing.getGlobalId());
+        return current.getGlobalId() != null && current.getGlobalId().equals(clothing.getGlobalId());
     }
 
     public void buyCurrentClothing(Context context) {

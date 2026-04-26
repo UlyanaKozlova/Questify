@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/calendarDayText"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:gravity="center"
-    android:textSize="14sp"
-    android:textColor="@android:color/black"/>
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/calendarDayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
+
+    <View
+        android:id="@+id/dotDeadline"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:background="@drawable/dot_deadline"
+        android:visibility="invisible" />
+
+</LinearLayout>

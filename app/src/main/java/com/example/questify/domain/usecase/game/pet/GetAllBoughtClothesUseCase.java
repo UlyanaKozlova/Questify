@@ -25,7 +25,10 @@ public class GetAllBoughtClothesUseCase {
         List<PetClothingRef> petClothingRefs = petClothingRefRepository.getAll();
         List<Clothing> clothes = new ArrayList<>();
         for (PetClothingRef petClothingRef : petClothingRefs) {
-            clothes.add(clothingRepository.getByGlobalId(petClothingRef.getClothingGlobalId()));
+            Clothing clothing = clothingRepository.getByGlobalId(petClothingRef.getClothingGlobalId());
+            if (clothing != null) {
+                clothes.add(clothing);
+            }
         }
         return clothes;
     }

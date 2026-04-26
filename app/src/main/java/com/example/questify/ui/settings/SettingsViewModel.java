@@ -56,6 +56,12 @@ public class SettingsViewModel extends ViewModel {
         this.syncManager = syncManager;
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        executor.shutdownNow();
+    }
+
     public void resetProgress() {
         executor.execute(() -> {
             try {

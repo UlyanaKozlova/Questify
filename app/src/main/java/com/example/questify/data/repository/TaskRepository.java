@@ -57,14 +57,14 @@ public class TaskRepository {
     }
 
     public List<Task> getAll() {
-        return taskDao.getAll()
+        return taskDao.getAll(userSession.getUserGlobalId())
                 .stream()
                 .map(TaskMapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     public LiveData<List<Task>> getAllLive() {
-        return Transformations.map(taskDao.getAllLive(),
+        return Transformations.map(taskDao.getAllLive(userSession.getUserGlobalId()),
                 list -> list.stream()
                         .map(TaskMapper::toDomain)
                         .collect(Collectors.toList()));
@@ -75,7 +75,7 @@ public class TaskRepository {
     }
 
     public List<Task> getTasksByProject(String projectGlobalId) {
-        return taskDao.getTasksByProject(projectGlobalId)
+        return taskDao.getTasksByProject(projectGlobalId, userSession.getUserGlobalId())
                 .stream()
                 .map(TaskMapper::toDomain)
                 .collect(Collectors.toList());

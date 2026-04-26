@@ -22,11 +22,14 @@ import com.kizitonwose.calendar.view.MonthDayBinder;
 import com.kizitonwose.calendar.core.CalendarDay;
 import com.kizitonwose.calendar.core.DayPosition;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.DayOfWeek;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -45,6 +48,7 @@ public class CalendarFragment extends Fragment {
     private TaskListAdapter adapter;
 
     private YearMonth currentMonth;
+    private Set<LocalDate> datesWithDeadlines = new HashSet<>();
 
     private final DateTimeFormatter monthFormatter =
             DateTimeFormatter.ofPattern("LLLL yyyy", new Locale("ru"));
@@ -151,6 +155,10 @@ public class CalendarFragment extends Fragment {
             container.textView.setText(String.valueOf(day.getDate().getDayOfMonth()));
 
             if (day.getPosition() == DayPosition.MonthDate) {
+                container.textView.setAlpha(1f);
+                boolean hasDeadline = datesWithDeadlines.contains(day.getDate());
+                container.dotDeadline.setVisibility(hasDeadline ? View.VISIBLE : View.INVISIBLE);
+
                 container.view.setOnClickListener(v -> {
                     textSelectedDate.setText(day.getDate().format(dateFormatter));
 
@@ -162,6 +170,10 @@ public class CalendarFragment extends Fragment {
                             )
                     );
                 });
+            } else {
+                container.textView.setAlpha(0.3f);
+                container.dotDeadline.setVisibility(View.INVISIBLE);
+                container.view.setOnClickListener(null);
             }
         }
     }
@@ -170,6 +182,11 @@ public class CalendarFragment extends Fragment {
         viewModel.getTasksForSelectedDay().observe(getViewLifecycleOwner(), tasks -> {
             adapter.submitList(tasks);
             textEmpty.setVisibility((tasks == null || tasks.isEmpty()) ? View.VISIBLE : View.GONE);
+        });
+
+        viewModel.getDatesWithDeadlines().observe(getViewLifecycleOwner(), dates -> {
+            datesWithDeadlines = dates != null ? dates : new HashSet<>();
+            calendarView.notifyCalendarChanged();
         });
     }
 }
