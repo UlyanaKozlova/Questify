@@ -191,4 +191,26 @@
     <string name="auth_error_register">Ошибка регистрации: %s</string>
     <string name="delete_subtask_button">Удалить подзадачу</string>
 
+    <!-- StatisticsFragment -->
+    <string name="stats_permission_denied">Разрешение на запись отклонено</string>
+    <string name="stats_export_png_saved">PNG сохранён в галерею</string>
+    <string name="stats_export_save_error">Ошибка сохранения</string>
+    <string name="stats_export_data_not_loaded">Данные ещё не загружены</string>
+    <string name="stats_export_json_saved">JSON сохранён в Загрузки</string>
+    <string name="stats_title">Статистика задач</string>
+    <string name="stats_total">Создано</string>
+    <string name="stats_completed">Выполнено</string>
+    <string name="stats_overdue">Просрочено</string>
+    <string name="stats_chart_title">Распределение по проектам</string>
+    <string name="stats_chart_no_data">Нет данных</string>
+    <string name="stats_export_format">Формат экспорта</string>
+    <string name="stats_export_png">PNG</string>
+    <string name="stats_export_json">JSON</string>
+    <string name="stats_export_button">Экспортировать</string>
+    <string name="stats_advice_title">Совет по продуктивности</string>
+    <string name="stats_advice_loading">Формируем совет…</string>
+    <string name="stats_advice_export_button">Экспортировать изображение</string>
+    <string name="stats_advice_empty">Совет недоступен. Попробуйте позже.</string>
+    <string name="zero">0</string>
+
 </resources>

@@ -15,6 +15,7 @@ roomRuntime = "2.8.4"
 agp = "8.9.1"
 gson = "2.13.2"
 view = "2.5.0"
+mpandroidchart = "v3.1.0"
 
 [libraries]
 
@@ -35,6 +36,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 view = { module = "com.kizitonwose.calendar:view", version.ref = "view" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
