@@ -1,7 +1,5 @@
 package com.example.questify.domain.usecase.plans.tasks.task;
 
-import android.content.Context;
-
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.data.repository.TaskRepository;
 import com.example.questify.domain.model.Project;
@@ -30,16 +28,15 @@ public class UpdateTaskUseCase {
                         String projectName,
                         Priority priority,
                         Difficulty difficulty,
-                        boolean isDone,
-                        Context context) {
+                        boolean isDone) {
         Project project = projectRepository.getByProjectName(projectName);
         if (project == null) {
-            project = new Project(projectName, context);
+            project = new Project(projectName);
             projectRepository.save(project);
         }
-        taskToEdit.setTaskName(name, context);
+        taskToEdit.setTaskName(name);
         taskToEdit.setDescription(description);
-        taskToEdit.setDeadline(deadline, context);
+        taskToEdit.setDeadline(deadline);
         taskToEdit.setProjectGlobalId(project.getGlobalId());
         taskToEdit.setPriority(priority);
         taskToEdit.setDifficulty(difficulty);

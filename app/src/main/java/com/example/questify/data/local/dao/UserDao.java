@@ -2,6 +2,7 @@ package com.example.questify.data.local.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -16,6 +17,12 @@ import java.util.List;
 public interface UserDao {
     @Insert
     void insert(UserEntity entity);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertOrReplace(UserEntity entity);
+
+    @Delete
+    void delete(UserEntity entity);
 
     @Update
     void update(UserEntity entity);

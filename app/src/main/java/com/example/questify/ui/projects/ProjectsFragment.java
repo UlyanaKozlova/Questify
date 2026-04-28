@@ -207,8 +207,7 @@ public class ProjectsFragment extends Fragment {
                                 showSnackbar(error);
                             });
                         }
-                    },
-                    requireContext());
+                    });
         });
     }
 
@@ -338,8 +337,7 @@ public class ProjectsFragment extends Fragment {
                                 showSnackbar(error);
                             });
                         }
-                    },
-                    requireContext());
+                    });
         });
     }
 
@@ -371,7 +369,7 @@ public class ProjectsFragment extends Fragment {
                                 showSnackbar(error);
                             });
                         }
-                    }, requireContext());
+                    });
                 })
                 .setNegativeButton(getString(R.string.project_cancel), null)
                 .show();

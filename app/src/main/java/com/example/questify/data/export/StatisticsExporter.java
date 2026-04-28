@@ -35,12 +35,16 @@ public class StatisticsExporter {
                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
                 values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Questify");
                 Uri uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                if (uri == null) return false;
+                if (uri == null) {
+                    return false;
+                }
                 out = context.getContentResolver().openOutputStream(uri);
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             } else {
                 File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Questify");
-                if (!dir.exists()) dir.mkdirs();
+                if (!dir.exists() && !dir.mkdirs()) {
+                    return false;
+                }
                 File file = new File(dir, name + ".png");
                 out = new FileOutputStream(file);
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
@@ -49,7 +53,10 @@ public class StatisticsExporter {
         } catch (IOException e) {
             return false;
         } finally {
-            if (out != null) try { out.close(); } catch (IOException ignored) {}
+            if (out != null) try {
+                out.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 
@@ -62,12 +69,16 @@ public class StatisticsExporter {
                 values.put(MediaStore.Downloads.MIME_TYPE, "application/json");
                 values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Questify");
                 Uri uri = context.getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
-                if (uri == null) return false;
+                if (uri == null) {
+                    return false;
+                }
                 out = context.getContentResolver().openOutputStream(uri);
                 out.write(json.getBytes());
             } else {
                 File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Questify");
-                if (!dir.exists()) dir.mkdirs();
+                if (!dir.exists() && !dir.mkdirs()) {
+                    return false;
+                }
                 File file = new File(dir, name + ".json");
                 out = new FileOutputStream(file);
                 out.write(json.getBytes());
@@ -76,7 +87,10 @@ public class StatisticsExporter {
         } catch (IOException e) {
             return false;
         } finally {
-            if (out != null) try { out.close(); } catch (IOException ignored) {}
+            if (out != null) try {
+                out.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 }

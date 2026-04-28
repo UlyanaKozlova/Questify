@@ -2,6 +2,7 @@ package com.example.questify.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,11 +82,18 @@ public class AuthActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.auth_fill_all_fields, Toast.LENGTH_SHORT).show();
             return;
         }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, R.string.auth_invalid_email, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         setLoading(true);
         authManager.signInWithEmail(email, password)
-                .addOnSuccessListener(result -> navigateToMain())
+                .addOnSuccessListener(result -> {
+                    if (!isFinishing() && !isDestroyed()) navigateToMain();
+                })
                 .addOnFailureListener(e -> {
+                    if (isFinishing() || isDestroyed()) return;
                     setLoading(false);
                     showError(getString(R.string.auth_error_login, e.getMessage()));
                 });
@@ -99,6 +107,10 @@ public class AuthActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.auth_fill_all_fields, Toast.LENGTH_SHORT).show();
             return;
         }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, R.string.auth_invalid_email, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (password.length() < 6) {
             Toast.makeText(this, R.string.auth_password_too_short, Toast.LENGTH_SHORT).show();
@@ -107,8 +119,11 @@ public class AuthActivity extends AppCompatActivity {
 
         setLoading(true);
         authManager.signUpWithEmail(email, password)
-                .addOnSuccessListener(result -> navigateToMain())
+                .addOnSuccessListener(result -> {
+                    if (!isFinishing() && !isDestroyed()) navigateToMain();
+                })
                 .addOnFailureListener(e -> {
+                    if (isFinishing() || isDestroyed()) return;
                     setLoading(false);
                     showError(getString(R.string.auth_error_register, e.getMessage()));
                 });
@@ -117,8 +132,11 @@ public class AuthActivity extends AppCompatActivity {
     private void anonymousLogin() {
         setLoading(true);
         authManager.signInAnonymously()
-                .addOnSuccessListener(result -> navigateToMain())
+                .addOnSuccessListener(result -> {
+                    if (!isFinishing() && !isDestroyed()) navigateToMain();
+                })
                 .addOnFailureListener(e -> {
+                    if (isFinishing() || isDestroyed()) return;
                     setLoading(false);
                     showError(getString(R.string.auth_error_login, e.getMessage()));
                 });

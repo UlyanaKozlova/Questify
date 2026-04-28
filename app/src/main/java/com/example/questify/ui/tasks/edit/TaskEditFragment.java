@@ -124,8 +124,7 @@ public class TaskEditFragment extends Fragment {
                             ((Project) spinnerProjects.getSelectedItem()).getProjectName(),
                             (Priority) spinnerPriority.getSelectedItem(),
                             (Difficulty) spinnerDifficulty.getSelectedItem(),
-                            checkboxDone.isChecked(),
-                            requireContext()
+                            checkboxDone.isChecked()
                     );
                     requireActivity().getOnBackPressedDispatcher().onBackPressed();
                 });

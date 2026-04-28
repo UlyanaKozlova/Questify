@@ -1,8 +1,5 @@
 package com.example.questify.domain.model;
 
-
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import com.example.questify.R;
@@ -12,26 +9,12 @@ import java.util.UUID;
 
 public class Project {
 
-    private static final String DEFAULT_COLOR = "#FF6200EE"; // todo
+    private static final String DEFAULT_COLOR = "#FF6200EE";
     private String globalId;
     private String userGlobalId;
     private String projectName;
     private String color;
     private long updatedAt;
-
-    public Project(String globalId,
-                   String userGlobalId,
-                   String projectName,
-                   String color,
-                   long updatedAt,
-                   Context context) {
-        checkProjectName(projectName, context);
-        this.globalId = globalId;
-        this.userGlobalId = userGlobalId;
-        this.projectName = projectName;
-        this.color = color;
-        this.updatedAt = updatedAt;
-    }
 
     public Project(String globalId, String userGlobalId, String projectName, String color, long updatedAt) {
         this.globalId = globalId;
@@ -41,31 +24,25 @@ public class Project {
         this.updatedAt = updatedAt;
     }
 
-    public Project(String projectName,
-                   String color,
-                   Context context) {
-        checkProjectName(projectName, context);
-        this.globalId = UUID.randomUUID().toString();
-        this.projectName = projectName;
-        this.color = color;
-    }
-    public Project(String projectName,
-                   String color) {
+    public Project(String projectName, String color) {
+        checkProjectName(projectName);
         this.globalId = UUID.randomUUID().toString();
         this.projectName = projectName;
         this.color = color;
     }
 
-    public Project(String projectName,
-                   Context context) {
-        this(projectName, DEFAULT_COLOR, context);
+    public Project(String projectName) {
+        this(projectName, DEFAULT_COLOR);
     }
 
-    private void checkProjectName(String projectName,
-                                  Context context) {
-        if (projectName.length() < 3) {
-            throw new IllegalArgumentException(context.getString(R.string.error_project_name_short));
+    private static void checkProjectName(String projectName) {
+        if (projectName == null || projectName.length() < 3) {
+            throw new DomainValidationException(R.string.error_project_name_short);
         }
+    }
+
+    public static void validate(String projectName) {
+        checkProjectName(projectName);
     }
 
     @Override
@@ -106,9 +83,8 @@ public class Project {
         return projectName;
     }
 
-    public void setProjectName(String projectName,
-                               Context context) {
-        checkProjectName(projectName, context);
+    public void setProjectName(String projectName) {
+        checkProjectName(projectName);
         this.projectName = projectName;
     }
 

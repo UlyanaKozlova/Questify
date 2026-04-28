@@ -93,12 +93,12 @@ public class ProjectRepository {
 
     public Project getDefaultProject() {
         Project defaultProject = getByProjectName(DEFAULT_PROJECT_NAME);
-        if (defaultProject == null) {
-            defaultProject = new Project(DEFAULT_PROJECT_NAME, DEFAULT_PROJECT_COLOR);
-            save(defaultProject);
-            defaultProject = getByProjectName(DEFAULT_PROJECT_NAME);
+        if (defaultProject != null) {
+            return defaultProject;
         }
-        return defaultProject;
+        Project toCreate = new Project(DEFAULT_PROJECT_NAME, DEFAULT_PROJECT_COLOR);
+        save(toCreate);
+        return toCreate;
     }
 
     public void ensureDefaultProjectExists() {
@@ -122,7 +122,6 @@ public class ProjectRepository {
         ProjectEntity existing = projectDao.getByGlobalId(project.getGlobalId());
         ProjectEntity entity = ProjectMapper.toEntity(project);
         entity.userGlobalId = userSession.getUserGlobalId();
-        entity.updatedAt = System.currentTimeMillis();
         entity.needsSync = false;
         entity.isDeleted = false;
 

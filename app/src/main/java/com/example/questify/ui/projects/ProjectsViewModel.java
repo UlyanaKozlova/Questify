@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.questify.R;
 import com.example.questify.data.repository.ProjectRepository;
+import com.example.questify.domain.model.DomainValidationException;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.usecase.plans.project.CreateProjectUseCase;
 import com.example.questify.domain.usecase.plans.project.DeleteProjectWithTasksUseCase;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 @HiltViewModel
 public class ProjectsViewModel extends ViewModel {
@@ -35,6 +37,7 @@ public class ProjectsViewModel extends ViewModel {
     private final GetProjectStatisticsUseCase getProjectStatisticsUseCase;
     private final ProjectRepository projectRepository;
     private final SyncManager syncManager;
+    private final Context context;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final MutableLiveData<Map<String, GetProjectStatisticsUseCase.ProjectStatistics>> projectStatsMap = new MutableLiveData<>();
@@ -59,13 +62,15 @@ public class ProjectsViewModel extends ViewModel {
     }
 
     @Inject
-    public ProjectsViewModel(GetAllProjectsUseCase getAllProjectsUseCase,
+    public ProjectsViewModel(@ApplicationContext Context context,
+                             GetAllProjectsUseCase getAllProjectsUseCase,
                              CreateProjectUseCase createProjectUseCase,
                              UpdateProjectUseCase updateProjectUseCase,
                              DeleteProjectWithTasksUseCase deleteProjectWithTasksUseCase,
                              GetProjectStatisticsUseCase getProjectStatisticsUseCase,
                              ProjectRepository projectRepository,
                              SyncManager syncManager) {
+        this.context = context;
         this.getAllProjectsUseCase = getAllProjectsUseCase;
         this.createProjectUseCase = createProjectUseCase;
         this.updateProjectUseCase = updateProjectUseCase;
@@ -96,11 +101,10 @@ public class ProjectsViewModel extends ViewModel {
         });
     }
 
-    public void createProject(String name, String color, OnProjectCreatedListener listener, Context context) {
+    public void createProject(String name, String color, OnProjectCreatedListener listener) {
         executor.execute(() -> {
             try {
-                Project newProject = new Project(name, color, context);
-                boolean created = createProjectUseCase.execute(newProject);
+                boolean created = createProjectUseCase.execute(name, color);
                 operationSuccess.postValue(created);
                 if (created) {
                     errorMessage.postValue(null);
@@ -108,6 +112,13 @@ public class ProjectsViewModel extends ViewModel {
                 }
                 if (listener != null) {
                     listener.onResult(created);
+                }
+            } catch (DomainValidationException e) {
+                String msg = context.getString(e.resId);
+                errorMessage.postValue(msg);
+                operationSuccess.postValue(false);
+                if (listener != null) {
+                    listener.onError(msg);
                 }
             } catch (Exception e) {
                 errorMessage.postValue(e.getMessage());
@@ -122,20 +133,19 @@ public class ProjectsViewModel extends ViewModel {
     public void updateProject(Project project,
                               String newName,
                               String newColor,
-                              OnProjectUpdatedListener listener,
-                              Context context) {
+                              OnProjectUpdatedListener listener) {
         executor.execute(() -> {
             try {
                 if (projectRepository.isDefaultProject(project) && !newName.equals(project.getProjectName())) {
-                    String error = context.getString(R.string.error_cannot_rename_default);
-                    errorMessage.postValue(error);
+                    String msg = context.getString(R.string.error_cannot_rename_default);
+                    errorMessage.postValue(msg);
                     operationSuccess.postValue(false);
                     if (listener != null) {
-                        listener.onError(error);
+                        listener.onError(msg);
                     }
                     return;
                 }
-                project.setProjectName(newName, context);
+                project.setProjectName(newName);
                 project.setColor(newColor);
                 updateProjectUseCase.execute(project);
                 errorMessage.postValue(null);
@@ -143,6 +153,13 @@ public class ProjectsViewModel extends ViewModel {
                 syncManager.scheduleSyncSoon();
                 if (listener != null) {
                     listener.onSuccess();
+                }
+            } catch (DomainValidationException e) {
+                String msg = context.getString(e.resId);
+                errorMessage.postValue(msg);
+                operationSuccess.postValue(false);
+                if (listener != null) {
+                    listener.onError(msg);
                 }
             } catch (Exception e) {
                 errorMessage.postValue(e.getMessage());
@@ -154,13 +171,13 @@ public class ProjectsViewModel extends ViewModel {
         });
     }
 
-    public void deleteProjectWithTasks(Project project, OnProjectDeletedListener listener, Context context) {
+    public void deleteProjectWithTasks(Project project, OnProjectDeletedListener listener) {
         if (projectRepository.isDefaultProject(project)) {
-            String error = context.getString(R.string.error_cannot_delete_default);
-            errorMessage.postValue(error);
+            String msg = context.getString(R.string.error_cannot_delete_default);
+            errorMessage.postValue(msg);
             operationSuccess.postValue(false);
             if (listener != null) {
-                listener.onError(error);
+                listener.onError(msg);
             }
             return;
         }

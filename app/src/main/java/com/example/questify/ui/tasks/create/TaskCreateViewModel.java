@@ -1,6 +1,5 @@
 package com.example.questify.ui.tasks.create;
 
-
 import android.content.Context;
 import android.util.Log;
 
@@ -8,10 +7,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.questify.domain.model.DomainValidationException;
+import com.example.questify.domain.model.Project;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
-import com.example.questify.domain.model.Project;
 import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.subtask.GenerateSubtasksUseCase;
 import com.example.questify.domain.usecase.plans.tasks.task.CreateTaskUseCase;
@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 @HiltViewModel
 public class TaskCreateViewModel extends ViewModel {
@@ -33,6 +34,7 @@ public class TaskCreateViewModel extends ViewModel {
     private final CreateTaskUseCase createTaskUseCase;
     private final GenerateSubtasksUseCase generateSubtasksUseCase;
     private final SyncManager syncManager;
+    private final Context context;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     public final LiveData<List<Project>> projects;
     private final MutableLiveData<String> error = new MutableLiveData<>();
@@ -47,10 +49,12 @@ public class TaskCreateViewModel extends ViewModel {
     }
 
     @Inject
-    public TaskCreateViewModel(CreateTaskUseCase createTaskUseCase,
+    public TaskCreateViewModel(@ApplicationContext Context context,
+                               CreateTaskUseCase createTaskUseCase,
                                GetAllProjectsUseCase getAllProjectsUseCase,
                                GenerateSubtasksUseCase generateSubtasksUseCase,
                                SyncManager syncManager) {
+        this.context = context;
         this.createTaskUseCase = createTaskUseCase;
         this.generateSubtasksUseCase = generateSubtasksUseCase;
         this.syncManager = syncManager;
@@ -68,8 +72,7 @@ public class TaskCreateViewModel extends ViewModel {
                          Long deadline,
                          String projectName,
                          Difficulty difficulty,
-                         Priority priority,
-                         Context context) {
+                         Priority priority) {
         executor.execute(() -> {
             try {
                 Task task = createTaskUseCase.execute(
@@ -78,13 +81,14 @@ public class TaskCreateViewModel extends ViewModel {
                         deadline,
                         projectName,
                         difficulty,
-                        priority,
-                        context
+                        priority
                 );
                 success.postValue(true);
                 syncManager.scheduleSyncSoon();
                 generateSubtasksUseCase.execute(task.getGlobalId(), task.getTaskName(), task.getDescription());
                 syncManager.scheduleSyncSoon();
+            } catch (DomainValidationException e) {
+                error.postValue(context.getString(e.resId));
             } catch (Exception e) {
                 Log.e(TAG, "Ошибка при создании задачи или генерации подзадач", e);
                 error.postValue(e.getMessage());

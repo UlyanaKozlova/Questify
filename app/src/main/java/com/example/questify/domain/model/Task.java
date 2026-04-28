@@ -1,7 +1,5 @@
 package com.example.questify.domain.model;
 
-import android.content.Context;
-
 import com.example.questify.R;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
@@ -39,32 +37,6 @@ public class Task {
                 Priority priority,
                 Difficulty difficulty,
                 long deadline,
-                long updatedAt,
-                Context context) {
-        checkTaskName(taskName, context);
-        checkDeadline(deadline, context);
-        this.localId = localId;
-        this.globalId = globalId;
-        this.projectGlobalId = projectGlobalId;
-        this.userGlobalId = userGlobalId;
-        this.isDone = isDone;
-        this.taskName = taskName;
-        this.description = description;
-        this.priority = priority;
-        this.difficulty = difficulty;
-        this.deadline = deadline;
-        this.updatedAt = updatedAt;
-    }
-    public Task(long localId,
-                String globalId,
-                String projectGlobalId,
-                String userGlobalId,
-                boolean isDone,
-                String taskName,
-                String description,
-                Priority priority,
-                Difficulty difficulty,
-                long deadline,
                 long updatedAt) {
         this.localId = localId;
         this.globalId = globalId;
@@ -84,10 +56,9 @@ public class Task {
                 String description,
                 Priority priority,
                 Difficulty difficulty,
-                long deadline,
-                Context context) {
-        checkTaskName(taskName, context);
-        checkDeadline(deadline, context);
+                long deadline) {
+        checkTaskName(taskName);
+        checkDeadline(deadline);
         this.globalId = UUID.randomUUID().toString();
         this.projectGlobalId = projectGlobalId;
         this.isDone = false;
@@ -106,44 +77,34 @@ public class Task {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return isDone == task.isDone
-                && deadline == task.deadline
-                && Objects.equals(projectGlobalId, task.projectGlobalId)
-                && Objects.equals(userGlobalId, task.userGlobalId)
-                && Objects.equals(taskName, task.taskName)
-                && Objects.equals(description, task.description)
-                && priority == task.priority
-                && difficulty == task.difficulty;
+        return Objects.equals(globalId, task.globalId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(projectGlobalId, userGlobalId, isDone, taskName, description, priority, difficulty, deadline);
+        return Objects.hash(globalId);
     }
 
-    private void checkTaskName(String taskName,
-                               Context context) {
-        if (taskName.length() < 3) {
-            throw new IllegalArgumentException(context.getString(R.string.error_task_name_short));
+    private static void checkTaskName(String taskName) {
+        if (taskName == null || taskName.length() < 3) {
+            throw new DomainValidationException(R.string.error_task_name_short);
         }
     }
 
-    private void checkDeadline(Long deadline,
-                               Context context)
-{
-    if (deadline == null){
-        throw new IllegalArgumentException(context.getString(R.string.error_task_deadline_empty));
-
-    }
+    private static void checkDeadline(long deadline) {
         Calendar todayStart = Calendar.getInstance();
         todayStart.set(Calendar.HOUR_OF_DAY, 0);
         todayStart.set(Calendar.MINUTE, 0);
         todayStart.set(Calendar.SECOND, 0);
         todayStart.set(Calendar.MILLISECOND, 0);
-        long todayStartMillis = todayStart.getTimeInMillis();
-        if (deadline < todayStartMillis) {
-            throw new IllegalArgumentException(context.getString(R.string.error_task_deadline_past));
+        if (deadline < todayStart.getTimeInMillis()) {
+            throw new DomainValidationException(R.string.error_task_deadline_past);
         }
+    }
+
+    public static void validate(String taskName, long deadline) {
+        checkTaskName(taskName);
+        checkDeadline(deadline);
     }
 
     public String getGlobalId() {
@@ -162,15 +123,13 @@ public class Task {
         this.projectGlobalId = projectGlobalId;
     }
 
-    public void setTaskName(String taskName,
-                            Context context) {
-        checkTaskName(taskName, context);
+    public void setTaskName(String taskName) {
+        checkTaskName(taskName);
         this.taskName = taskName;
     }
 
-    public void setDeadline(long deadline,
-                            Context context) {
-        checkDeadline(deadline, context);
+    public void setDeadline(long deadline) {
+        checkDeadline(deadline);
         this.deadline = deadline;
     }
 
@@ -237,9 +196,11 @@ public class Task {
     public void setLocalId(long localId) {
         this.localId = localId;
     }
+
     public void setTaskNameWithoutValidation(String taskName) {
         this.taskName = taskName;
     }
+
     public void setDeadlineWithoutValidation(long deadline) {
         this.deadline = deadline;
     }

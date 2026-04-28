@@ -131,8 +131,7 @@ public class TaskCreateFragment extends Fragment {
                 DateUtils.parseToMillis(inputDeadline.getText().toString()),
                 selectedProject.getProjectName(),
                 (Difficulty) spinnerDifficulty.getSelectedItem(),
-                (Priority) spinnerPriority.getSelectedItem(),
-                requireContext()
+                (Priority) spinnerPriority.getSelectedItem()
         );
     }
 }

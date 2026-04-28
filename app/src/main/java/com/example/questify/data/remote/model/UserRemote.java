@@ -14,9 +14,6 @@ public class UserRemote {
     @PropertyName("username")
     public String username;
 
-    @PropertyName("passwordHash")
-    public String passwordHash;
-
     @PropertyName("level")
     public int level;
 
@@ -36,7 +33,6 @@ public class UserRemote {
         Map<String, Object> map = new HashMap<>();
         map.put("globalId", globalId);
         map.put("username", username);
-        map.put("passwordHash", passwordHash);
         map.put("level", level);
         map.put("coins", coins);
         map.put("updatedAt", updatedAt);

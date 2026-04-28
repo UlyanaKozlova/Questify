@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.questify.domain.model.DomainValidationException;
 import com.example.questify.domain.model.Subtask;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
@@ -30,6 +31,7 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 @HiltViewModel
 public class TaskEditViewModel extends ViewModel {
@@ -43,6 +45,7 @@ public class TaskEditViewModel extends ViewModel {
     private final UpdateSubtaskUseCase updateSubtaskUseCase;
     private final DeleteSubtaskUseCase deleteSubtaskUseCase;
     private final SyncManager syncManager;
+    private final Context context;
 
     private final MutableLiveData<Task> task = new MutableLiveData<>();
     private final MutableLiveData<String> error = new MutableLiveData<>();
@@ -65,7 +68,8 @@ public class TaskEditViewModel extends ViewModel {
     }
 
     @Inject
-    public TaskEditViewModel(GetTaskUseCase getTaskUseCase,
+    public TaskEditViewModel(@ApplicationContext Context context,
+                             GetTaskUseCase getTaskUseCase,
                              UpdateTaskUseCase updateTaskUseCase,
                              DeleteTaskUseCase deleteTaskUseCase,
                              GetAllProjectsUseCase getAllProjectsUseCase,
@@ -75,6 +79,7 @@ public class TaskEditViewModel extends ViewModel {
                              UpdateSubtaskUseCase updateSubtaskUseCase,
                              DeleteSubtaskUseCase deleteSubtaskUseCase,
                              SyncManager syncManager) {
+        this.context = context;
         this.getTaskUseCase = getTaskUseCase;
         this.updateTaskUseCase = updateTaskUseCase;
         this.deleteTaskUseCase = deleteTaskUseCase;
@@ -103,9 +108,7 @@ public class TaskEditViewModel extends ViewModel {
                          String projectName,
                          Priority priority,
                          Difficulty difficulty,
-                         boolean isDone,
-                         Context context) {
-
+                         boolean isDone) {
         Task taskToEdit = task.getValue();
         if (taskToEdit == null) return;
 
@@ -119,12 +122,11 @@ public class TaskEditViewModel extends ViewModel {
                         projectName,
                         priority,
                         difficulty,
-                        isDone,
-                        context
+                        isDone
                 );
                 syncManager.scheduleSyncSoon();
-            } catch (IllegalArgumentException e) {
-                error.postValue(e.getMessage());
+            } catch (DomainValidationException e) {
+                error.postValue(context.getString(e.resId));
             }
         });
     }

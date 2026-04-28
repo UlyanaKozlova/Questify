@@ -1,7 +1,5 @@
 package com.example.questify.domain.usecase.plans.project;
 
-import android.content.Context;
-
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.domain.model.Project;
 
@@ -16,8 +14,8 @@ public class CreateProjectUseCase {
         this.projectRepository = projectRepository;
     }
 
-    public boolean execute(String projectName, Context context) {
-        return execute(new Project(projectName, context));
+    public boolean execute(String projectName, String color) {
+        return execute(new Project(projectName, color));
     }
 
     public boolean execute(Project project) {

@@ -28,8 +28,7 @@ public class ImportTasksFromCsvUseCase extends ImportTasksUseCase {
                         Long.parseLong(parts[2]),
                         parts[3],
                         Difficulty.valueOf(parts[4]),
-                        Priority.valueOf(parts[5]),
-                        context
+                        Priority.valueOf(parts[5])
                 );
             } catch (Exception e) {
                 Log.e("IMPORT", "Error parsing CSV line: " + lines[i], e);
@@ -37,3 +36,4 @@ public class ImportTasksFromCsvUseCase extends ImportTasksUseCase {
         }
     }
 }
+// todo автоообновление статистики

@@ -38,8 +38,7 @@ public class ImportTasksFromJsonUseCase extends ImportTasksUseCase {
                         dto.deadlineMillis(),
                         dto.projectName,
                         Difficulty.valueOf(dto.difficulty.toUpperCase()),
-                        Priority.valueOf(dto.priority.toUpperCase()),
-                        context
+                        Priority.valueOf(dto.priority.toUpperCase())
                 );
             } catch (Exception e) {
                 Log.e("IMPORT", "Error creating task from JSON: " + dto.name, e);

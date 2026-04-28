@@ -63,7 +63,7 @@
     <string name="level">"Level: %d"</string>
 
     <!--    ProjectDetailFragment-->
-    <string name="project_tasks_count">Задач: %d | Выполнено: %d | Просрочено: %d</string>
+    <string name="project_tasks_count" formatted="false">Задач: %d | Выполнено: %d | Просрочено: %d</string>
     <string name="project_progress_percent">Прогресс: %d%%</string>
     <string name="project_add_task">+ Добавить задачу</string>
     <string name="task_deadline_prefix">Дедлайн: </string>
@@ -93,11 +93,11 @@
     <string name="project_name_empty">Введите название проекта</string>
     <string name="project_name_too_short">Название должно быть не менее 3 символов</string>
     <string name="project_delete_title">Удаление проекта</string>
-    <string name="project_delete_message">Удалить проект "%s"?\n\nВсе задачи этого проекта будут перенесены в проект "%s"</string>
+    <string name="project_delete_message" formatted="false">Удалить проект "%s"?\n\nВсе задачи этого проекта будут перенесены в проект "%s"</string>
     <string name="project_deleting">Удаление проекта…</string>
     <string name="project_deleted_success">Проект удален, задачи перенесены в стандартный проект</string>
     <string name="project_stats_loading">Загрузка…</string>
-    <string name="project_stats_format">Задач: %d | Выполнено: %d</string>
+    <string name="project_stats_format" formatted="false">Задач: %d | Выполнено: %d</string>
     <string name="project_edit_color_title">Редактировать проект цвет</string>
     <string name="project_edit_title">Редактировать проект</string>
     <string name="project_edit_only_color_title">Редактировать проект (только цвет)</string>
@@ -186,6 +186,7 @@
     <string name="email">Email</string>
     <string name="questify">Questify</string>
     <string name="auth_fill_all_fields">Заполните все поля</string>
+    <string name="auth_invalid_email">Введите корректный email</string>
     <string name="auth_password_too_short">Пароль должен быть минимум 6 символов</string>
     <string name="auth_error_login">Ошибка входа: %s</string>
     <string name="auth_error_register">Ошибка регистрации: %s</string>

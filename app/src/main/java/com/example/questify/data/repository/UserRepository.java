@@ -12,6 +12,8 @@ import javax.inject.Inject;
 
 public class UserRepository {
 
+    private static final String DEFAULT_USERNAME = "LocalUser";
+
     private final UserDao userDao;
     private final UserSession session;
 
@@ -43,8 +45,8 @@ public class UserRepository {
         if (userDao.getUser() == null) {
             UserEntity userEntity = new UserEntity();
             userEntity.globalId = session.getUserGlobalId();
-            userEntity.username = "LocalUser";
-            userEntity.passwordHash = "12345";
+            userEntity.username = DEFAULT_USERNAME;
+            userEntity.passwordHash = "";
             userEntity.level = 0;
             userEntity.coins = 0;
             userEntity.updatedAt = System.currentTimeMillis();
@@ -72,16 +74,13 @@ public class UserRepository {
     public void saveOrUpdateFromSync(User user) {
         UserEntity existing = userDao.getUser();
         UserEntity entity = UserMapper.toEntity(user);
-        entity.updatedAt = System.currentTimeMillis();
         entity.needsSync = false;
         entity.isDeleted = false;
 
-        if (existing != null) {
-            entity.globalId = existing.globalId;
-            userDao.update(entity);
-        } else {
-            userDao.insert(entity);
+        if (existing != null && !existing.globalId.equals(entity.globalId)) {
+            userDao.delete(existing);
         }
+        userDao.insertOrReplace(entity);
     }
 
     public void clearSyncFlag() {

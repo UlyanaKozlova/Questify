@@ -35,9 +35,9 @@ public class SyncWorker extends Worker {
 
             CountDownLatch latch = new CountDownLatch(1);
             syncManager.syncAllToCloud(latch::countDown);
-            boolean completed = latch.await(30, TimeUnit.SECONDS);
+            boolean completed = latch.await(120, TimeUnit.SECONDS);
             if (!completed) {
-                Log.w(TAG, "Sync timed out after 30 seconds");
+                Log.w(TAG, "Sync timed out after 120 seconds");
             }
 
             Log.d(TAG, "Background sync completed");

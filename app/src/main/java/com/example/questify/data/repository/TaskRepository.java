@@ -97,7 +97,6 @@ public class TaskRepository {
         TaskEntity existing = taskDao.getByGlobalId(task.getGlobalId());
         TaskEntity entity = TaskMapper.toEntity(task);
         entity.userGlobalId = userSession.getUserGlobalId();
-        entity.updatedAt = System.currentTimeMillis();
         entity.needsSync = false;
         entity.isDeleted = false;
 

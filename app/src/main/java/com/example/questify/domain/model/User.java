@@ -1,5 +1,6 @@
 package com.example.questify.domain.model;
 
+import java.util.Objects;
 
 public class User {
     private String globalId;
@@ -10,7 +11,7 @@ public class User {
     private long coins;
 
     private long updatedAt;
-    //todo hash, equals, string, delete set во всех
+
     public User(String globalId,
                 String username,
                 String passwordHash,
@@ -23,6 +24,18 @@ public class User {
         this.level = level;
         this.coins = coins;
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(globalId, user.globalId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(globalId);
     }
 
     public String getGlobalId() {

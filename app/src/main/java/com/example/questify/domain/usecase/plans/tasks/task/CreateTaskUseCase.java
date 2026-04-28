@@ -1,14 +1,11 @@
 package com.example.questify.domain.usecase.plans.tasks.task;
 
-import android.content.Context;
-
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.data.repository.TaskRepository;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
-
 
 import javax.inject.Inject;
 
@@ -29,11 +26,10 @@ public class CreateTaskUseCase {
                         long deadline,
                         String projectName,
                         Difficulty difficulty,
-                        Priority priority,
-                        Context context) {
+                        Priority priority) {
         Project project = projectRepository.getByProjectName(projectName);
         if (project == null) {
-            project = new Project(projectName, context);
+            project = new Project(projectName);
             projectRepository.save(project);
         }
 
@@ -43,8 +39,7 @@ public class CreateTaskUseCase {
                 description,
                 priority,
                 difficulty,
-                deadline,
-                context
+                deadline
         );
         taskRepository.save(newTask);
         return newTask;

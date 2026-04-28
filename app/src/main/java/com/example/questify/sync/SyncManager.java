@@ -16,6 +16,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.Timestamp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -23,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
@@ -58,7 +60,7 @@ public class SyncManager {
     private final PetClothingRefRepository petClothingRefRepository;
 
     private boolean firebaseInitialized = false;
-    private boolean isSyncing = false;
+    private final AtomicBoolean isSyncing = new AtomicBoolean(false);
 
     @Inject
     public SyncManager(Context context,
@@ -121,21 +123,19 @@ public class SyncManager {
             return;
         }
 
-        if (isSyncing) {
+        if (!isSyncing.compareAndSet(false, true)) {
             Log.w(TAG, "Sync already in progress");
             if (onComplete != null) {
                 onComplete.run();
             }
             return;
         }
-
-        isSyncing = true;
         String userId = auth.getCurrentUser().getUid();
 
         AtomicInteger pendingTasks = new AtomicInteger(7);
         Runnable onTaskComplete = () -> {
             if (pendingTasks.decrementAndGet() == 0) {
-                isSyncing = false;
+                isSyncing.set(false);
                 Log.d(TAG, "All sync from cloud completed");
                 if (onComplete != null) {
                     onComplete.run();
@@ -244,8 +244,14 @@ public class SyncManager {
                             continue;
                         }
                         if (remote.isDeleted) {
-                            taskRepository.deleteByGlobalId(remote.globalId);
-                            Log.d(TAG, "Task deleted locally: " + remote.globalId);
+                            Task local = taskRepository.getByGlobalId(remote.globalId);
+                            long remoteUpdatedAt = remote.updatedAt != null ? remote.updatedAt.toDate().getTime() : 0;
+                            if (local == null || local.getUpdatedAt() <= remoteUpdatedAt) {
+                                taskRepository.deleteByGlobalId(remote.globalId);
+                                Log.d(TAG, "Task deleted locally: " + remote.globalId);
+                            } else {
+                                Log.d(TAG, "Skip cloud deletion — local task is newer: " + remote.globalId);
+                            }
                         } else {
                             Task task = convertToTask(remote);
                             taskRepository.saveOrUpdateFromSync(task);
@@ -283,8 +289,14 @@ public class SyncManager {
                             continue;
                         }
                         if (remote.isDeleted) {
-                            projectRepository.deleteByGlobalId(remote.globalId);
-                            Log.d(TAG, "Project deleted locally: " + remote.globalId);
+                            Project localProject = projectRepository.getByGlobalId(remote.globalId);
+                            long remoteUpdatedAt = remote.updatedAt != null ? remote.updatedAt.toDate().getTime() : 0;
+                            if (localProject == null || localProject.getUpdatedAt() <= remoteUpdatedAt) {
+                                projectRepository.deleteByGlobalId(remote.globalId);
+                                Log.d(TAG, "Project deleted locally: " + remote.globalId);
+                            } else {
+                                Log.d(TAG, "Skip cloud deletion — local project is newer: " + remote.globalId);
+                            }
                         } else {
                             Project project = convertToProject(remote);
                             projectRepository.saveOrUpdateFromSync(project);
@@ -322,8 +334,14 @@ public class SyncManager {
                             continue;
                         }
                         if (remote.isDeleted) {
-                            subtaskRepository.deleteByGlobalId(remote.globalId);
-                            Log.d(TAG, "Subtask deleted locally: " + remote.globalId);
+                            Subtask localSubtask = subtaskRepository.getByGlobalId(remote.globalId);
+                            long remoteUpdatedAt = remote.updatedAt != null ? remote.updatedAt.toDate().getTime() : 0;
+                            if (localSubtask == null || localSubtask.getUpdatedAt() <= remoteUpdatedAt) {
+                                subtaskRepository.deleteByGlobalId(remote.globalId);
+                                Log.d(TAG, "Subtask deleted locally: " + remote.globalId);
+                            } else {
+                                Log.d(TAG, "Skip cloud deletion — local subtask is newer: " + remote.globalId);
+                            }
                         } else {
                             Subtask subtask = convertToSubtask(remote);
                             subtaskRepository.saveOrUpdateFromSync(subtask);
@@ -498,12 +516,8 @@ public class SyncManager {
         }
 
         for (Task task : deletedTasks) {
-            Map<String, Object> tombstone = new java.util.HashMap<>();
-            tombstone.put("isDeleted", true);
-            tombstone.put("updatedAt", new Timestamp(System.currentTimeMillis() / 1000, 0));
-
             batch.set(firestore.collection(TASKS_COLLECTION)
-                    .document(task.getGlobalId()), tombstone, SetOptions.merge());
+                    .document(task.getGlobalId()), buildTombstone(), SetOptions.merge());
             syncedIds.add(task.getGlobalId());
             Log.d(TAG, "Added deleted task to batch: " + task.getGlobalId());
         }
@@ -533,12 +547,8 @@ public class SyncManager {
         }
 
         for (Project project : deletedProjects) {
-            Map<String, Object> tombstone = new java.util.HashMap<>();
-            tombstone.put("isDeleted", true);
-            tombstone.put("updatedAt", new Timestamp(System.currentTimeMillis() / 1000, 0));
-
             batch.set(firestore.collection(PROJECTS_COLLECTION)
-                    .document(project.getGlobalId()), tombstone, SetOptions.merge());
+                    .document(project.getGlobalId()), buildTombstone(), SetOptions.merge());
             syncedIds.add(project.getGlobalId());
             Log.d(TAG, "Added deleted project to batch: " + project.getGlobalId());
         }
@@ -569,12 +579,8 @@ public class SyncManager {
         }
 
         for (Subtask subtask : deletedSubtasks) {
-            Map<String, Object> tombstone = new java.util.HashMap<>();
-            tombstone.put("isDeleted", true);
-            tombstone.put("updatedAt", new Timestamp(System.currentTimeMillis() / 1000, 0));
-
             batch.set(firestore.collection(SUBTASKS_COLLECTION)
-                    .document(subtask.getGlobalId()), tombstone, SetOptions.merge());
+                    .document(subtask.getGlobalId()), buildTombstone(), SetOptions.merge());
             syncedIds.add(subtask.getGlobalId());
             Log.d(TAG, "Added deleted subtask to batch: " + subtask.getGlobalId());
         }
@@ -588,7 +594,6 @@ public class SyncManager {
             UserRemote remote = new UserRemote();
             remote.globalId = user.getGlobalId();
             remote.username = user.getUsername();
-            remote.passwordHash = user.getPasswordHash();
             remote.level = user.getLevel();
             remote.coins = user.getCoins();
             remote.updatedAt = new Timestamp(user.getUpdatedAt() / 1000, 0);
@@ -665,7 +670,7 @@ public class SyncManager {
         task.setProjectGlobalId(remote.projectGlobalId);
         task.setUserGlobalId(remote.userGlobalId);
         task.setDone(remote.isDone);
-        task.setTaskNameWithoutValidation(remote.taskName);
+        task.setTaskNameWithoutValidation(remote.taskName != null ? remote.taskName : "");
         task.setDescription(remote.description);
         task.setDeadlineWithoutValidation(remote.deadline != null
                 ? remote.deadline.toDate().getTime()
@@ -722,7 +727,7 @@ public class SyncManager {
         return new User(
                 remote.globalId,
                 remote.username,
-                remote.passwordHash,
+                "",
                 remote.level,
                 remote.coins,
                 remote.updatedAt != null
@@ -752,5 +757,12 @@ public class SyncManager {
                         ? remote.updatedAt.toDate().getTime()
                         : 0
         );
+    }
+
+    private Map<String, Object> buildTombstone() {
+        Map<String, Object> tombstone = new HashMap<>();
+        tombstone.put("isDeleted", true);
+        tombstone.put("updatedAt", new Timestamp(System.currentTimeMillis() / 1000, 0));
+        return tombstone;
     }
 }
