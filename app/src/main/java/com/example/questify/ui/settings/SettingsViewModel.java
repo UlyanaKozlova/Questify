@@ -7,14 +7,20 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.questify.domain.model.Project;
+import com.example.questify.domain.usecase.plans.project.DeleteProjectWithTasksUseCase;
+import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.tasks.exp.ExportStatisticsToJsonUseCase;
 import com.example.questify.domain.usecase.plans.tasks.exp.ExportStatisticsToPngUseCase;
 import com.example.questify.domain.usecase.plans.tasks.exp.ExportToIcsUseCase;
 import com.example.questify.domain.usecase.plans.tasks.exp.ExportToJsonUseCase;
 import com.example.questify.domain.usecase.user.DeleteCompletedTasksUseCase;
 import com.example.questify.domain.usecase.user.DeleteProgressUseCase;
+import com.example.questify.sync.AuthenticationManager;
 import com.example.questify.sync.SyncManager;
+import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,11 +38,26 @@ public class SettingsViewModel extends ViewModel {
     private final ExportToIcsUseCase exportToIcsUseCase;
     private final ExportStatisticsToPngUseCase exportStatisticsToPngUseCase;
     private final ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase;
+    private final GetAllProjectsUseCase getAllProjectsUseCase;
+    private final DeleteProjectWithTasksUseCase deleteProjectWithTasksUseCase;
+    private final AuthenticationManager authManager;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     public LiveData<String> getErrorMessage() {
         return errorMessage;
+    }
+
+    private final MutableLiveData<String> successMessage = new MutableLiveData<>();
+
+    public LiveData<List<Project>> getProjects() {
+        return getAllProjectsUseCase.executeLive();
+    }
+
+    public String getCurrentAccountEmail() {
+        FirebaseUser user = authManager.getCurrentUser();
+        if (user == null) return null;
+        return user.isAnonymous() ? null : user.getEmail();
     }
 
     @Inject
@@ -46,7 +67,10 @@ public class SettingsViewModel extends ViewModel {
                              ExportToIcsUseCase exportToIcsUseCase,
                              ExportStatisticsToPngUseCase exportStatisticsToPngUseCase,
                              ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase,
-                             SyncManager syncManager) {
+                             SyncManager syncManager,
+                             GetAllProjectsUseCase getAllProjectsUseCase,
+                             DeleteProjectWithTasksUseCase deleteProjectWithTasksUseCase,
+                             AuthenticationManager authManager) {
         this.deleteProgressUseCase = deleteProgressUseCase;
         this.deleteCompletedTasksUseCase = deleteCompletedTasksUseCase;
         this.exportToJsonUseCase = exportToJsonUseCase;
@@ -54,6 +78,31 @@ public class SettingsViewModel extends ViewModel {
         this.exportStatisticsToPngUseCase = exportStatisticsToPngUseCase;
         this.exportStatisticsToJsonUseCase = exportStatisticsToJsonUseCase;
         this.syncManager = syncManager;
+        this.getAllProjectsUseCase = getAllProjectsUseCase;
+        this.deleteProjectWithTasksUseCase = deleteProjectWithTasksUseCase;
+        this.authManager = authManager;
+    }
+
+    public void sendPasswordResetEmail(String email, Runnable onSuccess, java.util.function.Consumer<String> onError) {
+        com.google.firebase.auth.FirebaseAuth.getInstance()
+                .sendPasswordResetEmail(email)
+                .addOnSuccessListener(unused -> onSuccess.run())
+                .addOnFailureListener(e -> onError.accept(e.getMessage()));
+    }
+
+    public void signOut() {
+        authManager.signOut();
+    }
+
+    public void deleteProject(Project project) {
+        executor.execute(() -> {
+            try {
+                deleteProjectWithTasksUseCase.execute(project);
+                syncManager.scheduleSyncSoon();
+            } catch (Exception e) {
+                errorMessage.postValue(e.getMessage());
+            }
+        });
     }
 
     @Override

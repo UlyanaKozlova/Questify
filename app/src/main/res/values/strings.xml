@@ -266,5 +266,7 @@
     <string name="stats_advice_empty">Совет недоступен. Попробуйте позже.</string>
     <string name="zero">0</string>
     <string name="stats_user_level">Ур. %d</string>
+    <string name="en">EN</string>
+    <string name="ru">RU</string>
 
 </resources>
