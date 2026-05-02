@@ -1,6 +1,5 @@
 package com.example.questify.ui.projects.detail;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,7 +75,7 @@ public class ProjectDetailFragment extends Fragment {
                     requireActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.fragmentContainer, fragment)
+                            .add(R.id.fragmentContainer, fragment)
                             .addToBackStack(null)
                             .commit();
                 },
@@ -113,7 +112,7 @@ public class ProjectDetailFragment extends Fragment {
             requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragmentContainer, fragment)
+                    .add(R.id.fragmentContainer, fragment)
                     .addToBackStack(null)
                     .commit();
         });
@@ -215,10 +214,10 @@ public class ProjectDetailFragment extends Fragment {
 
                 boolean isOverdue = !task.isDone() && task.getDeadline() < System.currentTimeMillis();
                 if (isOverdue) {
-                    textTaskDeadline.setTextColor(Color.RED);
+                    textTaskDeadline.setTextColor(context.getResources().getColor(R.color.danger_red, context.getTheme()));
                     deadlineText += context.getString(R.string.task_overdue_suffix);
                 } else {
-                    textTaskDeadline.setTextColor(Color.parseColor("#FF888888"));
+                    textTaskDeadline.setTextColor(context.getResources().getColor(R.color.text_secondary, context.getTheme()));
                 }
                 textTaskDeadline.setText(deadlineText);
 

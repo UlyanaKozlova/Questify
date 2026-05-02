@@ -1,5 +1,6 @@
 package com.example.questify.ui.projects;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -37,11 +38,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
+@SuppressLint("NotifyDataSetChanged")
 public class ProjectsFragment extends Fragment {
 
     private ProjectsViewModel viewModel;
     private ProjectsAdapter adapter;
-    private RecyclerView recyclerProjects;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private View rootView;
     private AlertDialog currentDialog;
@@ -74,7 +75,7 @@ public class ProjectsFragment extends Fragment {
             }
         });
 
-        recyclerProjects = view.findViewById(R.id.recyclerProjects);
+        RecyclerView recyclerProjects = view.findViewById(R.id.recyclerProjects);
         recyclerProjects.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         adapter = new ProjectsAdapter(
@@ -89,7 +90,7 @@ public class ProjectsFragment extends Fragment {
                     requireActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.fragmentContainer, fragment)
+                            .add(R.id.fragmentContainer, fragment)
                             .addToBackStack(null)
                             .commit();
                 },
@@ -111,20 +112,8 @@ public class ProjectsFragment extends Fragment {
         });
 
         viewModel.getProjectStatisticsMap().observe(getViewLifecycleOwner(), statsMap -> {
-            if (statsMap != null && adapter != null) {
-                for (int i = 0; i < adapter.getItemCount(); i++) {
-                    Project project = adapter.getProjectAt(i);
-                    if (project != null) {
-                        GetProjectStatisticsUseCase.ProjectStatistics stats = statsMap.get(project.getGlobalId());
-                        if (stats != null) {
-                            RecyclerView.ViewHolder holder = recyclerProjects.findViewHolderForAdapterPosition(i);
-                            if (holder instanceof ProjectsAdapter.ProjectViewHolder) {
-                                ((ProjectsAdapter.ProjectViewHolder) holder).updateStats(
-                                        stats.total, stats.completed, stats.getProgressPercent());
-                            }
-                        }
-                    }
-                }
+            if (adapter != null) {
+                adapter.updateStatsMap(statsMap);
             }
         });
     }
@@ -155,7 +144,7 @@ public class ProjectsFragment extends Fragment {
                     getString(R.string.project_color_pink)
             };
             String[] colorHex = {"#FF6200EE", "#F44336", "#4CAF50", "#FFC107", "#2196F3", "#9C27B0"};
-
+            // todo colors
             new AlertDialog.Builder(requireContext())
                     .setTitle(getString(R.string.project_color_picker_title))
                     .setItems(colors, (dialog, which) -> {
@@ -392,6 +381,7 @@ public class ProjectsFragment extends Fragment {
 
     private static class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ProjectViewHolder> {
         private List<Project> projects = new ArrayList<>();
+        private java.util.Map<String, GetProjectStatisticsUseCase.ProjectStatistics> statsMap = new java.util.HashMap<>();
         private final OnProjectClickListener clickListener;
         private final OnProjectMenuListener menuListener;
 
@@ -414,11 +404,11 @@ public class ProjectsFragment extends Fragment {
             notifyDataSetChanged();
         }
 
-        public Project getProjectAt(int position) {
-            if (position >= 0 && position < projects.size()) {
-                return projects.get(position);
+        public void updateStatsMap(java.util.Map<String, GetProjectStatisticsUseCase.ProjectStatistics> map) {
+            if (map != null) {
+                this.statsMap = map;
+                notifyDataSetChanged();
             }
-            return null;
         }
 
         @Override
@@ -437,7 +427,8 @@ public class ProjectsFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ProjectViewHolder holder, int position) {
             Project project = projects.get(position);
-            holder.bind(project, clickListener, menuListener);
+            GetProjectStatisticsUseCase.ProjectStatistics stats = statsMap.get(project.getGlobalId());
+            holder.bind(project, stats, clickListener, menuListener);
         }
 
         static class ProjectViewHolder extends RecyclerView.ViewHolder {
@@ -456,7 +447,9 @@ public class ProjectsFragment extends Fragment {
                 buttonMenu = itemView.findViewById(R.id.buttonProjectMenu);
             }
 
-            void bind(Project project, OnProjectClickListener clickListener,
+            void bind(Project project,
+                      GetProjectStatisticsUseCase.ProjectStatistics statistics,
+                      OnProjectClickListener clickListener,
                       OnProjectMenuListener menuListener) {
                 textName.setText(project.getProjectName());
 
@@ -466,16 +459,17 @@ public class ProjectsFragment extends Fragment {
                     colorView.setBackgroundColor(Color.parseColor("#FF6200EE"));
                 }
 
-                textStats.setText(itemView.getContext().getString(R.string.project_stats_loading));
-                progressBar.setProgress(0);
+                if (statistics != null) {
+                    textStats.setText(itemView.getContext().getString(
+                            R.string.project_stats_format, statistics.total, statistics.completed));
+                    progressBar.setProgress(statistics.getProgressPercent());
+                } else {
+                    textStats.setText(itemView.getContext().getString(R.string.project_stats_loading));
+                    progressBar.setProgress(0);
+                }
 
                 itemView.setOnClickListener(v -> clickListener.onProjectClick(project));
                 buttonMenu.setOnClickListener(v -> menuListener.onMenuClick(project));
-            }
-
-            void updateStats(int total, int completed, int percent) {
-                textStats.setText(itemView.getContext().getString(R.string.project_stats_format, total, completed));
-                progressBar.setProgress(percent);
             }
         }
     }

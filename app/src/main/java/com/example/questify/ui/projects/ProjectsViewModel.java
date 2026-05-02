@@ -8,18 +8,24 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.questify.R;
 import com.example.questify.data.repository.ProjectRepository;
-import com.example.questify.domain.model.DomainValidationException;
+import com.example.questify.util.exception.DomainValidationException;
 import com.example.questify.domain.model.Project;
+import com.example.questify.domain.model.Task;
 import com.example.questify.domain.usecase.plans.project.CreateProjectUseCase;
 import com.example.questify.domain.usecase.plans.project.DeleteProjectWithTasksUseCase;
 import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
 import com.example.questify.domain.usecase.plans.project.GetProjectStatisticsUseCase;
 import com.example.questify.domain.usecase.plans.project.UpdateProjectUseCase;
+import com.example.questify.domain.usecase.plans.tasks.task.GetAllTasksUseCase;
 import com.example.questify.sync.SyncManager;
 
+import androidx.lifecycle.Observer;
+
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,7 +47,10 @@ public class ProjectsViewModel extends ViewModel {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final MutableLiveData<Map<String, GetProjectStatisticsUseCase.ProjectStatistics>> projectStatsMap = new MutableLiveData<>();
-    private final Map<String, GetProjectStatisticsUseCase.ProjectStatistics> statsCache = new HashMap<>();
+    private final Map<String, GetProjectStatisticsUseCase.ProjectStatistics> statsCache = new ConcurrentHashMap<>();
+
+    private final LiveData<List<Task>> allTasksLive;
+    private final Observer<List<Task>> taskChangeObserver;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
 
@@ -64,6 +73,7 @@ public class ProjectsViewModel extends ViewModel {
     @Inject
     public ProjectsViewModel(@ApplicationContext Context context,
                              GetAllProjectsUseCase getAllProjectsUseCase,
+                             GetAllTasksUseCase getAllTasksUseCase,
                              CreateProjectUseCase createProjectUseCase,
                              UpdateProjectUseCase updateProjectUseCase,
                              DeleteProjectWithTasksUseCase deleteProjectWithTasksUseCase,
@@ -80,11 +90,20 @@ public class ProjectsViewModel extends ViewModel {
         this.syncManager = syncManager;
 
         executor.execute(projectRepository::ensureDefaultProjectExists);
+
+        taskChangeObserver = tasks -> {
+            for (String projectId : new HashSet<>(statsCache.keySet())) {
+                loadProjectStatistics(projectId);
+            }
+        };
+        allTasksLive = getAllTasksUseCase.executeLive();
+        allTasksLive.observeForever(taskChangeObserver);
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
+        allTasksLive.removeObserver(taskChangeObserver);
         executor.shutdownNow();
     }
 
