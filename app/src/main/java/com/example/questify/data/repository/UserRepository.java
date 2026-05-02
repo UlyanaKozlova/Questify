@@ -59,8 +59,9 @@ public class UserRepository {
     public void resetProgress() {
         User user = getUser();
         if (user != null) {
-            user.setLevel(1);
+            user.setLevel(0);
             user.setCoins(0);
+            user.setEarnedCoins(0);
             user.setUpdatedAt(System.currentTimeMillis());
             update(user);
         }

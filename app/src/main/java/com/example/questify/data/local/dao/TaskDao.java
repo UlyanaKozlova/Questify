@@ -52,6 +52,9 @@ public interface TaskDao {
     @Query("SELECT * FROM tasks WHERE isDeleted = 1 AND needsSync = 1")
     List<TaskEntity> getSoftDeletedNeedingSync();
 
+    @Query("SELECT * FROM tasks WHERE LOWER(taskName) = LOWER(:name) AND userGlobalId = :userId AND isDeleted = 0 LIMIT 1")
+    TaskEntity getByTaskName(String name, String userId);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<TaskEntity> entities);
 

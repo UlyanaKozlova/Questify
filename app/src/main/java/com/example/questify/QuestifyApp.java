@@ -3,6 +3,9 @@ package com.example.questify;
 import android.app.Application;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
+import com.example.questify.ui.utils.AppPreferences;
 import com.google.firebase.FirebaseApp;
 
 import dagger.hilt.android.HiltAndroidApp;
@@ -15,6 +18,7 @@ public class QuestifyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        AppCompatDelegate.setDefaultNightMode(AppPreferences.getNightMode(this));
 
         try {
             if (FirebaseApp.getApps(this).isEmpty()) {

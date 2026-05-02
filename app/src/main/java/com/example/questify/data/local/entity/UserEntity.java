@@ -17,6 +17,7 @@ public class UserEntity {
 
     public int level;
     public long coins;
+    public long earnedCoins;
 
     public long updatedAt;
     public boolean isDeleted;

@@ -1,7 +1,13 @@
 package com.example.questify.ui.auth;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+
+import com.example.questify.ui.utils.AppPreferences;
+
+import java.util.Locale;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +41,19 @@ public class AuthActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private Button btnLogin, btnRegister, btnAnonymous;
     private ProgressBar progressBar;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        String lang = AppPreferences.getLanguage(newBase);
+        if (!lang.isEmpty()) {
+            Locale locale = new Locale(lang);
+            Configuration config = new Configuration(newBase.getResources().getConfiguration());
+            config.setLocale(locale);
+            super.attachBaseContext(newBase.createConfigurationContext(config));
+        } else {
+            super.attachBaseContext(newBase);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

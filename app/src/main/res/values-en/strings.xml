@@ -1,2 +1,242 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Questify</string>
+    <string name="buttonFilter">Filter</string>
+    <string name="buttonSort">Sort</string>
+    <string name="importButton">Import</string>
+    <string name="addTaskButton">Add task</string>
+    <string name="cancelButton">Cancel</string>
+    <string name="saveButton">Save</string>
+    <string name="taskNameButton">Task name</string>
+    <string name="descriptionButton">Description</string>
+    <string name="deadlineButton">Deadline</string>
+    <string name="projectName">New project name</string>
+    <string name="resetFilterButton">Clear all filters</string>
+    <string name="showButton">Show</string>
+    <string name="doneButton">Done</string>
+    <string name="deleteTaskButton">Delete task</string>
+    <string name="tasksMenuItem">Tasks</string>
+    <string name="calendarMenuItem">Calendar</string>
+    <string name="shopMenuItem">Shop</string>
+    <string name="statisticsMenuItem">Stats</string>
+    <string name="petMenuItem">Main</string>
+    <string name="settingsButton">Settings</string>
+    <string name="deleteProgressButton">Reset progress</string>
+    <string name="deleteCompletedButton">Delete completed tasks</string>
+    <string name="ExportTasksButton">Export tasks</string>
+    <string name="status">Status</string>
+    <string name="hintStartDate">Select start date</string>
+    <string name="hintEndDate">Select end date</string>
+    <string name="Projects">Projects</string>
+
+    <string-array name="sort_options">
+        <item>Sort by</item>
+        <item>By deadline</item>
+        <item>By priority</item>
+        <item>By difficulty</item>
+        <item>By update</item>
+    </string-array>
+
+    <string name="error_task_name_short">Task name must be at least 3 characters</string>
+    <string name="error_task_name_exists">A task with this name already exists</string>
+    <string name="error_task_deadline_past">Deadline cannot be earlier than today</string>
+    <string name="error_project_name_short">Project name must be at least 3 characters</string>
+    <string name="error_task_deadline_empty">Deadline cannot be empty</string>
+    <string name="error_os_closed">Could not open file for writing</string>
+    <string name="error_reading_file">Error reading file</string>
+    <string name="error_wrong_format">Wrong format</string>
+
+    <string name="filter_priority">Priority</string>
+    <string name="filter_difficulty">Difficulty</string>
+    <string name="filter_deadline">Deadline until</string>
+    <string name="button_back">Back</string>
+    <string name="button_apply">Apply</string>
+    <string name="button_reset">Reset</string>
+    <string name="hint_deadline">Deadline</string>
+
+    <string name="coins">%d</string>
+    <string name="level">%d</string>
+    <string name="pet_coins_to_next_level">%d</string>
+    <string name="coins_label">Coins</string>
+    <string name="level_label">Level</string>
+    <string name="to_next_level_label">To lvl up</string>
+    <string name="achievements_title">Achievements</string>
+    <string name="pet_advice_button">Advice</string>
+
+    <string name="ach_first_task">First Task</string>
+    <string name="ach_five_tasks">Experienced</string>
+    <string name="ach_twenty_tasks">Master</string>
+    <string name="ach_level_5">Level 5</string>
+    <string name="ach_coins_100">Rich</string>
+
+    <string name="project_tasks_count" formatted="false">Tasks: %d | Done: %d | Overdue: %d</string>
+    <string name="project_progress_percent">Progress: %d%%</string>
+    <string name="project_add_task">+ Add task</string>
+    <string name="task_deadline_prefix">Deadline: </string>
+    <string name="task_overdue_suffix"> (Overdue)</string>
+
+    <string name="projects_title">Projects</string>
+    <string name="project_create_title">Create project</string>
+    <string name="project_name_hint">Project name</string>
+    <string name="project_color">Project color</string>
+    <string name="project_color_picker_title">Choose color</string>
+    <string name="project_color_purple">Purple</string>
+    <string name="project_color_red">Red</string>
+    <string name="project_color_green">Green</string>
+    <string name="project_color_yellow">Yellow</string>
+    <string name="project_color_blue">Blue</string>
+    <string name="project_color_pink">Pink</string>
+    <string name="project_create">Create</string>
+    <string name="project_cancel">Cancel</string>
+    <string name="project_save">Save</string>
+    <string name="project_edit">Edit</string>
+    <string name="project_edit_color_only">Edit color</string>
+    <string name="project_delete">Delete</string>
+    <string name="project_export">Export</string>
+    <string name="project_name_exists">A project with this name already exists</string>
+    <string name="project_name_empty">Enter a project name</string>
+    <string name="project_name_too_short">Name must be at least 3 characters</string>
+    <string name="project_delete_title">Delete project</string>
+    <string name="project_delete_message" formatted="false">Delete project "%s"?\n\nAll tasks will be moved to "%s"</string>
+    <string name="project_deleting">Deleting project…</string>
+    <string name="project_deleted_success">Project deleted, tasks moved to default</string>
+    <string name="project_stats_loading">Loading…</string>
+    <string name="project_stats_format" formatted="false">Tasks: %d | Done: %d</string>
+    <string name="project_edit_color_title">Edit project color</string>
+    <string name="project_edit_title">Edit project</string>
+    <string name="project_edit_only_color_title">Edit project (color only)</string>
+    <string name="error_occurred">Error: %s</string>
+    <string name="error_cannot_rename_default">Cannot rename the default project</string>
+    <string name="error_cannot_delete_default">Cannot delete the default project</string>
+    <string name="project_updated">Project updated</string>
+
+    <string name="filter_error_start_after_end">Start date is after end date</string>
+    <string name="filter_all">All</string>
+    <string name="filter_project">Project</string>
+    <string name="filter_all_projects">All projects</string>
+
+    <string name="priority_very_high">Very High</string>
+    <string name="priority_high">High</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_very_low">Very Low</string>
+
+    <string name="difficulty_very_difficult">Very Hard</string>
+    <string name="difficulty_difficult">Hard</string>
+    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_very_easy">Very Easy</string>
+
+    <string name="task_status_all">All</string>
+    <string name="task_status_done">Completed</string>
+    <string name="task_status_not_done">Not completed</string>
+
+    <string name="choose_project">Choose project</string>
+    <string name="subtasks_header">Subtasks</string>
+    <string name="subtask_add_hint">Add subtask</string>
+    <string name="subtask_edit_title">Edit subtask</string>
+
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_progress">Progress</string>
+    <string name="settings_section_projects">Projects</string>
+    <string name="settings_section_export">Export</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_delete_project_section">Delete project</string>
+    <string name="settings_delete_project_button">Delete selected project</string>
+    <string name="settings_delete_project_title">Delete project</string>
+    <string name="settings_delete_project_confirm" formatted="false">Delete project "%s"? Tasks will be moved to default project.</string>
+    <string name="settings_select_project">Select project</string>
+    <string name="settings_reset_progress">Reset progress</string>
+    <string name="settings_reset_progress_confirm">Are you sure you want to reset all progress?</string>
+    <string name="settings_delete_completed">Delete tasks</string>
+    <string name="settings_delete_completed_confirm">Delete all completed tasks?</string>
+    <string name="settings_export_tasks">Export tasks (JSON)</string>
+    <string name="settings_export_deadlines">Export deadlines (.ics)</string>
+    <string name="settings_export_statistics_json">Export statistics (JSON)</string>
+    <string name="settings_export_statistics_png">Export statistics (PNG)</string>
+    <string name="settings_yes">Yes</string>
+    <string name="settings_no">Cancel</string>
+
+    <!-- Settings: Account -->
+    <string name="settings_section_account">Account</string>
+    <string name="settings_account_email">Account: %s</string>
+    <string name="settings_account_guest">Guest login</string>
+    <string name="settings_reset_password">Reset password (via email)</string>
+    <string name="settings_reset_password_sent">Password reset email sent</string>
+    <string name="settings_reset_password_error">Error: %s</string>
+    <string name="settings_sign_out">Sign out</string>
+    <string name="settings_sign_out_confirm">Sign out? Unsynced data may be lost.</string>
+    <string name="settings_no_email">No email (anonymous login)</string>
+
+    <string name="shop_buy">Buy for %d coins</string>
+    <string name="shop_wear">Wear</string>
+    <string name="shop_wearing">Wearing</string>
+    <string name="shop_already_bought">Already bought</string>
+    <string name="shop_insufficient_coins">Not enough coins</string>
+    <string name="catInClothes">Pet in clothes</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="shop_buy_format">Buy for %d coins</string>
+    <string name="shop_price_format">Price: %d coins</string>
+    <string name="shop_price_insufficient_format">Price: %d coins (not enough)</string>
+    <string name="shop_already_bought_error">Already bought</string>
+    <string name="shop_buy_first_error">Buy this item first</string>
+    <string name="shop_wear_success">Clothes equipped!</string>
+    <string name="shop_buy_success">Purchase successful!</string>
+
+    <string name="calendar_title">Calendar</string>
+    <string name="calendar_tasks_for_day">Tasks for the day:</string>
+    <string name="calendar_no_tasks">(no tasks)</string>
+    <string name="no_tasks">No tasks</string>
+
+    <string name="without_auth">Continue as guest</string>
+    <string name="register">Register</string>
+    <string name="log_in">Log in</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="questify">Questify</string>
+    <string name="auth_fill_all_fields">Please fill all fields</string>
+    <string name="auth_invalid_email">Enter a valid email</string>
+    <string name="auth_password_too_short">Password must be at least 6 characters</string>
+    <string name="auth_error_login">Login error: %s</string>
+    <string name="auth_error_register">Registration error: %s</string>
+    <string name="delete_subtask_button">Delete subtask</string>
+
+    <!-- Project detail -->
+    <string name="add_task_to_project">+ Add task</string>
+    <string name="project_color_label">Project color</string>
+    <string name="choose_color">Choose color</string>
+
+    <string name="sort_deadline_asc">Deadline: earliest first</string>
+    <string name="sort_deadline_desc">Deadline: latest first</string>
+    <string name="sort_priority_asc">Priority: high first</string>
+    <string name="sort_priority_desc">Priority: low first</string>
+    <string name="sort_difficulty_asc">Difficulty: hard first</string>
+    <string name="sort_difficulty_desc">Difficulty: easy first</string>
+    <string name="sort_apply">Apply</string>
+
+    <string name="stats_permission_denied">Storage permission denied</string>
+    <string name="stats_export_png_saved">PNG saved to gallery</string>
+    <string name="stats_export_save_error">Save error</string>
+    <string name="stats_export_data_not_loaded">Data not loaded yet</string>
+    <string name="stats_export_json_saved">JSON saved to Downloads</string>
+    <string name="stats_title">Task Statistics</string>
+    <string name="stats_total">Created</string>
+    <string name="stats_completed">Done</string>
+    <string name="stats_overdue">Overdue</string>
+    <string name="stats_chart_title">Distribution by project</string>
+    <string name="stats_chart_no_data">No data</string>
+    <string name="stats_export_format">Export format</string>
+    <string name="stats_export_png">PNG</string>
+    <string name="stats_export_json">JSON</string>
+    <string name="stats_export_button">Export</string>
+    <string name="stats_advice_title">Productivity tip</string>
+    <string name="stats_advice_loading">Generating advice…</string>
+    <string name="stats_advice_export_button">Export image</string>
+    <string name="stats_advice_empty">Advice unavailable. Try again later.</string>
+    <string name="zero">0</string>
+    <string name="stats_user_level">Lvl. %d</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

@@ -2,14 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_tasks"
-        android:icon="@android:drawable/checkbox_on_background"
-        android:title="@string/tasksMenuItem" />
-
-    <item
-        android:id="@+id/nav_calendar"
-        android:icon="@android:drawable/ic_menu_my_calendar"
-        android:title="@string/calendarMenuItem" />
+        android:id="@+id/nav_stats"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="@string/statisticsMenuItem" />
 
     <item
         android:id="@+id/nav_projects"
@@ -17,13 +12,18 @@
         android:title="@string/Projects" />
 
     <item
-        android:id="@+id/nav_stats"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:title="@string/statisticsMenuItem" />
-
-    <item
         android:id="@+id/nav_pet"
         android:icon="@android:drawable/btn_star_big_on"
         android:title="@string/petMenuItem" />
+
+    <item
+        android:id="@+id/nav_calendar"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="@string/calendarMenuItem" />
+
+    <item
+        android:id="@+id/nav_tasks"
+        android:icon="@android:drawable/checkbox_on_background"
+        android:title="@string/tasksMenuItem" />
 
 </menu>

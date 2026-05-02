@@ -1,12 +1,19 @@
 package com.example.questify;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
+
+import com.example.questify.ui.utils.AppPreferences;
+
+import java.util.Locale;
 
 import com.example.questify.sync.WorkManagerScheduler;
 import com.example.questify.ui.AppInitViewModel;
@@ -32,6 +39,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Inject
     WorkManagerScheduler workManagerScheduler;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        String language = AppPreferences.getLanguage(newBase);
+        Configuration config = new Configuration(newBase.getResources().getConfiguration());
+
+        if (!language.isEmpty()) {
+            config.setLocale(new Locale(language));
+        }
+        int savedNightMode = AppPreferences.getNightMode(newBase);
+        int nightBit = (savedNightMode == AppCompatDelegate.MODE_NIGHT_YES)
+                ? Configuration.UI_MODE_NIGHT_YES
+                : Configuration.UI_MODE_NIGHT_NO;
+        config.uiMode = (config.uiMode & ~Configuration.UI_MODE_NIGHT_MASK) | nightBit;
+
+        super.attachBaseContext(newBase.createConfigurationContext(config));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

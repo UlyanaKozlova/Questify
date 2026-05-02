@@ -74,6 +74,10 @@ public class TaskRepository {
         return TaskMapper.toDomain(taskDao.getByGlobalId(globalId));
     }
 
+    public Task getByTaskName(String name) {
+        return TaskMapper.toDomain(taskDao.getByTaskName(name, userSession.getUserGlobalId()));
+    }
+
     public List<Task> getTasksByProject(String projectGlobalId) {
         return taskDao.getTasksByProject(projectGlobalId, userSession.getUserGlobalId())
                 .stream()

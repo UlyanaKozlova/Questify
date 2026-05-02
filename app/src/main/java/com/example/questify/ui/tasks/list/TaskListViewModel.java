@@ -131,6 +131,15 @@ public class TaskListViewModel extends ViewModel {
         }
     }
 
+    public void applySort(SortType type, SortOrder order) {
+        currentSortType = type;
+        currentSortOrder = order;
+        List<Task> original = source.getValue();
+        if (original != null) {
+            recalc(original);
+        }
+    }
+
     public void applyFilter(TaskFilter filter) {
         currentFilter = filter;
         List<Task> original = source.getValue();

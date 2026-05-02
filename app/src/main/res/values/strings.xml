@@ -15,12 +15,12 @@
     <string name="showButton">Показать</string>
     <string name="doneButton">Выполнена</string>
     <string name="deleteTaskButton">Удалить задачу</string>
-    <string name="tasksMenuItem">Tasks</string>
-    <string name="calendarMenuItem">Calendar</string>
-    <string name="shopMenuItem">Shop</string>
-    <string name="statisticsMenuItem">Stats</string>
-    <string name="petMenuItem">Pet</string>
-    <string name="settingsButton">Settings</string>
+    <string name="tasksMenuItem">Задачи</string>
+    <string name="calendarMenuItem">Календарь</string>
+    <string name="shopMenuItem">Магазин</string>
+    <string name="statisticsMenuItem">Статистика</string>
+    <string name="petMenuItem">Главная</string>
+    <string name="settingsButton">Настройки</string>
     <string name="deleteProgressButton">Сбросить прогресс</string>
     <string name="deleteCompletedButton">Удалить выполненные задачи</string>
     <string name="ExportTasksButton">Экспортировать задачи</string>
@@ -38,6 +38,7 @@
 
 
     <string name="error_task_name_short">Название задачи должно состоять не менее чем из 3 символов</string>
+    <string name="error_task_name_exists">Задача с таким названием уже существует</string>
     <string name="error_task_deadline_past">Дедлайн задачи должен быть не раньше даты, в которую создается задача</string>
     <string name="error_project_name_short">Название проекта должно состоять не менее чем из 3 символов</string>
     <string name="error_task_deadline_empty">Дедлайн не может быть пустым</string>
@@ -58,9 +59,22 @@
 
     <string name="hint_deadline">Дедлайн (timestamp)</string>
 
-    <!--    PetFragmemnt-->
-    <string name="coins">"Coins: %d"</string>
-    <string name="level">"Level: %d"</string>
+    <!--    PetFragment-->
+    <string name="coins">%d</string>
+    <string name="level">%d</string>
+    <string name="pet_coins_to_next_level">%d</string>
+    <string name="coins_label">Монеты</string>
+    <string name="level_label">Уровень</string>
+    <string name="to_next_level_label">До ур.</string>
+    <string name="achievements_title">Достижения</string>
+    <string name="pet_advice_button">Совет</string>
+
+    <!-- Achievements -->
+    <string name="ach_first_task">Первое задание</string>
+    <string name="ach_five_tasks">Опытный</string>
+    <string name="ach_twenty_tasks">Мастер</string>
+    <string name="ach_level_5">Уровень 5</string>
+    <string name="ach_coins_100">Богатство</string>
 
     <!--    ProjectDetailFragment-->
     <string name="project_tasks_count" formatted="false">Задач: %d | Выполнено: %d | Просрочено: %d</string>
@@ -140,6 +154,19 @@
 
 
     <!-- SettingsFragment -->
+    <string name="settings_section_appearance">Внешний вид</string>
+    <string name="settings_section_progress">Прогресс</string>
+    <string name="settings_section_projects">Проекты</string>
+    <string name="settings_section_export">Экспорт</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_delete_project_section">Удалить проект</string>
+    <string name="settings_delete_project_button">Удалить выбранный проект</string>
+    <string name="settings_delete_project_title">Удаление проекта</string>
+    <string name="settings_delete_project_confirm" formatted="false">Удалить проект "%s"? Задачи будут перенесены в стандартный проект.</string>
+    <string name="settings_select_project">Выберите проект</string>
     <string name="settings_reset_progress">Сброс прогресса</string>
     <string name="settings_reset_progress_confirm">Вы уверены, что хотите удалить весь прогресс?</string>
     <string name="settings_delete_completed">Удаление задач</string>
@@ -150,6 +177,17 @@
     <string name="settings_export_statistics_png">Экспорт статистики PNG</string>
     <string name="settings_yes">Да</string>
     <string name="settings_no">Отмена</string>
+
+    <!-- Settings: Account -->
+    <string name="settings_section_account">Аккаунт</string>
+    <string name="settings_account_email">Аккаунт: %s</string>
+    <string name="settings_account_guest">Гостевой вход</string>
+    <string name="settings_reset_password">Сбросить пароль (по email)</string>
+    <string name="settings_reset_password_sent">Письмо для сброса пароля отправлено</string>
+    <string name="settings_reset_password_error">Ошибка: %s</string>
+    <string name="settings_sign_out">Выйти из аккаунта</string>
+    <string name="settings_sign_out_confirm">Выйти из аккаунта? Несинхронизированные данные могут быть потеряны.</string>
+    <string name="settings_no_email">Нет email (анонимный вход)</string>
 
 
     <!--ShopFragment-->
@@ -192,6 +230,20 @@
     <string name="auth_error_register">Ошибка регистрации: %s</string>
     <string name="delete_subtask_button">Удалить подзадачу</string>
 
+    <!-- Project detail -->
+    <string name="add_task_to_project">+ Добавить задачу</string>
+    <string name="project_color_label">Цвет проекта</string>
+    <string name="choose_color">Выбрать цвет</string>
+
+    <!-- Sort bottom sheet (FUNC-5) -->
+    <string name="sort_deadline_asc">Дедлайн: ближайшие первые</string>
+    <string name="sort_deadline_desc">Дедлайн: дальние первые</string>
+    <string name="sort_priority_asc">Приоритет: высокий первый</string>
+    <string name="sort_priority_desc">Приоритет: низкий первый</string>
+    <string name="sort_difficulty_asc">Сложность: сложные первые</string>
+    <string name="sort_difficulty_desc">Сложность: лёгкие первые</string>
+    <string name="sort_apply">Применить</string>
+
     <!-- StatisticsFragment -->
     <string name="stats_permission_denied">Разрешение на запись отклонено</string>
     <string name="stats_export_png_saved">PNG сохранён в галерею</string>
@@ -213,5 +265,6 @@
     <string name="stats_advice_export_button">Экспортировать изображение</string>
     <string name="stats_advice_empty">Совет недоступен. Попробуйте позже.</string>
     <string name="zero">0</string>
+    <string name="stats_user_level">Ур. %d</string>
 
 </resources>

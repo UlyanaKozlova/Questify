@@ -9,6 +9,7 @@ public class User {
 
     private int level;
     private long coins;
+    private long earnedCoins;
 
     private long updatedAt;
 
@@ -17,12 +18,14 @@ public class User {
                 String passwordHash,
                 int level,
                 long coins,
+                long earnedCoins,
                 long updatedAt) {
         this.globalId = globalId;
         this.username = username;
         this.passwordHash = passwordHash;
         this.level = level;
         this.coins = coins;
+        this.earnedCoins = earnedCoins;
         this.updatedAt = updatedAt;
     }
 
@@ -76,6 +79,14 @@ public class User {
 
     public void setCoins(long coins) {
         this.coins = coins;
+    }
+
+    public long getEarnedCoins() {
+        return earnedCoins;
+    }
+
+    public void setEarnedCoins(long earnedCoins) {
+        this.earnedCoins = earnedCoins;
     }
 
     public long getUpdatedAt() {

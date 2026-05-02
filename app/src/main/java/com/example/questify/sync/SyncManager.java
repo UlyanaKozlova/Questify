@@ -730,6 +730,7 @@ public class SyncManager {
                 "",
                 remote.level,
                 remote.coins,
+                remote.coins,
                 remote.updatedAt != null
                         ? remote.updatedAt.toDate().getTime()
                         : 0

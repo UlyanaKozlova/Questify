@@ -57,14 +57,14 @@ public class TaskEditFragment extends Fragment {
         spinnerPriority.setAdapter(new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                Priority.values()
+                buildLocalizedNames(Priority.values())
         ));
 
         spinnerDifficulty = view.findViewById(R.id.spinnerDifficulty);
         spinnerDifficulty.setAdapter(new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                Difficulty.values()
+                buildLocalizedNames(Difficulty.values())
         ));
 
         spinnerProjects = view.findViewById(R.id.spinnerProjects);
@@ -122,8 +122,8 @@ public class TaskEditFragment extends Fragment {
                             inputDescription.getText().toString(),
                             DateUtils.parseToMillis(inputDeadline.getText().toString()),
                             ((Project) spinnerProjects.getSelectedItem()).getProjectName(),
-                            (Priority) spinnerPriority.getSelectedItem(),
-                            (Difficulty) spinnerDifficulty.getSelectedItem(),
+                            Priority.values()[spinnerPriority.getSelectedItemPosition()],
+                            Difficulty.values()[spinnerDifficulty.getSelectedItemPosition()],
                             checkboxDone.isChecked()
                     );
                     requireActivity().getOnBackPressedDispatcher().onBackPressed();
@@ -134,6 +134,21 @@ public class TaskEditFragment extends Fragment {
                     viewModel.deleteTask();
                     requireActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
+    }
+
+    @SuppressWarnings("unchecked")
+    private <E extends Enum<E>> String[] buildLocalizedNames(E[] values) {
+        String[] names = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] instanceof Priority) {
+                names[i] = ((Priority) values[i]).getString(requireContext());
+            } else if (values[i] instanceof Difficulty) {
+                names[i] = ((Difficulty) values[i]).getString(requireContext());
+            } else {
+                names[i] = values[i].name();
+            }
+        }
+        return names;
     }
 
     private void setupSubtasksList(View view) {

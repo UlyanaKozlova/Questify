@@ -13,6 +13,7 @@ public class UserMapper {
                 entity.passwordHash,
                 entity.level,
                 entity.coins,
+                entity.earnedCoins,
                 entity.updatedAt);
     }
 
@@ -27,6 +28,7 @@ public class UserMapper {
         entity.passwordHash = model.getPasswordHash();
         entity.level = model.getLevel();
         entity.coins = model.getCoins();
+        entity.earnedCoins = model.getEarnedCoins();
         entity.updatedAt = model.getUpdatedAt();
 
         return entity;

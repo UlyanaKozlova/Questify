@@ -74,7 +74,7 @@ public class TaskCreateFragment extends Fragment {
         spinnerDifficulty.setAdapter(new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                Difficulty.values()
+                buildLocalizedNames(Difficulty.values())
         ));
         spinnerDifficulty.setSelection(Difficulty.MEDIUM.ordinal());
 
@@ -82,7 +82,7 @@ public class TaskCreateFragment extends Fragment {
         spinnerPriority.setAdapter(new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                Priority.values()
+                buildLocalizedNames(Priority.values())
         ));
         spinnerPriority.setSelection(Priority.MEDIUM.ordinal());
 
@@ -118,6 +118,21 @@ public class TaskCreateFragment extends Fragment {
                 .setOnClickListener(v -> saveTask());
     }
 
+    @SuppressWarnings("unchecked")
+    private <E extends Enum<E>> String[] buildLocalizedNames(E[] values) {
+        String[] names = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] instanceof Priority) {
+                names[i] = ((Priority) values[i]).getString(requireContext());
+            } else if (values[i] instanceof Difficulty) {
+                names[i] = ((Difficulty) values[i]).getString(requireContext());
+            } else {
+                names[i] = values[i].name();
+            }
+        }
+        return names;
+    }
+
     private void saveTask() {
         Project selectedProject = (Project) spinnerProjects.getSelectedItem();
         if (selectedProject == null) {
@@ -130,8 +145,8 @@ public class TaskCreateFragment extends Fragment {
                 inputDescription.getText().toString(),
                 DateUtils.parseToMillis(inputDeadline.getText().toString()),
                 selectedProject.getProjectName(),
-                (Difficulty) spinnerDifficulty.getSelectedItem(),
-                (Priority) spinnerPriority.getSelectedItem()
+                Difficulty.values()[spinnerDifficulty.getSelectedItemPosition()],
+                Priority.values()[spinnerPriority.getSelectedItemPosition()]
         );
     }
 }
