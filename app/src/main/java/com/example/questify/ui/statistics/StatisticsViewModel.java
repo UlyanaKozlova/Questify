@@ -9,13 +9,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.R;
+import com.example.questify.domain.model.User;
 import com.example.questify.domain.model.helpers.ProjectTaskCount;
 import com.example.questify.domain.model.helpers.TaskStatistics;
 import com.example.questify.domain.usecase.statistics.ExportStatisticsToJsonUseCase;
 import com.example.questify.domain.usecase.statistics.ExportStatisticsToPngUseCase;
-import com.example.questify.domain.usecase.statistics.GetAdviceUseCase;
 import com.example.questify.domain.usecase.statistics.GetGraphicsUseCase;
 import com.example.questify.domain.usecase.statistics.GetTasksAmountUseCase;
+import com.example.questify.domain.usecase.user.GetUserUseCase;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +31,6 @@ public class StatisticsViewModel extends ViewModel {
 
     private final GetTasksAmountUseCase getTasksAmountUseCase;
     private final GetGraphicsUseCase getGraphicsUseCase;
-    private final GetAdviceUseCase getAdviceUseCase;
     private final ExportStatisticsToPngUseCase exportStatisticsToPngUseCase;
     private final ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase;
 
@@ -38,9 +38,8 @@ public class StatisticsViewModel extends ViewModel {
 
     private final MutableLiveData<TaskStatistics> taskStatistics = new MutableLiveData<>();
     private final MutableLiveData<List<ProjectTaskCount>> projectChartData = new MutableLiveData<>();
-    private final MutableLiveData<String> advice = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> adviceLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Integer> exportResult = new MutableLiveData<>();
+    private final LiveData<User> user;
 
     public LiveData<TaskStatistics> getTaskStatistics() {
         return taskStatistics;
@@ -50,29 +49,25 @@ public class StatisticsViewModel extends ViewModel {
         return projectChartData;
     }
 
-    public LiveData<String> getAdvice() {
-        return advice;
-    }
-
-    public LiveData<Boolean> getAdviceLoading() {
-        return adviceLoading;
-    }
-
     public LiveData<Integer> getExportResult() {
         return exportResult;
+    }
+
+    public LiveData<User> getUser() {
+        return user;
     }
 
     @Inject
     public StatisticsViewModel(GetTasksAmountUseCase getTasksAmountUseCase,
                                GetGraphicsUseCase getGraphicsUseCase,
-                               GetAdviceUseCase getAdviceUseCase,
                                ExportStatisticsToPngUseCase exportStatisticsToPngUseCase,
-                               ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase) {
+                               ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase,
+                               GetUserUseCase getUserUseCase) {
         this.getTasksAmountUseCase = getTasksAmountUseCase;
         this.getGraphicsUseCase = getGraphicsUseCase;
-        this.getAdviceUseCase = getAdviceUseCase;
         this.exportStatisticsToPngUseCase = exportStatisticsToPngUseCase;
         this.exportStatisticsToJsonUseCase = exportStatisticsToJsonUseCase;
+        this.user = getUserUseCase.executeLive();
         loadStatistics();
     }
 
@@ -81,10 +76,6 @@ public class StatisticsViewModel extends ViewModel {
             TaskStatistics stats = getTasksAmountUseCase.execute();
             taskStatistics.postValue(stats);
             projectChartData.postValue(getGraphicsUseCase.execute());
-
-            adviceLoading.postValue(true);
-            advice.postValue(getAdviceUseCase.execute(stats));
-            adviceLoading.postValue(false);
         });
     }
 
@@ -93,16 +84,6 @@ public class StatisticsViewModel extends ViewModel {
             boolean saved = exportStatisticsToPngUseCase.execute(
                     captureBitmap(cardView),
                     "questify_statics_" + System.currentTimeMillis()
-            );
-            exportResult.postValue(saved ? R.string.stats_export_png_saved : R.string.stats_export_save_error);
-        });
-    }
-
-    public void exportAdviceAsPng(View cardView) {
-        executor.execute(() -> {
-            boolean saved = exportStatisticsToPngUseCase.execute(
-                    captureBitmap(cardView),
-                    "questify_advice_" + System.currentTimeMillis()
             );
             exportResult.postValue(saved ? R.string.stats_export_png_saved : R.string.stats_export_save_error);
         });

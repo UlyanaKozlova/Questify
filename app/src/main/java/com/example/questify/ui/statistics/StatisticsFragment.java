@@ -3,12 +3,12 @@ package com.example.questify.ui.statistics;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import com.github.mikephil.charting.animation.Easing;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -44,11 +44,10 @@ public class StatisticsFragment extends Fragment {
     private TextView textTotal;
     private TextView textCompleted;
     private TextView textOverdue;
+    private TextView tvStatsUsername;
+    private TextView tvStatsLevel;
     private PieChart pieChart;
-    private TextView textAdvice;
-    private ProgressBar progressAdvice;
     private View cardStats;
-    private View cardAdvice;
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
@@ -74,25 +73,23 @@ public class StatisticsFragment extends Fragment {
         textTotal = view.findViewById(R.id.textTotal);
         textCompleted = view.findViewById(R.id.textCompleted);
         textOverdue = view.findViewById(R.id.textOverdue);
+        tvStatsUsername = view.findViewById(R.id.tvStatsUsername);
+        tvStatsLevel = view.findViewById(R.id.tvStatsLevel);
         pieChart = view.findViewById(R.id.pieChart);
-        textAdvice = view.findViewById(R.id.textAdvice);
-        progressAdvice = view.findViewById(R.id.progressAdvice);
         view.findViewById(R.id.chipGroupExportFormat);
         cardStats = view.findViewById(R.id.cardStats);
-        cardAdvice = view.findViewById(R.id.cardAdvice);
 
         MaterialButton buttonExportStats = view.findViewById(R.id.buttonExportStats);
-        MaterialButton buttonExportAdvice = view.findViewById(R.id.buttonExportAdvice);
 
         setupPieChart();
         requestStoragePermissionIfNeeded();
 
         viewModel.getTaskStatistics().observe(getViewLifecycleOwner(), this::updateStatsUI);
         viewModel.getProjectChartData().observe(getViewLifecycleOwner(), this::updateChart);
-        viewModel.getAdvice().observe(getViewLifecycleOwner(), this::updateAdviceUI);
-        viewModel.getAdviceLoading().observe(getViewLifecycleOwner(), loading -> {
-            progressAdvice.setVisibility(Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
-            textAdvice.setVisibility(Boolean.TRUE.equals(loading) ? View.GONE : View.VISIBLE);
+        viewModel.getUser().observe(getViewLifecycleOwner(), user -> {
+            if (user == null) return;
+            tvStatsUsername.setText(user.getUsername());
+            tvStatsLevel.setText(getString(R.string.stats_user_level, user.getLevel()));
         });
         viewModel.getExportResult().observe(getViewLifecycleOwner(), resId -> {
             if (resId != null) {
@@ -107,23 +104,27 @@ public class StatisticsFragment extends Fragment {
                 viewModel.exportStatsAsPng(cardStats);
             }
         });
-
-        buttonExportAdvice.setOnClickListener(v -> viewModel.exportAdviceAsPng(cardAdvice));
     }
 
     private void setupPieChart() {
         pieChart.setUsePercentValues(true);
         pieChart.getDescription().setEnabled(false);
         pieChart.setDrawHoleEnabled(true);
-        pieChart.setHoleRadius(40f);
-        pieChart.setTransparentCircleRadius(45f);
+        pieChart.setHoleRadius(42f);
+        int surfaceColor = requireContext().getResources().getColor(R.color.bg_surface, requireContext().getTheme());
+        int secondaryTextColor = requireContext().getResources().getColor(R.color.text_secondary, requireContext().getTheme());
+        pieChart.setHoleColor(surfaceColor);
+        pieChart.setTransparentCircleRadius(47f);
+        pieChart.setTransparentCircleColor(surfaceColor);
         pieChart.setDrawCenterText(false);
         pieChart.setRotationEnabled(false);
         pieChart.setHighlightPerTapEnabled(true);
         pieChart.getLegend().setEnabled(true);
         pieChart.getLegend().setWordWrapEnabled(true);
+        pieChart.getLegend().setTextColor(secondaryTextColor);
         pieChart.setNoDataText(getString(R.string.stats_chart_no_data));
-        pieChart.setNoDataTextColor(Color.GRAY);
+        pieChart.setNoDataTextColor(secondaryTextColor);
+        pieChart.setBackgroundColor(Color.TRANSPARENT);
     }
 
     private void updateStatsUI(TaskStatistics stats) {
@@ -168,15 +169,8 @@ public class StatisticsFragment extends Fragment {
         pieData.setValueTextSize(11f);
 
         pieChart.setData(pieData);
+        pieChart.animateY(800, Easing.EaseInOutQuad);
         pieChart.invalidate();
-    }
-
-    private void updateAdviceUI(String adviceText) {
-        if (adviceText == null || adviceText.isEmpty()) {
-            textAdvice.setText(R.string.stats_advice_empty);
-        } else {
-            textAdvice.setText(adviceText);
-        }
     }
 
     private boolean isJsonSelected() {

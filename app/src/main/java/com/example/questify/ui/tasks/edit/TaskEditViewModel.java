@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.questify.domain.model.DomainValidationException;
+import com.example.questify.util.exception.DomainValidationException;
 import com.example.questify.domain.model.Subtask;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
