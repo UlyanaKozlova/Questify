@@ -2,8 +2,9 @@ package com.example.questify.ui.calendar;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.google.android.material.button.MaterialButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,7 +42,7 @@ public class CalendarFragment extends Fragment {
     private TextView textSelectedDate;
     private TextView textEmpty;
     private RecyclerView recyclerTasks;
-    private ImageButton btnPrev, btnNext;
+    private MaterialButton btnPrev, btnNext;
 
     private CalendarViewModel viewModel;
     private TaskListViewModel taskListViewModel;
@@ -76,14 +77,6 @@ public class CalendarFragment extends Fragment {
         setupRecycler();
         setupCalendar();
         observe();
-
-        viewModel.loadAllTasks();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        viewModel.loadAllTasks();
     }
 
     private void setupRecycler() {
@@ -96,7 +89,7 @@ public class CalendarFragment extends Fragment {
                 requireActivity()
                         .getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragmentContainer, TaskEditFragment.class, args)
+                        .add(R.id.fragmentContainer, TaskEditFragment.class, args)
                         .addToBackStack(null)
                         .commit();
             }

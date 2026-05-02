@@ -1,7 +1,9 @@
 package com.example.questify.ui.calendar;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.domain.model.Task;
@@ -20,19 +22,37 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class CalendarViewModel extends ViewModel {
-    private Date selectedDate;
-    private final GetAllTasksUseCase getAllTasksUseCase;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private final MutableLiveData<List<Task>> allTasks = new MutableLiveData<>();
-    private final MutableLiveData<List<Task>> tasksForSelectedDay = new MutableLiveData<>();
-    private final MutableLiveData<Set<LocalDate>> datesWithDeadlines = new MutableLiveData<>(new HashSet<>());
+    private final LiveData<List<Task>> allTasksLive;
+    private final LiveData<Set<LocalDate>> datesWithDeadlines;
+
+    private final MutableLiveData<Date> selectedDateLive = new MutableLiveData<>();
+    private final MediatorLiveData<List<Task>> tasksForSelectedDay = new MediatorLiveData<>();
+
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
     @Inject
     public CalendarViewModel(GetAllTasksUseCase getAllTasksUseCase) {
-        this.getAllTasksUseCase = getAllTasksUseCase;
+        allTasksLive = getAllTasksUseCase.executeLive();
+
+        datesWithDeadlines = Transformations.map(allTasksLive, tasks -> {
+            Set<LocalDate> dates = new HashSet<>();
+            if (tasks != null) {
+                for (Task task : tasks) {
+                    if (task.getDeadline() > 0) {
+                        dates.add(Instant.ofEpochMilli(task.getDeadline())
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate());
+                    }
+                }
+            }
+            return dates;
+        });
+
+        tasksForSelectedDay.addSource(allTasksLive, tasks -> recomputeSelectedDay());
+        tasksForSelectedDay.addSource(selectedDateLive, date -> recomputeSelectedDay());
     }
 
     public LiveData<List<Task>> getTasksForSelectedDay() {
@@ -47,43 +67,18 @@ public class CalendarViewModel extends ViewModel {
         return error;
     }
 
-    public void loadAllTasks() {
-        executor.execute(() -> {
-            try {
-                List<Task> tasks = getAllTasksUseCase.execute();
-                allTasks.postValue(tasks);
-
-                Set<LocalDate> dates = new HashSet<>();
-                for (Task task : tasks) {
-                    LocalDate date = Instant.ofEpochMilli(task.getDeadline())
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate();
-                    dates.add(date);
-                }
-                datesWithDeadlines.postValue(dates);
-
-                if (selectedDate != null) {
-                    filterTasksForDate(selectedDate, tasks);
-                }
-            } catch (Exception e) {
-                error.postValue(e.getMessage());
-            }
-        });
+    public void loadTasksForDate(Date date) {
+        selectedDateLive.setValue(date);
     }
 
-    public void loadTasksForDate(Date date) {
-        selectedDate = date;
-        List<Task> tasks = allTasks.getValue();
-        if (tasks == null) {
+    private void recomputeSelectedDay() {
+        List<Task> tasks = allTasksLive.getValue();
+        Date date = selectedDateLive.getValue();
+        if (tasks == null || date == null) {
             return;
         }
-        filterTasksForDate(date, tasks);
-    }
 
-    private void filterTasksForDate(Date date, List<Task> tasks) {
         executor.execute(() -> {
-            List<Task> result = new ArrayList<>();
-
             Calendar start = Calendar.getInstance();
             start.setTime(date);
             start.set(Calendar.HOUR_OF_DAY, 0);
@@ -95,6 +90,7 @@ public class CalendarViewModel extends ViewModel {
             start.add(Calendar.DAY_OF_MONTH, 1);
             long endTime = start.getTimeInMillis();
 
+            List<Task> result = new ArrayList<>();
             for (Task task : tasks) {
                 if (task.getDeadline() >= startTime && task.getDeadline() < endTime) {
                     result.add(task);
