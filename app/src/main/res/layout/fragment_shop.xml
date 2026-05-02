@@ -39,9 +39,10 @@
 
             <ImageView
                 android:id="@+id/imagePet"
-                android:layout_width="260dp"
-                android:layout_height="260dp"
+                android:layout_width="285dp"
+                android:layout_height="283dp"
                 android:layout_gravity="center"
+                android:background="@android:color/transparent"
                 android:contentDescription="@string/catInClothes"
                 android:scaleType="fitCenter"
                 android:src="@drawable/pet_default" />
