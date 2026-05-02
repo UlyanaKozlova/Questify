@@ -7,11 +7,6 @@ import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -23,10 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.questify.R;
 import com.example.questify.domain.model.Task;
+import com.example.questify.domain.usecase.plans.tasks.sort.SortOrder;
 import com.example.questify.domain.usecase.plans.tasks.sort.SortType;
 import com.example.questify.ui.tasks.create.TaskCreateFragment;
 import com.example.questify.ui.tasks.edit.TaskEditFragment;
 import com.example.questify.ui.tasks.list.filter.TaskFilterFragment;
+import com.example.questify.ui.tasks.list.sort.TaskSortBottomSheet;
 import com.google.android.material.snackbar.Snackbar;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -51,24 +48,17 @@ public class TaskListFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerTasks);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        Button buttonFilter = view.findViewById(R.id.buttonFilter);
+        View buttonFilter = view.findViewById(R.id.buttonFilter);
+        View buttonSort = view.findViewById(R.id.buttonSort);
 
-        Spinner spinnerSort = view.findViewById(R.id.spinnerSort);
-        ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
-                requireContext(),
-                R.array.sort_options,
-                android.R.layout.simple_spinner_item);
-        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSort.setAdapter(sortAdapter);
-
-        Button buttonImport = view.findViewById(R.id.buttonImport);
+        View buttonImport = view.findViewById(R.id.buttonImport);
         pickFileLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {
                 taskListViewModel.importFromFile(requireContext(), uri, getFileName(uri));
             }
         });
 
-        Button buttonAdd = view.findViewById(R.id.buttonAddTask);
+        View buttonAdd = view.findViewById(R.id.buttonAddTask);
 
         TaskListAdapter taskListAdapter = new TaskListAdapter(new TaskListAdapter.Listener() {
             @Override
@@ -79,7 +69,7 @@ public class TaskListFragment extends Fragment {
                 requireActivity()
                         .getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragmentContainer, TaskEditFragment.class, args)
+                        .add(R.id.fragmentContainer, TaskEditFragment.class, args)
                         .addToBackStack(null)
                         .commit();
             }
@@ -90,25 +80,21 @@ public class TaskListFragment extends Fragment {
             }
         });
 
-        spinnerSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    return;
-                }
-                SortType type = SortType.getType(position);
-                taskListViewModel.sort(type);
-                spinnerSort.setSelection(0);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
         recyclerView.setAdapter(taskListAdapter);
 
         taskListViewModel = new ViewModelProvider(requireActivity()).get(TaskListViewModel.class);
+
+        getParentFragmentManager().setFragmentResultListener(
+                TaskSortBottomSheet.REQUEST_KEY, getViewLifecycleOwner(), (key, bundle) -> {
+                    SortType type = (SortType) bundle.getSerializable(TaskSortBottomSheet.ARG_TYPE);
+                    SortOrder order = (SortOrder) bundle.getSerializable(TaskSortBottomSheet.ARG_ORDER);
+                    if (type != null && order != null) {
+                        taskListViewModel.applySort(type, order);
+                    }
+                });
+
+        buttonSort.setOnClickListener(v ->
+                new TaskSortBottomSheet().show(getParentFragmentManager(), TaskSortBottomSheet.TAG));
         taskListViewModel.getTasks().observe(getViewLifecycleOwner(), taskListAdapter::submitList);
 
         taskListViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
@@ -120,14 +106,14 @@ public class TaskListFragment extends Fragment {
         buttonFilter.setOnClickListener(v -> requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragmentContainer, new TaskFilterFragment())
+                .add(R.id.fragmentContainer, new TaskFilterFragment())
                 .addToBackStack(null)
                 .commit());
 
         buttonAdd.setOnClickListener(v -> requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragmentContainer, new TaskCreateFragment())
+                .add(R.id.fragmentContainer, new TaskCreateFragment())
                 .addToBackStack(null)
                 .commit());
 

@@ -268,5 +268,6 @@
     <string name="stats_user_level">Ур. %d</string>
     <string name="en">EN</string>
     <string name="ru">RU</string>
-
+    <string name="forward">›</string>
+    <string name="back">‹</string>
 </resources>

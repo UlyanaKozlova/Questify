@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/bg_elevated"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bottom_sheet_handle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/buttonSort"
+        android:textColor="@color/text_primary"
+        android:textSize="18sp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupSort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radioDeadlineAsc"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:buttonTint="@color/brand_violet"
+            android:gravity="center_vertical"
+            android:text="@string/sort_deadline_asc"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:id="@+id/radioDeadlineDesc"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:buttonTint="@color/brand_violet"
+            android:gravity="center_vertical"
+            android:text="@string/sort_deadline_desc"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:id="@+id/radioPriorityAsc"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:buttonTint="@color/brand_violet"
+            android:gravity="center_vertical"
+            android:text="@string/sort_priority_asc"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:id="@+id/radioPriorityDesc"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:buttonTint="@color/brand_violet"
+            android:gravity="center_vertical"
+            android:text="@string/sort_priority_desc"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:id="@+id/radioDifficultyAsc"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:buttonTint="@color/brand_violet"
+            android:gravity="center_vertical"
+            android:text="@string/sort_difficulty_asc"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:id="@+id/radioDifficultyDesc"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:buttonTint="@color/brand_violet"
+            android:gravity="center_vertical"
+            android:text="@string/sort_difficulty_desc"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+    </RadioGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonApplySort"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="16dp"
+        android:letterSpacing="0"
+        android:text="@string/sort_apply"
+        android:textAllCaps="false" />
+</LinearLayout>
