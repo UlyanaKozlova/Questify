@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,8 +13,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.questify.R;
+import com.example.questify.ui.advice.AdviceFragment;
 import com.example.questify.ui.settings.SettingsFragment;
 import com.example.questify.ui.shop.ShopFragment;
+import com.google.android.material.button.MaterialButton;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -23,6 +25,8 @@ public class PetFragment extends Fragment {
 
     private TextView textCoins;
     private TextView textLevel;
+    private TextView tvCoinsToNextLevel;
+    private ImageView ivPet;
 
     @Nullable
     @Override
@@ -37,17 +41,28 @@ public class PetFragment extends Fragment {
 
         textCoins = view.findViewById(R.id.textCoins);
         textLevel = view.findViewById(R.id.textLevel);
+        tvCoinsToNextLevel = view.findViewById(R.id.tvCoinsToNextLevel);
+        ivPet = view.findViewById(R.id.ivPet);
 
-        Button buttonSettings = view.findViewById(R.id.buttonSettings);
-        Button buttonShop = view.findViewById(R.id.buttonShop);
+        MaterialButton buttonAdvice = view.findViewById(R.id.buttonAdvice);
+        MaterialButton buttonSettings = view.findViewById(R.id.buttonSettings);
+        MaterialButton buttonShop = view.findViewById(R.id.buttonShop);
 
         PetViewModel petViewModel = new ViewModelProvider(requireActivity()).get(PetViewModel.class);
 
+        buttonAdvice.setOnClickListener(v ->
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.fragmentContainer, new AdviceFragment())
+                        .addToBackStack(null)
+                        .commit()
+        );
         buttonSettings.setOnClickListener(v ->
                 requireActivity()
                         .getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragmentContainer, new SettingsFragment())
+                        .add(R.id.fragmentContainer, new SettingsFragment())
                         .addToBackStack(null)
                         .commit()
         );
@@ -55,18 +70,27 @@ public class PetFragment extends Fragment {
                 requireActivity()
                         .getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragmentContainer, new ShopFragment())
+                        .add(R.id.fragmentContainer, new ShopFragment())
                         .addToBackStack(null)
                         .commit()
         );
 
         petViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
-            if (user == null) {
-                return;
-            }
-
-            textCoins.setText(getString(R.string.coins, user.getCoins()));
-            textLevel.setText(getString(R.string.level, user.getLevel()));
+            if (user == null) return;
+            textCoins.setText(String.valueOf(user.getCoins()));
+            textLevel.setText(String.valueOf(user.getLevel()));
         });
+
+        petViewModel.getCoinsToNextLevel().observe(getViewLifecycleOwner(), coins ->
+                tvCoinsToNextLevel.setText(String.valueOf(coins)));
+
+        petViewModel.getCurrentPetImageRes().observe(getViewLifecycleOwner(), resId -> {
+            if (resId != null && resId != 0) {
+                ivPet.setImageResource(resId);
+            } else {
+                ivPet.setImageResource(R.drawable.pet_default);
+            }
+        });
+
     }
 }
