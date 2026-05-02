@@ -1,7 +1,9 @@
 package com.example.questify.domain.usecase.plans.tasks.task;
 
+import com.example.questify.R;
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.data.repository.TaskRepository;
+import com.example.questify.util.exception.DomainValidationException;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.model.enums.Difficulty;
@@ -27,6 +29,10 @@ public class CreateTaskUseCase {
                         String projectName,
                         Difficulty difficulty,
                         Priority priority) {
+        if (taskRepository.getByTaskName(taskName) != null) {
+            throw new DomainValidationException(R.string.error_task_name_exists);
+        }
+
         Project project = projectRepository.getByProjectName(projectName);
         if (project == null) {
             project = new Project(projectName);

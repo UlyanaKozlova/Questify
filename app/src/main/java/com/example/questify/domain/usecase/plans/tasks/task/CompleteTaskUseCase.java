@@ -26,11 +26,15 @@ public class CompleteTaskUseCase {
     public void execute(Task task, boolean isDone) {
         task.setDone(isDone);
         User user = getUserUseCase.execute();
-        long coins = task.getDifficulty().getWeight() * 3L + task.getPriority().getWeight();
-        long newCoins = user.getCoins() + (isDone ? coins : -coins);
-        user.setLevel((int) newCoins / LEVEL);
-        user.setCoins(newCoins);
-
+        long taskCoins = task.getDifficulty().getWeight() * 3L + task.getPriority().getWeight();
+        if (isDone) {
+            user.setCoins(user.getCoins() + taskCoins);
+            user.setEarnedCoins(user.getEarnedCoins() + taskCoins);
+        } else {
+            user.setCoins(Math.max(0, user.getCoins() - taskCoins));
+            user.setEarnedCoins(Math.max(0, user.getEarnedCoins() - taskCoins));
+        }
+        user.setLevel((int) (user.getEarnedCoins() / LEVEL));
         updateUserUseCase.execute(user);
         taskRepository.update(task);
     }

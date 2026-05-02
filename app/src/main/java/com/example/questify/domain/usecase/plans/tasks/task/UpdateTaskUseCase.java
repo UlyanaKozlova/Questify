@@ -3,7 +3,7 @@ package com.example.questify.domain.usecase.plans.tasks.task;
 import com.example.questify.R;
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.data.repository.TaskRepository;
-import com.example.questify.domain.model.DomainValidationException;
+import com.example.questify.util.exception.DomainValidationException;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.model.enums.Difficulty;
