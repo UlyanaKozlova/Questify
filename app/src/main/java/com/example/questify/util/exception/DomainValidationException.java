@@ -1,4 +1,4 @@
-package com.example.questify.domain.model;
+package com.example.questify.util.exception;
 
 import androidx.annotation.StringRes;
 

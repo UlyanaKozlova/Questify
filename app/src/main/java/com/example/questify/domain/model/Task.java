@@ -3,6 +3,7 @@ package com.example.questify.domain.model;
 import com.example.questify.R;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
+import com.example.questify.util.exception.DomainValidationException;
 
 import java.util.Calendar;
 import java.util.Objects;
@@ -75,7 +76,9 @@ public class Task {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Task task = (Task) o;
         return Objects.equals(globalId, task.globalId);
     }
@@ -100,11 +103,6 @@ public class Task {
         if (deadline < todayStart.getTimeInMillis()) {
             throw new DomainValidationException(R.string.error_task_deadline_past);
         }
-    }
-
-    public static void validate(String taskName, long deadline) {
-        checkTaskName(taskName);
-        checkDeadline(deadline);
     }
 
     public String getGlobalId() {

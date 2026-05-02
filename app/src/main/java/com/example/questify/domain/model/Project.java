@@ -3,6 +3,7 @@ package com.example.questify.domain.model;
 import androidx.annotation.NonNull;
 
 import com.example.questify.R;
+import com.example.questify.util.exception.DomainValidationException;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -40,14 +41,11 @@ public class Project {
             throw new DomainValidationException(R.string.error_project_name_short);
         }
     }
-
-    public static void validate(String projectName) {
-        checkProjectName(projectName);
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Project project = (Project) o;
         return Objects.equals(globalId, project.globalId);
     }
