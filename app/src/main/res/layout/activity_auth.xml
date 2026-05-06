@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_deep"
@@ -14,40 +15,31 @@
         android:paddingTop="64dp">
 
         <FrameLayout
-            android:layout_width="130dp"
-            android:layout_height="130dp"
+            android:layout_width="360dp"
+            android:layout_height="360dp"
             android:layout_marginBottom="8dp">
 
             <View
-                android:layout_width="160dp"
-                android:layout_height="160dp"
+                android:layout_width="360dp"
+                android:layout_height="360dp"
                 android:layout_gravity="center"
                 android:alpha="0.3"
                 android:background="@drawable/pet_glow" />
 
             <ImageView
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="350dp"
+                android:layout_height="350dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/app_name"
                 android:scaleType="fitCenter"
                 android:src="@drawable/pet_default" />
-
         </FrameLayout>
+<!--todo пофиксить адекватно-->
 
-        <TextView
-            android:layout_width="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="360dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/questify"
-            android:textColor="@color/brand_violet_light"
-            android:textSize="36sp" />
-
-        <com.google.android.material.card.MaterialCardView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="10dp"
             app:cardBackgroundColor="@color/bg_surface"
             app:cardCornerRadius="20dp"
             app:cardElevation="12dp"
@@ -55,10 +47,10 @@
             app:strokeWidth="1dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="350dp"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="10dp">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"

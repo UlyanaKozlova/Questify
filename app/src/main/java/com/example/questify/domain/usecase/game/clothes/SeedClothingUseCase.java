@@ -35,7 +35,6 @@ public class SeedClothingUseCase {
                 {"leather pants and blue sweater", 30, R.drawable.cat_with_leather_pants_blue_sweater},
                 {"pants and shirt", 35, R.drawable.cat_with_pants_and_shirt},
                 {"pink dress", 90, R.drawable.cat_with_pink_dress},
-                {"purple dress", 80, R.drawable.cat_with_purple_dress},
                 {"red skirt and black top", 30, R.drawable.cat_with_red_skirt_black_top},
                 {"shorts and tanktop", 45, R.drawable.cat_with_shorts_and_tanktop},
                 {"white t-shirt and jeans", 40, R.drawable.cat_with_white_t_shirt_and_jeans}

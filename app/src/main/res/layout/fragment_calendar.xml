@@ -16,11 +16,12 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPrev"
             style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:contentDescription="@string/left"
             app:icon="@android:drawable/ic_media_previous"
-            app:iconSize="18dp" />
+            app:iconSize="40dp"
+            app:iconGravity="textEnd" />
 
         <TextView
             android:id="@+id/textMonth"
@@ -36,11 +37,12 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNext"
             style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:contentDescription="@string/right"
             app:icon="@android:drawable/ic_media_next"
-            app:iconSize="18dp" />
+            app:iconSize="40dp"
+            app:iconGravity="textEnd"/>
 
     </LinearLayout>
 

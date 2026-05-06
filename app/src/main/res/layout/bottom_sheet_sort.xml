@@ -20,7 +20,8 @@
         android:fontFamily="sans-serif-medium"
         android:text="@string/buttonSort"
         android:textColor="@color/text_primary"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_gravity="center"/>
 
     <RadioGroup
         android:id="@+id/radioGroupSort"
