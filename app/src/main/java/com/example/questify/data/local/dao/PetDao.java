@@ -1,6 +1,7 @@
 package com.example.questify.data.local.dao;
 
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -23,6 +24,9 @@ public interface PetDao {
 
     @Query("SELECT * FROM pet LIMIT 1")
     PetEntity getPet();
+
+    @Query("SELECT * FROM pet LIMIT 1")
+    LiveData<PetEntity> getPetLive();
 
     @Query("SELECT * FROM pet WHERE globalId = :globalId LIMIT 1")
     PetEntity getPetByGlobalId(String globalId);

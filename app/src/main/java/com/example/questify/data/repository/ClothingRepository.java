@@ -36,7 +36,10 @@ public class ClothingRepository {
     }
 
     public void delete(Clothing clothing) {
-        clothingDao.delete(ClothingMapper.toEntity(clothing));
+        if (clothing == null || clothing.getGlobalId() == null) {
+            return;
+        }
+        clothingDao.softDelete(clothing.getGlobalId(), System.currentTimeMillis());
     }
 
     public List<Clothing> getAll() {
@@ -71,9 +74,25 @@ public class ClothingRepository {
     public List<Clothing> getNeedingSync() {
         return clothingDao.getNeedingSync()
                 .stream()
+                .filter(e -> !e.isDeleted)
                 .map(ClothingMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    public List<Clothing> getDeletedNeedingSync() {
+        return clothingDao.getSoftDeletedNeedingSync()
+                .stream()
+                .map(ClothingMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteByGlobalId(String globalId) {
+        ClothingEntity entity = clothingDao.getByGlobalId(globalId);
+        if (entity != null) {
+            clothingDao.delete(entity);
+        }
+    }
+
     public void saveOrUpdateFromSync(Clothing clothing) {
         ClothingEntity existing = clothingDao.getByGlobalId(clothing.getGlobalId());
         ClothingEntity entity = ClothingMapper.toEntity(clothing);
@@ -87,6 +106,7 @@ public class ClothingRepository {
             clothingDao.insert(entity);
         }
     }
+
     public void clearSyncFlag(String globalId) {
         ClothingEntity entity = clothingDao.getByGlobalId(globalId);
         if (entity != null) {

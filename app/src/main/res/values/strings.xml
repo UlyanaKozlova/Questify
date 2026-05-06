@@ -96,6 +96,8 @@
     <string name="project_color_yellow">Желтый</string>
     <string name="project_color_blue">Синий</string>
     <string name="project_color_pink">Розовый</string>
+    <string name="project_color_orange">Оранжевый</string>
+    <string name="project_color_burgundy">Бордовый</string>
     <string name="project_create">Создать</string>
     <string name="project_cancel">Отмена</string>
     <string name="project_save">Сохранить</string>

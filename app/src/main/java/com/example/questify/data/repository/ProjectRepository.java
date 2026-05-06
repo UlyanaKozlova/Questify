@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ProjectRepository {
     public static final String DEFAULT_PROJECT_NAME = "Без проекта";
-    public static final String DEFAULT_PROJECT_COLOR = "#FF6200EE";
+    public static final String DEFAULT_PROJECT_COLOR = "#C74E51";
 
     private final ProjectDao projectDao;
     private final UserSession userSession;

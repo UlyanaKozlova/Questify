@@ -9,38 +9,27 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         android:padding="16dp"
-        android:paddingBottom="80dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingBottom="16dp">
-
-
-        </LinearLayout>
+        android:paddingBottom="96dp">
 
         <FrameLayout
-            android:layout_width="360dp"
-            android:layout_height="360dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="20dp">
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp">
 
             <View
-                android:layout_width="3600dp"
-                android:layout_height="360dp"
-                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:alpha="0.4"
                 android:background="@drawable/pet_glow" />
 
             <ImageView
                 android:id="@+id/ivAdvicePet"
-                android:layout_width="350dp"
-                android:layout_height="350dp"
-                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:contentDescription="@string/catInClothes"
                 android:scaleType="fitCenter"
                 android:src="@drawable/pet_default" />
@@ -89,10 +78,11 @@
             android:id="@+id/buttonExportAdvice"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:letterSpacing="0"
             android:text="@string/stats_advice_export_button"
             android:textAllCaps="false"
+            app:cornerRadius="14dp"
             app:strokeColor="@color/brand_violet" />
 
     </LinearLayout>

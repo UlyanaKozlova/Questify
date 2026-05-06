@@ -52,8 +52,7 @@ public class AdviceFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(AdviceViewModel.class);
 
-        ImageView viewById = view.findViewById(R.id.ivAdvicePet);
-        viewById.setImageResource(R.drawable.pet_default);
+        ImageView ivPet = view.findViewById(R.id.ivAdvicePet);
 
         TextView textAdvice = view.findViewById(R.id.textAdvice);
         ProgressBar progressAdvice = view.findViewById(R.id.progressAdvice);
@@ -81,6 +80,14 @@ public class AdviceFragment extends Fragment {
 
         viewModel.getExportResult().observe(getViewLifecycleOwner(), resId -> {
             if (resId != null) showMessage(getString(resId));
+        });
+
+        viewModel.getPetImageRes().observe(getViewLifecycleOwner(), resId -> {
+            if (resId != null && resId != 0) {
+                ivPet.setImageResource(resId);
+            } else {
+                ivPet.setImageResource(R.drawable.pet_default);
+            }
         });
 
         buttonExport.setOnClickListener(v -> viewModel.exportAsPng(cardAdvice));

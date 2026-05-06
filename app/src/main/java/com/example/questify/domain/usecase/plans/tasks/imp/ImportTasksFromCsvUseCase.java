@@ -36,4 +36,4 @@ public class ImportTasksFromCsvUseCase extends ImportTasksUseCase {
         }
     }
 }
-// todo автоообновление статистики
+// todo покрасивее иконки

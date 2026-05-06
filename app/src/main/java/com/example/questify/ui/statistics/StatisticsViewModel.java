@@ -5,13 +5,18 @@ import android.graphics.Canvas;
 import android.view.View;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.R;
+import com.example.questify.domain.model.Project;
+import com.example.questify.domain.model.Task;
 import com.example.questify.domain.model.User;
 import com.example.questify.domain.model.helpers.ProjectTaskCount;
 import com.example.questify.domain.model.helpers.TaskStatistics;
+import com.example.questify.domain.usecase.plans.project.GetAllProjectsUseCase;
+import com.example.questify.domain.usecase.plans.tasks.task.GetAllTasksUseCase;
 import com.example.questify.domain.usecase.statistics.ExportStatisticsToJsonUseCase;
 import com.example.questify.domain.usecase.statistics.ExportStatisticsToPngUseCase;
 import com.example.questify.domain.usecase.statistics.GetGraphicsUseCase;
@@ -36,8 +41,8 @@ public class StatisticsViewModel extends ViewModel {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private final MutableLiveData<TaskStatistics> taskStatistics = new MutableLiveData<>();
-    private final MutableLiveData<List<ProjectTaskCount>> projectChartData = new MutableLiveData<>();
+    private final MediatorLiveData<TaskStatistics> taskStatistics = new MediatorLiveData<>();
+    private final MediatorLiveData<List<ProjectTaskCount>> projectChartData = new MediatorLiveData<>();
     private final MutableLiveData<Integer> exportResult = new MutableLiveData<>();
     private final LiveData<User> user;
 
@@ -62,21 +67,29 @@ public class StatisticsViewModel extends ViewModel {
                                GetGraphicsUseCase getGraphicsUseCase,
                                ExportStatisticsToPngUseCase exportStatisticsToPngUseCase,
                                ExportStatisticsToJsonUseCase exportStatisticsToJsonUseCase,
-                               GetUserUseCase getUserUseCase) {
+                               GetUserUseCase getUserUseCase,
+                               GetAllTasksUseCase getAllTasksUseCase,
+                               GetAllProjectsUseCase getAllProjectsUseCase) {
         this.getTasksAmountUseCase = getTasksAmountUseCase;
         this.getGraphicsUseCase = getGraphicsUseCase;
         this.exportStatisticsToPngUseCase = exportStatisticsToPngUseCase;
         this.exportStatisticsToJsonUseCase = exportStatisticsToJsonUseCase;
         this.user = getUserUseCase.executeLive();
-        loadStatistics();
+
+        LiveData<List<Task>> tasksLive = getAllTasksUseCase.executeLive();
+        LiveData<List<Project>> projectsLive = getAllProjectsUseCase.executeLive();
+
+        taskStatistics.addSource(tasksLive, tasks -> reloadStatistics());
+        projectChartData.addSource(tasksLive, tasks -> reloadChart());
+        projectChartData.addSource(projectsLive, projects -> reloadChart());
     }
 
-    private void loadStatistics() {
-        executor.execute(() -> {
-            TaskStatistics stats = getTasksAmountUseCase.execute();
-            taskStatistics.postValue(stats);
-            projectChartData.postValue(getGraphicsUseCase.execute());
-        });
+    private void reloadStatistics() {
+        executor.execute(() -> taskStatistics.postValue(getTasksAmountUseCase.execute()));
+    }
+
+    private void reloadChart() {
+        executor.execute(() -> projectChartData.postValue(getGraphicsUseCase.execute()));
     }
 
     public void exportStatsAsPng(View cardView) {

@@ -85,6 +85,8 @@
     <string name="project_color_yellow">Yellow</string>
     <string name="project_color_blue">Blue</string>
     <string name="project_color_pink">Pink</string>
+    <string name="project_color_orange">Orange</string>
+    <string name="project_color_burgundy">Burgundy</string>
     <string name="project_create">Create</string>
     <string name="project_cancel">Cancel</string>
     <string name="project_save">Save</string>

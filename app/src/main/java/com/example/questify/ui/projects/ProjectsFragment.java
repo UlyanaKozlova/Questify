@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.questify.R;
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.domain.model.Project;
+import com.example.questify.domain.model.helpers.ProjectColorPalette;
 import com.example.questify.domain.usecase.plans.project.GetProjectStatisticsUseCase;
 import com.example.questify.ui.projects.detail.ProjectDetailFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -126,34 +127,14 @@ public class ProjectsFragment extends Fragment {
                 .inflate(R.layout.dialog_create_project, null);
 
         EditText inputName = dialogView.findViewById(R.id.inputProjectName);
-        inputName.setHint(getString(R.string.project_name_hint));
 
         View colorPicker = dialogView.findViewById(R.id.colorPicker);
         View selectedColorView = dialogView.findViewById(R.id.selectedColor);
 
-        AtomicReference<String> selectedColor = new AtomicReference<>("#FF6200EE");
+        AtomicReference<String> selectedColor = new AtomicReference<>(ProjectColorPalette.DEFAULT_COLOR);
         ((GradientDrawable) selectedColorView.getBackground()).setColor(Color.parseColor(selectedColor.get()));
 
-        colorPicker.setOnClickListener(v -> {
-            String[] colors = {
-                    getString(R.string.project_color_purple),
-                    getString(R.string.project_color_red),
-                    getString(R.string.project_color_green),
-                    getString(R.string.project_color_yellow),
-                    getString(R.string.project_color_blue),
-                    getString(R.string.project_color_pink)
-            };
-            String[] colorHex = {"#FF6200EE", "#F44336", "#4CAF50", "#FFC107", "#2196F3", "#9C27B0"};
-            // todo colors
-            new AlertDialog.Builder(requireContext())
-                    .setTitle(getString(R.string.project_color_picker_title))
-                    .setItems(colors, (dialog, which) -> {
-                        selectedColor.set(colorHex[which]);
-                        ((GradientDrawable) selectedColorView.getBackground())
-                                .setColor(Color.parseColor(selectedColor.get()));
-                    })
-                    .show();
-        });
+        colorPicker.setOnClickListener(v -> showColorPickerDialog(selectedColor, selectedColorView));
 
         builder.setView(dialogView);
 
@@ -243,7 +224,6 @@ public class ProjectsFragment extends Fragment {
                 .inflate(R.layout.dialog_create_project, null);
 
         EditText inputName = dialogView.findViewById(R.id.inputProjectName);
-        inputName.setHint(getString(R.string.project_name_hint));
 
         View colorPicker = dialogView.findViewById(R.id.colorPicker);
         View selectedColorView = dialogView.findViewById(R.id.selectedColor);
@@ -256,30 +236,11 @@ public class ProjectsFragment extends Fragment {
             inputName.setText(project.getProjectName());
         }
 
-        AtomicReference<String> selectedColor = new AtomicReference<>(project.getColor());
+        AtomicReference<String> selectedColor = new AtomicReference<>(safeColor(project.getColor()));
         ((GradientDrawable) selectedColorView.getBackground())
                 .setColor(Color.parseColor(selectedColor.get()));
 
-        colorPicker.setOnClickListener(v -> {
-            String[] colors = {
-                    getString(R.string.project_color_purple),
-                    getString(R.string.project_color_red),
-                    getString(R.string.project_color_green),
-                    getString(R.string.project_color_yellow),
-                    getString(R.string.project_color_blue),
-                    getString(R.string.project_color_pink)
-            };
-            String[] colorHex = {"#FF6200EE", "#F44336", "#4CAF50", "#FFC107", "#2196F3", "#9C27B0"};
-
-            new AlertDialog.Builder(requireContext())
-                    .setTitle(getString(R.string.project_color_picker_title))
-                    .setItems(colors, (dialog, which) -> {
-                        selectedColor.set(colorHex[which]);
-                        ((GradientDrawable) selectedColorView.getBackground())
-                                .setColor(Color.parseColor(selectedColor.get()));
-                    })
-                    .show();
-        });
+        colorPicker.setOnClickListener(v -> showColorPickerDialog(selectedColor, selectedColorView));
 
         builder.setView(dialogView);
 
@@ -370,6 +331,31 @@ public class ProjectsFragment extends Fragment {
         }
     }
 
+    private void showColorPickerDialog(AtomicReference<String> selectedColor, View selectedColorView) {
+        String[] labels = new String[ProjectColorPalette.LABEL_RES_IDS.length];
+        for (int i = 0; i < labels.length; i++) {
+            labels[i] = getString(ProjectColorPalette.LABEL_RES_IDS[i]);
+        }
+        new AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.project_color_picker_title))
+                .setItems(labels, (dialog, which) -> {
+                    selectedColor.set(ProjectColorPalette.HEX[which]);
+                    ((GradientDrawable) selectedColorView.getBackground())
+                            .setColor(Color.parseColor(selectedColor.get()));
+                })
+                .show();
+    }
+
+    private static String safeColor(String hex) {
+        if (hex == null) return ProjectColorPalette.DEFAULT_COLOR;
+        try {
+            Color.parseColor(hex);
+            return hex;
+        } catch (Exception e) {
+            return ProjectColorPalette.DEFAULT_COLOR;
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -431,7 +417,7 @@ public class ProjectsFragment extends Fragment {
             holder.bind(project, stats, clickListener, menuListener);
         }
 
-        static class ProjectViewHolder extends RecyclerView.ViewHolder {
+        private static class ProjectViewHolder extends RecyclerView.ViewHolder {
             View colorView;
             TextView textName;
             TextView textStats;
@@ -453,10 +439,19 @@ public class ProjectsFragment extends Fragment {
                       OnProjectMenuListener menuListener) {
                 textName.setText(project.getProjectName());
 
+                int parsedColor;
                 try {
-                    colorView.setBackgroundColor(Color.parseColor(project.getColor()));
+                    parsedColor = Color.parseColor(project.getColor());
                 } catch (Exception e) {
-                    colorView.setBackgroundColor(Color.parseColor("#FF6200EE"));
+                    parsedColor = Color.parseColor(ProjectColorPalette.DEFAULT_COLOR);
+                }
+                if (colorView.getBackground() instanceof GradientDrawable) {
+                    ((GradientDrawable) colorView.getBackground()).setColor(parsedColor);
+                } else {
+                    GradientDrawable circle = new GradientDrawable();
+                    circle.setShape(GradientDrawable.OVAL);
+                    circle.setColor(parsedColor);
+                    colorView.setBackground(circle);
                 }
 
                 if (statistics != null) {

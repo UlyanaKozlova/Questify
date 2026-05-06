@@ -1,6 +1,7 @@
 package com.example.questify.data.repository;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 
 import com.example.questify.UserSession;
 import com.example.questify.data.local.dao.UserDao;
@@ -9,7 +10,9 @@ import com.example.questify.data.mapper.UserMapper;
 import com.example.questify.domain.model.User;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class UserRepository {
 
     private static final String DEFAULT_USERNAME = "LocalUser";
@@ -17,10 +20,16 @@ public class UserRepository {
     private final UserDao userDao;
     private final UserSession session;
 
+    private final MediatorLiveData<User> userLive = new MediatorLiveData<>();
+
     @Inject
     public UserRepository(UserDao userDao, UserSession session) {
         this.userDao = userDao;
         this.session = session;
+        userLive.addSource(
+                androidx.lifecycle.Transformations.map(userDao.getUserLive(), UserMapper::toDomain),
+                userLive::setValue
+        );
     }
 
     public void update(User user) {
@@ -28,6 +37,7 @@ public class UserRepository {
         userEntity.updatedAt = System.currentTimeMillis();
         userEntity.needsSync = true;
         userDao.update(userEntity);
+        userLive.postValue(UserMapper.toDomain(userEntity));
     }
 
     public User getUser() {
@@ -35,10 +45,7 @@ public class UserRepository {
     }
 
     public LiveData<User> getUserLive() {
-        return androidx.lifecycle.Transformations.map(
-                userDao.getUserLive(),
-                UserMapper::toDomain
-        );
+        return userLive;
     }
 
     public void ensureLocalUserExists() {
@@ -53,6 +60,7 @@ public class UserRepository {
             userEntity.isDeleted = false;
             userEntity.needsSync = true;
             userDao.insert(userEntity);
+            userLive.postValue(UserMapper.toDomain(userEntity));
         }
     }
 
@@ -82,6 +90,7 @@ public class UserRepository {
             userDao.delete(existing);
         }
         userDao.insertOrReplace(entity);
+        userLive.postValue(UserMapper.toDomain(entity));
     }
 
     public void clearSyncFlag() {

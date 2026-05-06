@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/bg_elevated"
@@ -11,7 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:hint="@string/projectName">
+        android:hint="@string/project_name_hint"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:hintTextColor="@color/brand_violet_light">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputProjectName"
@@ -44,13 +50,12 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/colorPicker"
-            style="@style/Widget.Material3.Button.TextButton"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="14dp"
             android:letterSpacing="0"
             android:text="@string/choose_color"
-            android:textAllCaps="false"
-            android:textColor="@color/brand_violet_light" />
+            android:textAllCaps="false" />
     </LinearLayout>
 </LinearLayout>

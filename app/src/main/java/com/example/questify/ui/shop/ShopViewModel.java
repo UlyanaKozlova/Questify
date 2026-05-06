@@ -3,10 +3,12 @@ package com.example.questify.ui.shop;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.R;
+import com.example.questify.data.repository.PetRepository;
 import com.example.questify.domain.model.Clothing;
 import com.example.questify.domain.model.User;
 import com.example.questify.domain.usecase.game.clothes.BuyClothingUseCase;
@@ -33,16 +35,15 @@ public class ShopViewModel extends ViewModel {
     private final GetCurrentClothingUseCase getCurrentClothingUseCase;
     private final BuyClothingUseCase buyClothingUseCase;
     private final ChangePetClothingUseCase changePetClothingUseCase;
-    private final GetUserUseCase getUserUseCase;
     private final SyncManager syncManager;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private final MutableLiveData<List<Clothing>> allClothes = new MutableLiveData<>();
+    private final MediatorLiveData<List<Clothing>> allClothes = new MediatorLiveData<>();
     private final MutableLiveData<List<Clothing>> boughtClothes = new MutableLiveData<>();
-    private final MutableLiveData<Clothing> currentClothing = new MutableLiveData<>();
+    private final MediatorLiveData<Clothing> currentClothing = new MediatorLiveData<>();
     private final MutableLiveData<Integer> currentIndex = new MutableLiveData<>();
-    private final MutableLiveData<User> user = new MutableLiveData<>();
+    private final LiveData<User> user;
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
     public LiveData<List<Clothing>> getAllClothes() {
@@ -68,16 +69,21 @@ public class ShopViewModel extends ViewModel {
                          BuyClothingUseCase buyClothingUseCase,
                          ChangePetClothingUseCase changePetClothingUseCase,
                          GetUserUseCase getUserUseCase,
+                         PetRepository petRepository,
                          SyncManager syncManager) {
         this.getAllClothesUseCase = getAllClothesUseCase;
         this.getAllBoughtClothesUseCase = getAllBoughtClothesUseCase;
         this.getCurrentClothingUseCase = getCurrentClothingUseCase;
         this.buyClothingUseCase = buyClothingUseCase;
         this.changePetClothingUseCase = changePetClothingUseCase;
-        this.getUserUseCase = getUserUseCase;
         this.syncManager = syncManager;
+        this.user = getUserUseCase.executeLive();
 
-        loadData();
+        allClothes.addSource(petRepository.getPetLive(), pet -> reloadClothes());
+        currentClothing.addSource(petRepository.getPetLive(), pet -> reloadCurrentClothing());
+
+        reloadClothes();
+        reloadCurrentClothing();
     }
 
     @Override
@@ -86,7 +92,7 @@ public class ShopViewModel extends ViewModel {
         executor.shutdownNow();
     }
 
-    private void loadData() {
+    private void reloadClothes() {
         executor.execute(() -> {
             List<Clothing> clothes = getAllClothesUseCase.execute();
             allClothes.postValue(clothes);
@@ -94,11 +100,16 @@ public class ShopViewModel extends ViewModel {
             List<Clothing> bought = getAllBoughtClothesUseCase.execute();
             boughtClothes.postValue(bought);
 
+            if (clothes != null && !clothes.isEmpty() && currentIndex.getValue() == null) {
+                currentIndex.postValue(0);
+            }
+        });
+    }
+
+    private void reloadCurrentClothing() {
+        executor.execute(() -> {
             Clothing current = getCurrentClothingUseCase.execute();
             currentClothing.postValue(current);
-
-            User currentUser = getUserUseCase.execute();
-            user.postValue(currentUser);
         });
     }
 
@@ -108,7 +119,7 @@ public class ShopViewModel extends ViewModel {
         if (clothes == null || clothes.isEmpty() || index == null) {
             return null;
         }
-        return clothes.get(index);
+        return clothes.get(Math.min(index, clothes.size() - 1));
     }
 
     public void next() {
@@ -174,18 +185,8 @@ public class ShopViewModel extends ViewModel {
         executor.execute(() -> {
             boolean success = buyClothingUseCase.execute(clothing);
             if (success) {
-                List<Clothing> clothes = getAllClothesUseCase.execute();
-                allClothes.postValue(clothes);
-
                 List<Clothing> bought = getAllBoughtClothesUseCase.execute();
                 boughtClothes.postValue(bought);
-
-                Clothing current = getCurrentClothingUseCase.execute();
-                currentClothing.postValue(current);
-
-                User currentUser = getUserUseCase.execute();
-                user.postValue(currentUser);
-
                 error.postValue(null);
                 syncManager.scheduleSyncSoon();
             } else {
@@ -207,26 +208,8 @@ public class ShopViewModel extends ViewModel {
 
         executor.execute(() -> {
             changePetClothingUseCase.execute(clothing);
-
-            List<Clothing> clothes = getAllClothesUseCase.execute();
-            allClothes.postValue(clothes);
-
-            List<Clothing> bought = getAllBoughtClothesUseCase.execute();
-            boughtClothes.postValue(bought);
-
-            Clothing newCurrent = getCurrentClothingUseCase.execute();
-            currentClothing.postValue(newCurrent);
-
-            User currentUser = getUserUseCase.execute();
-            user.postValue(currentUser);
-
             error.postValue(null);
             syncManager.scheduleSyncSoon();
-
-            Integer index = currentIndex.getValue();
-            if (index != null) {
-                currentIndex.postValue(index);
-            }
         });
     }
 }

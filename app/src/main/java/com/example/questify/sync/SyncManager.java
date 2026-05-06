@@ -439,7 +439,13 @@ public class SyncManager {
                     Log.d(TAG, "Syncing " + querySnapshot.size() + " clothing items from cloud");
                     for (var doc : querySnapshot.getDocuments()) {
                         ClothingRemote remote = doc.toObject(ClothingRemote.class);
-                        if (remote != null && !remote.isDeleted) {
+                        if (remote == null) {
+                            continue;
+                        }
+                        if (remote.isDeleted) {
+                            clothingRepository.deleteByGlobalId(remote.globalId);
+                            Log.d(TAG, "Clothing deleted locally: " + remote.globalId);
+                        } else {
                             Clothing clothing = convertToClothing(remote);
                             clothingRepository.saveOrUpdateFromSync(clothing);
                             Log.d(TAG, "Clothing synced: " + remote.name);
@@ -629,8 +635,9 @@ public class SyncManager {
 
     private List<String> addClothingToBatch(WriteBatch batch) {
         List<Clothing> clothingList = clothingRepository.getNeedingSync();
+        List<Clothing> deletedClothing = clothingRepository.getDeletedNeedingSync();
         List<String> syncedIds = new ArrayList<>();
-        Log.d(TAG, "Clothing needing sync: " + clothingList.size());
+        Log.d(TAG, "Clothing needing sync: " + clothingList.size() + ", deleted: " + deletedClothing.size());
         for (Clothing clothing : clothingList) {
             ClothingRemote remote = new ClothingRemote();
             remote.globalId = clothing.getGlobalId();
@@ -645,6 +652,13 @@ public class SyncManager {
 
             syncedIds.add(clothing.getGlobalId());
             Log.d(TAG, "Added clothing to batch: " + clothing.getName());
+        }
+
+        for (Clothing clothing : deletedClothing) {
+            batch.set(firestore.collection(CLOTHING_COLLECTION)
+                    .document(clothing.getGlobalId()), buildTombstone(), SetOptions.merge());
+            syncedIds.add(clothing.getGlobalId());
+            Log.d(TAG, "Added deleted clothing to batch: " + clothing.getGlobalId());
         }
         return syncedIds;
     }

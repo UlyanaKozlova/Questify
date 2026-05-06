@@ -5,14 +5,20 @@ import android.graphics.Canvas;
 import android.view.View;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.questify.R;
+import com.example.questify.data.repository.ClothingRepository;
+import com.example.questify.data.repository.PetRepository;
+import com.example.questify.domain.model.Clothing;
+import com.example.questify.domain.model.Pet;
 import com.example.questify.domain.usecase.statistics.ExportStatisticsToPngUseCase;
 import com.example.questify.domain.usecase.statistics.GetAdviceUseCase;
 import com.example.questify.domain.usecase.statistics.GetTasksAmountUseCase;
-
+// todo мб возможность поделиться
+// ещвщ минибалллы за подзадачи
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,12 +32,14 @@ public class AdviceViewModel extends ViewModel {
     private final GetAdviceUseCase getAdviceUseCase;
     private final GetTasksAmountUseCase getTasksAmountUseCase;
     private final ExportStatisticsToPngUseCase exportStatisticsToPngUseCase;
+    private final ClothingRepository clothingRepository;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final MutableLiveData<String> advice = new MutableLiveData<>();
     private final MutableLiveData<Boolean> adviceLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Integer> exportResult = new MutableLiveData<>();
+    private final MediatorLiveData<Integer> petImageRes = new MediatorLiveData<>();
 
     public LiveData<String> getAdvice() {
         return advice;
@@ -45,14 +53,38 @@ public class AdviceViewModel extends ViewModel {
         return exportResult;
     }
 
+    public LiveData<Integer> getPetImageRes() {
+        return petImageRes;
+    }
+
     @Inject
     public AdviceViewModel(GetAdviceUseCase getAdviceUseCase,
                            GetTasksAmountUseCase getTasksAmountUseCase,
-                           ExportStatisticsToPngUseCase exportStatisticsToPngUseCase) {
+                           ExportStatisticsToPngUseCase exportStatisticsToPngUseCase,
+                           PetRepository petRepository,
+                           ClothingRepository clothingRepository) {
         this.getAdviceUseCase = getAdviceUseCase;
         this.getTasksAmountUseCase = getTasksAmountUseCase;
         this.exportStatisticsToPngUseCase = exportStatisticsToPngUseCase;
+        this.clothingRepository = clothingRepository;
+
+        petImageRes.addSource(petRepository.getPetLive(), this::resolvePetImage);
         loadAdvice();
+    }
+
+    private void resolvePetImage(Pet pet) {
+        executor.execute(() -> {
+            if (pet == null || pet.getCurrentClothingGlobalId() == null) {
+                petImageRes.postValue(R.drawable.pet_default);
+                return;
+            }
+            Clothing clothing = clothingRepository.getByGlobalId(pet.getCurrentClothingGlobalId());
+            if (clothing != null && clothing.getImageResId() != 0) {
+                petImageRes.postValue(clothing.getImageResId());
+            } else {
+                petImageRes.postValue(R.drawable.pet_default);
+            }
+        });
     }
 
     private void loadAdvice() {
