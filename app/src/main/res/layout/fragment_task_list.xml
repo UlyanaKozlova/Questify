@@ -27,7 +27,7 @@
                 android:textAllCaps="false"
                 android:letterSpacing="0"
                 android:text="@string/buttonFilter"
-                app:icon="@android:drawable/ic_menu_sort_by_size"
+                app:icon="@drawable/ic_filter"
                 app:iconSize="16dp" />
 
             <View
@@ -43,7 +43,7 @@
                 android:textAllCaps="false"
                 android:letterSpacing="0"
                 android:text="@string/buttonSort"
-                app:icon="@android:drawable/ic_menu_sort_alphabetically"
+                app:icon="@drawable/ic_sort"
                 app:iconSize="16dp" />
 
         </LinearLayout>
@@ -69,7 +69,7 @@
         android:layout_marginBottom="24dp"
         android:contentDescription="@string/importButton"
         app:fabSize="mini"
-        app:srcCompat="@android:drawable/ic_menu_upload" />
+        app:srcCompat="@drawable/ic_upload" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/buttonAddTask"
@@ -79,6 +79,6 @@
         android:layout_margin="16dp"
         android:layout_marginBottom="24dp"
         android:contentDescription="@string/addTaskButton"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/ic_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

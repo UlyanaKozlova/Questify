@@ -38,6 +38,9 @@ public interface PetDao {
     @Query("UPDATE pet SET isDeleted = 1, needsSync = 1, updatedAt = :updatedAt WHERE globalId = :globalId")
     void softDelete(String globalId, long updatedAt);
 
+    @Query("UPDATE pet SET currentClothingGlobalId = :newId, needsSync = 1, updatedAt = :now WHERE currentClothingGlobalId = :oldId")
+    void repointCurrentClothing(String oldId, String newId, long now);
+
     @Query("SELECT * FROM pet WHERE isDeleted = 1 AND needsSync = 1")
     List<PetEntity> getSoftDeletedNeedingSync();
 

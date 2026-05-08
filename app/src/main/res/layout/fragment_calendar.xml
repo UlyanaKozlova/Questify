@@ -19,7 +19,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:contentDescription="@string/left"
-            app:icon="@android:drawable/ic_media_previous"
+            app:icon="@drawable/ic_chevron_left"
             app:iconSize="40dp"
             app:iconGravity="textEnd" />
 
@@ -40,7 +40,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:contentDescription="@string/right"
-            app:icon="@android:drawable/ic_media_next"
+            app:icon="@drawable/ic_chevron_right"
             app:iconSize="40dp"
             app:iconGravity="textEnd"/>
 

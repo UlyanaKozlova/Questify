@@ -26,6 +26,9 @@ public interface ClothingDao {
     @Query("SELECT * FROM clothing WHERE isDeleted = 0")
     List<ClothingEntity> getAll();
 
+    @Query("SELECT * FROM clothing WHERE name = :name AND isDeleted = 0")
+    List<ClothingEntity> getAllByName(String name);
+
     @Query("SELECT * FROM clothing WHERE globalId = :globalId LIMIT 1")
     ClothingEntity getByGlobalId(String globalId);
 

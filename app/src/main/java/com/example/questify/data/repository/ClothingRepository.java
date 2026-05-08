@@ -1,12 +1,14 @@
 package com.example.questify.data.repository;
 
+import com.example.questify.R;
 import com.example.questify.data.local.dao.ClothingDao;
+import com.example.questify.data.local.dao.PetClothingRefDao;
+import com.example.questify.data.local.dao.PetDao;
 import com.example.questify.data.local.entity.ClothingEntity;
 import com.example.questify.data.mapper.ClothingMapper;
 import com.example.questify.domain.model.Clothing;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -14,11 +16,19 @@ import javax.inject.Inject;
 public class ClothingRepository {
 
     private final ClothingDao clothingDao;
+    private final PetClothingRefDao petClothingRefDao;
+    private final PetDao petDao;
+
     private static final String DEFAULT = "default";
+    public static final String DEFAULT_GLOBAL_ID = "clothing_default";
 
     @Inject
-    public ClothingRepository(ClothingDao clothingDao) {
+    public ClothingRepository(ClothingDao clothingDao,
+                              PetClothingRefDao petClothingRefDao,
+                              PetDao petDao) {
         this.clothingDao = clothingDao;
+        this.petClothingRefDao = petClothingRefDao;
+        this.petDao = petDao;
     }
 
     public void save(Clothing clothing) {
@@ -58,16 +68,41 @@ public class ClothingRepository {
     }
 
     public void ensureLocalClothingExists() {
-        if (clothingDao.getAll().isEmpty()) {
-            ClothingEntity clothingEntity = new ClothingEntity();
-            clothingEntity.globalId = UUID.randomUUID().toString();
-            clothingEntity.name = DEFAULT;
-            clothingEntity.price = 0;
-            clothingEntity.imageResId = 0;
-            clothingEntity.updatedAt = System.currentTimeMillis();
-            clothingEntity.isDeleted = false;
-            clothingEntity.needsSync = true;
-            clothingDao.insert(clothingEntity);
+        List<ClothingEntity> defaults = clothingDao.getAllByName(DEFAULT);
+        long now = System.currentTimeMillis();
+
+        ClothingEntity canonical = null;
+        for (ClothingEntity e : defaults) {
+            if (DEFAULT_GLOBAL_ID.equals(e.globalId)) {
+                canonical = e;
+                break;
+            }
+        }
+
+        if (canonical == null) {
+            ClothingEntity entity = new ClothingEntity();
+            entity.globalId = DEFAULT_GLOBAL_ID;
+            entity.name = DEFAULT;
+            entity.price = 0;
+            entity.imageResId = R.drawable.pet_default;
+            entity.updatedAt = now;
+            entity.isDeleted = false;
+            entity.needsSync = true;
+            clothingDao.insert(entity);
+        } else if (canonical.imageResId != R.drawable.pet_default) {
+            canonical.imageResId = R.drawable.pet_default;
+            canonical.updatedAt = now;
+            canonical.needsSync = true;
+            clothingDao.update(canonical);
+        }
+
+        for (ClothingEntity e : defaults) {
+            if (DEFAULT_GLOBAL_ID.equals(e.globalId)) {
+                continue;
+            }
+            petClothingRefDao.repointClothing(e.globalId, DEFAULT_GLOBAL_ID);
+            petDao.repointCurrentClothing(e.globalId, DEFAULT_GLOBAL_ID, now);
+            clothingDao.softDelete(e.globalId, now);
         }
     }
 
@@ -95,8 +130,14 @@ public class ClothingRepository {
 
     public void saveOrUpdateFromSync(Clothing clothing) {
         ClothingEntity existing = clothingDao.getByGlobalId(clothing.getGlobalId());
+        if (existing != null && existing.isDeleted && existing.needsSync) {
+            return;
+        }
+        if (existing != null && existing.updatedAt > clothing.getUpdatedAt()) {
+            return;
+        }
         ClothingEntity entity = ClothingMapper.toEntity(clothing);
-        entity.updatedAt = System.currentTimeMillis();
+        entity.updatedAt = clothing.getUpdatedAt();
         entity.needsSync = false;
         entity.isDeleted = false;
         if (existing != null) {

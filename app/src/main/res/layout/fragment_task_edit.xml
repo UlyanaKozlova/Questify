@@ -100,7 +100,7 @@
             android:layout_marginBottom="12dp"
             android:hint="@string/deadlineButton"
             app:endIconMode="custom"
-            app:endIconDrawable="@android:drawable/ic_menu_my_calendar">
+            app:endIconDrawable="@drawable/ic_calendar">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputDeadline"
@@ -201,7 +201,7 @@
                 android:layout_height="48dp"
                 android:layout_marginStart="8dp"
                 android:contentDescription="@string/subtask_add_hint"
-                app:icon="@android:drawable/ic_input_add"
+                app:icon="@drawable/ic_add"
                 app:iconSize="20dp" />
         </LinearLayout>
 

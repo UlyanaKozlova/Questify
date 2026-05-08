@@ -40,7 +40,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="TODO"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_add"
+        app:tint="@android:color/white"
         app:backgroundTint="@color/brand_violet" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

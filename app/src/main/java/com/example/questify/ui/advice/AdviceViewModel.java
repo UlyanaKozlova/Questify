@@ -17,8 +17,6 @@ import com.example.questify.domain.model.Pet;
 import com.example.questify.domain.usecase.statistics.ExportStatisticsToPngUseCase;
 import com.example.questify.domain.usecase.statistics.GetAdviceUseCase;
 import com.example.questify.domain.usecase.statistics.GetTasksAmountUseCase;
-// todo мб возможность поделиться
-// ещвщ минибалллы за подзадачи
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,6 +30,7 @@ public class AdviceViewModel extends ViewModel {
     private final GetAdviceUseCase getAdviceUseCase;
     private final GetTasksAmountUseCase getTasksAmountUseCase;
     private final ExportStatisticsToPngUseCase exportStatisticsToPngUseCase;
+    private final PetRepository petRepository;
     private final ClothingRepository clothingRepository;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -66,25 +65,29 @@ public class AdviceViewModel extends ViewModel {
         this.getAdviceUseCase = getAdviceUseCase;
         this.getTasksAmountUseCase = getTasksAmountUseCase;
         this.exportStatisticsToPngUseCase = exportStatisticsToPngUseCase;
+        this.petRepository = petRepository;
         this.clothingRepository = clothingRepository;
 
         petImageRes.addSource(petRepository.getPetLive(), this::resolvePetImage);
+        executor.execute(() -> resolvePetImageSync(petRepository.getPet()));
         loadAdvice();
     }
 
+    private void resolvePetImageSync(Pet pet) {
+        if (pet == null || pet.getCurrentClothingGlobalId() == null) {
+            petImageRes.postValue(R.drawable.pet_default);
+            return;
+        }
+        Clothing clothing = clothingRepository.getByGlobalId(pet.getCurrentClothingGlobalId());
+        if (clothing != null && clothing.getImageResId() != 0) {
+            petImageRes.postValue(clothing.getImageResId());
+        } else {
+            petImageRes.postValue(R.drawable.pet_default);
+        }
+    }
+
     private void resolvePetImage(Pet pet) {
-        executor.execute(() -> {
-            if (pet == null || pet.getCurrentClothingGlobalId() == null) {
-                petImageRes.postValue(R.drawable.pet_default);
-                return;
-            }
-            Clothing clothing = clothingRepository.getByGlobalId(pet.getCurrentClothingGlobalId());
-            if (clothing != null && clothing.getImageResId() != 0) {
-                petImageRes.postValue(clothing.getImageResId());
-            } else {
-                petImageRes.postValue(R.drawable.pet_default);
-            }
-        });
+        executor.execute(() -> resolvePetImageSync(pet));
     }
 
     private void loadAdvice() {

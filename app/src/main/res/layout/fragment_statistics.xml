@@ -237,7 +237,7 @@
                 android:letterSpacing="0"
                 android:text="@string/stats_share_button"
                 android:textAllCaps="false"
-                app:icon="@android:drawable/ic_menu_share"
+                app:icon="@drawable/ic_share"
                 app:iconSize="18dp" />
         </LinearLayout>
     </LinearLayout>

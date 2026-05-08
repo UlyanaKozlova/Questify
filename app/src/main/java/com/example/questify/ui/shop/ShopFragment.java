@@ -75,6 +75,8 @@ public class ShopFragment extends Fragment {
         });
 
         viewModel.getUser().observe(getViewLifecycleOwner(), user -> updateDisplay());
+        viewModel.getBoughtClothes().observe(getViewLifecycleOwner(), bought -> updateDisplay());
+        viewModel.getCurrentClothing().observe(getViewLifecycleOwner(), current -> updateDisplay());
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
             if (error != null && !error.isEmpty()) {
                 Snackbar.make(requireView(), error, Snackbar.LENGTH_LONG).show();

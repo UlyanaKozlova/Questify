@@ -27,6 +27,9 @@ public interface PetClothingRefDao {
     @Query("SELECT * FROM pet_clothing_ref WHERE petGlobalId = :petGlobalId AND clothingGlobalId = :clothingGlobalId LIMIT 1")
     PetClothingRefEntity getByPetAndClothing(String petGlobalId, String clothingGlobalId);
 
+    @Query("UPDATE OR REPLACE pet_clothing_ref SET clothingGlobalId = :newId WHERE clothingGlobalId = :oldId")
+    void repointClothing(String oldId, String newId);
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<PetClothingRefEntity> entities);

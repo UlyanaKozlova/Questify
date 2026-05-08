@@ -50,6 +50,14 @@ public class ShopViewModel extends ViewModel {
         return allClothes;
     }
 
+    public LiveData<List<Clothing>> getBoughtClothes() {
+        return boughtClothes;
+    }
+
+    public LiveData<Clothing> getCurrentClothing() {
+        return currentClothing;
+    }
+
     public LiveData<Integer> getCurrentIndex() {
         return currentIndex;
     }
@@ -185,6 +193,7 @@ public class ShopViewModel extends ViewModel {
         executor.execute(() -> {
             boolean success = buyClothingUseCase.execute(clothing);
             if (success) {
+                changePetClothingUseCase.execute(clothing);
                 List<Clothing> bought = getAllBoughtClothesUseCase.execute();
                 boughtClothes.postValue(bought);
                 error.postValue(null);
