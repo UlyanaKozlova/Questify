@@ -60,6 +60,20 @@ public class StatisticsExporter {
         }
     }
 
+    public File saveBitmapToCache(Bitmap bitmap, String name) {
+        File dir = new File(context.getCacheDir(), "shared");
+        if (!dir.exists() && !dir.mkdirs()) {
+            return null;
+        }
+        File file = new File(dir, name + ".png");
+        try (OutputStream out = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            return file;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     public boolean saveJsonToDownloads(String json, String name) {
         OutputStream out = null;
         try {

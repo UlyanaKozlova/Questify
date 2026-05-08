@@ -35,6 +35,9 @@ public class TaskRemote {
     @PropertyName("deadline")
     public Timestamp deadline;
 
+    @PropertyName("coinsAwarded")
+    public long coinsAwarded;
+
     @PropertyName("updatedAt")
     public Timestamp updatedAt;
 
@@ -55,6 +58,7 @@ public class TaskRemote {
         map.put("priority", priority);
         map.put("difficulty", difficulty);
         map.put("deadline", deadline);
+        map.put("coinsAwarded", coinsAwarded);
         map.put("updatedAt", updatedAt);
         map.put("isDeleted", isDeleted);
         return map;

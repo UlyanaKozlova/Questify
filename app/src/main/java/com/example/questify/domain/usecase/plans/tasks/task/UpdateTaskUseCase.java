@@ -3,11 +3,12 @@ package com.example.questify.domain.usecase.plans.tasks.task;
 import com.example.questify.R;
 import com.example.questify.data.repository.ProjectRepository;
 import com.example.questify.data.repository.TaskRepository;
-import com.example.questify.util.exception.DomainValidationException;
 import com.example.questify.domain.model.Project;
 import com.example.questify.domain.model.Task;
 import com.example.questify.domain.model.enums.Difficulty;
 import com.example.questify.domain.model.enums.Priority;
+import com.example.questify.domain.usecase.plans.tasks.reward.RewardEngine;
+import com.example.questify.util.exception.DomainValidationException;
 
 import javax.inject.Inject;
 
@@ -15,12 +16,15 @@ public class UpdateTaskUseCase {
 
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
+    private final RewardEngine rewardEngine;
 
     @Inject
     public UpdateTaskUseCase(TaskRepository taskRepository,
-                             ProjectRepository projectRepository) {
+                             ProjectRepository projectRepository,
+                             RewardEngine rewardEngine) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
+        this.rewardEngine = rewardEngine;
     }
 
     public void execute(Task taskToEdit,
@@ -48,13 +52,11 @@ public class UpdateTaskUseCase {
         taskToEdit.setPriority(priority);
         taskToEdit.setDifficulty(difficulty);
         taskToEdit.setDone(isDone);
-        taskToEdit.setUpdatedAt(System.currentTimeMillis());
-        taskRepository.update(taskToEdit);
+        rewardEngine.applyAfterChange(taskToEdit);
     }
 
     public void updateDoneStatus(Task taskToEdit, boolean isDone) {
         taskToEdit.setDone(isDone);
-        taskToEdit.setUpdatedAt(System.currentTimeMillis());
-        taskRepository.update(taskToEdit);
+        rewardEngine.applyAfterChange(taskToEdit);
     }
 }

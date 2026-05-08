@@ -213,12 +213,32 @@
                 android:text="@string/stats_export_json" />
         </com.google.android.material.chip.ChipGroup>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonExportStats"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:letterSpacing="0"
-            android:text="@string/stats_export_button"
-            android:textAllCaps="false" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonExportStats"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:letterSpacing="0"
+                android:text="@string/stats_export_button"
+                android:textAllCaps="false" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonShareStats"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:letterSpacing="0"
+                android:text="@string/stats_share_button"
+                android:textAllCaps="false"
+                app:icon="@android:drawable/ic_menu_share"
+                app:iconSize="18dp" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

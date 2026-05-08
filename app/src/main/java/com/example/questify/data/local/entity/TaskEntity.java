@@ -26,6 +26,8 @@ public class TaskEntity {
 
     public long deadline;
 
+    public long coinsAwarded;
+
     public long updatedAt;
     public boolean isDeleted;
     public boolean needsSync;

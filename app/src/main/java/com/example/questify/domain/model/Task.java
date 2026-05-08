@@ -26,6 +26,8 @@ public class Task {
 
     private long deadline;
 
+    private long coinsAwarded;
+
     private long updatedAt;
 
     public Task(long localId,
@@ -201,5 +203,13 @@ public class Task {
 
     public void setDeadlineWithoutValidation(long deadline) {
         this.deadline = deadline;
+    }
+
+    public long getCoinsAwarded() {
+        return coinsAwarded;
+    }
+
+    public void setCoinsAwarded(long coinsAwarded) {
+        this.coinsAwarded = coinsAwarded;
     }
 }

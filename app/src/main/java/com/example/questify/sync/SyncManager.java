@@ -512,6 +512,7 @@ public class SyncManager {
             remote.priority = task.getPriority() != null ? task.getPriority().name() : null;
             remote.difficulty = task.getDifficulty() != null ? task.getDifficulty().name() : null;
             remote.deadline = new Timestamp(task.getDeadline() / 1000, 0);
+            remote.coinsAwarded = task.getCoinsAwarded();
             remote.updatedAt = new Timestamp(task.getUpdatedAt() / 1000, 0);
             remote.isDeleted = false;
 
@@ -689,6 +690,7 @@ public class SyncManager {
         task.setDeadlineWithoutValidation(remote.deadline != null
                 ? remote.deadline.toDate().getTime()
                 : 0);
+        task.setCoinsAwarded(remote.coinsAwarded);
         task.setUpdatedAt(remote.updatedAt != null
                 ? remote.updatedAt.toDate().getTime()
                 : 0);

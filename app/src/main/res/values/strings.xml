@@ -262,6 +262,9 @@
     <string name="stats_export_png">PNG</string>
     <string name="stats_export_json">JSON</string>
     <string name="stats_export_button">Экспортировать</string>
+    <string name="stats_share_button">Поделиться</string>
+    <string name="stats_share_title">Поделиться статистикой</string>
+    <string name="stats_share_text">Моя статистика в Questify</string>
     <string name="stats_advice_title">Совет по продуктивности</string>
     <string name="stats_advice_loading">Формируем совет…</string>
     <string name="stats_advice_export_button">Экспортировать изображение</string>

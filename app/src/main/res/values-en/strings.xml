@@ -58,7 +58,7 @@
     <string name="pet_coins_to_next_level">%d</string>
     <string name="coins_label">Coins</string>
     <string name="level_label">Level</string>
-    <string name="to_next_level_label">To lvl up</string>
+    <string name="to_next_level_label">To level up</string>
     <string name="achievements_title">Achievements</string>
     <string name="pet_advice_button">Advice</string>
 
@@ -234,12 +234,15 @@
     <string name="stats_export_png">PNG</string>
     <string name="stats_export_json">JSON</string>
     <string name="stats_export_button">Export</string>
+    <string name="stats_share_button">Share</string>
+    <string name="stats_share_title">Share statistics</string>
+    <string name="stats_share_text">My Questify statistics</string>
     <string name="stats_advice_title">Productivity tip</string>
     <string name="stats_advice_loading">Generating advice…</string>
     <string name="stats_advice_export_button">Export image</string>
     <string name="stats_advice_empty">Advice unavailable. Try again later.</string>
     <string name="zero">0</string>
-    <string name="stats_user_level">Lvl. %d</string>
+    <string name="stats_user_level">Level. %d</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="en">EN</string>

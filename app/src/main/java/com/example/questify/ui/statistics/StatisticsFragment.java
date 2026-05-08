@@ -1,8 +1,10 @@
 package com.example.questify.ui.statistics;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import com.github.mikephil.charting.animation.Easing;
 import android.os.Build;
 import android.os.Bundle;
@@ -80,6 +82,7 @@ public class StatisticsFragment extends Fragment {
         cardStats = view.findViewById(R.id.cardStats);
 
         MaterialButton buttonExportStats = view.findViewById(R.id.buttonExportStats);
+        MaterialButton buttonShareStats = view.findViewById(R.id.buttonShareStats);
 
         setupPieChart();
         requestStoragePermissionIfNeeded();
@@ -104,6 +107,24 @@ public class StatisticsFragment extends Fragment {
                 viewModel.exportStatsAsPng(cardStats);
             }
         });
+
+        buttonShareStats.setOnClickListener(v -> viewModel.shareStatsAsPng(cardStats));
+
+        viewModel.getShareUri().observe(getViewLifecycleOwner(), uri -> {
+            if (uri != null) {
+                launchShareIntent(uri);
+                viewModel.clearShareUri();
+            }
+        });
+    }
+
+    private void launchShareIntent(Uri uri) {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("image/png");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.stats_share_text));
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.stats_share_title)));
     }
 
     private void setupPieChart() {

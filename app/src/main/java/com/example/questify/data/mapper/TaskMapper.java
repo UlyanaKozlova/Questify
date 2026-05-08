@@ -8,9 +8,10 @@ import com.example.questify.domain.model.enums.Difficulty;
 public class TaskMapper {
 
     public static Task toDomain(TaskEntity entity) {
-        return entity == null
-                ? null
-                : new Task(
+        if (entity == null) {
+            return null;
+        }
+        Task task = new Task(
                 entity.localId,
                 entity.globalId,
                 entity.projectGlobalId,
@@ -21,6 +22,8 @@ public class TaskMapper {
                 Priority.valueOf(entity.priority),
                 Difficulty.valueOf(entity.difficulty),
                 entity.deadline, entity.updatedAt);
+        task.setCoinsAwarded(entity.coinsAwarded);
+        return task;
     }
 
     public static TaskEntity toEntity(Task model) {
@@ -40,6 +43,7 @@ public class TaskMapper {
         entity.updatedAt = model.getUpdatedAt();
         entity.priority = model.getPriority().name();
         entity.difficulty = model.getDifficulty().name();
+        entity.coinsAwarded = model.getCoinsAwarded();
 
         return entity;
     }

@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 
 import com.example.questify.data.export.StatisticsExporter;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
 public class ExportStatisticsToPngUseCase {
@@ -17,5 +19,9 @@ public class ExportStatisticsToPngUseCase {
 
     public boolean execute(Bitmap bitmap, String fileName) {
         return exporter.saveBitmapToGallery(bitmap, fileName);
+    }
+
+    public File executeToCacheFile(Bitmap bitmap, String fileName) {
+        return exporter.saveBitmapToCache(bitmap, fileName);
     }
 }
