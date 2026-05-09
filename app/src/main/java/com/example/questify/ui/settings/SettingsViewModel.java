@@ -57,7 +57,7 @@ public class SettingsViewModel extends ViewModel {
     public String getCurrentAccountEmail() {
         FirebaseUser user = authManager.getCurrentUser();
         if (user == null) return null;
-        return user.isAnonymous() ? null : user.getEmail();
+        return user.getEmail();
     }
 
     @Inject

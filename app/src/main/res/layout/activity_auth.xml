@@ -129,16 +129,6 @@
             app:cornerRadius="14dp"
             app:strokeColor="@color/brand_violet" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAnonymous"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:letterSpacing="0"
-            android:text="@string/without_auth"
-            android:textAllCaps="false"
-            android:textColor="@color/text_secondary" />
-
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"

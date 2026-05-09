@@ -189,7 +189,6 @@
     <string name="settings_reset_password_error">Ошибка: %s</string>
     <string name="settings_sign_out">Выйти из аккаунта</string>
     <string name="settings_sign_out_confirm">Выйти из аккаунта? Несинхронизированные данные могут быть потеряны.</string>
-    <string name="settings_no_email">Нет email (анонимный вход)</string>
 
 
     <!--ShopFragment-->
@@ -219,7 +218,6 @@
 
 
     <!--    AuthActivity-->
-    <string name="without_auth">Войти без регистрации</string>
     <string name="register">Регистрация</string>
     <string name="log_in">Вход</string>
     <string name="password">Пароль</string>

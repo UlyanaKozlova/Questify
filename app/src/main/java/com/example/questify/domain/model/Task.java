@@ -75,6 +75,25 @@ public class Task {
 
     public Task() {
     }
+    public static Task forImport(String projectGlobalId,
+                                 String taskName,
+                                 String description,
+                                 Priority priority,
+                                 Difficulty difficulty,
+                                 long deadline) {
+        checkTaskName(taskName);
+        Task task = new Task();
+        task.globalId = UUID.randomUUID().toString();
+        task.projectGlobalId = projectGlobalId;
+        task.isDone = false;
+        task.taskName = taskName;
+        task.description = description;
+        task.priority = priority;
+        task.difficulty = difficulty;
+        task.deadline = deadline;
+        task.updatedAt = System.currentTimeMillis();
+        return task;
+    }
 
     @Override
     public boolean equals(Object o) {

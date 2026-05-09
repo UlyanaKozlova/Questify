@@ -32,7 +32,7 @@ public class ImportTasksFromJsonUseCase extends ImportTasksUseCase {
         List<ImportedTaskDto> dtos = gson.fromJson(content, type);
         for (ImportedTaskDto dto : dtos) {
             try {
-                createTaskUseCase.execute(
+                createTaskUseCase.executeFromImport(
                         dto.name,
                         dto.description,
                         dto.deadlineMillis(),

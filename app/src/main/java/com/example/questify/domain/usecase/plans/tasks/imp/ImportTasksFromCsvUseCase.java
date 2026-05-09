@@ -22,7 +22,7 @@ public class ImportTasksFromCsvUseCase extends ImportTasksUseCase {
         for (int i = 1; i < lines.length; i++) {
             String[] parts = lines[i].split(",");
             try {
-                createTaskUseCase.execute(
+                createTaskUseCase.executeFromImport(
                         parts[0],
                         parts[1],
                         Long.parseLong(parts[2]),
@@ -36,4 +36,3 @@ public class ImportTasksFromCsvUseCase extends ImportTasksUseCase {
         }
     }
 }
-// todo покрасивее иконки

@@ -170,7 +170,6 @@
     <string name="settings_reset_password_error">Error: %s</string>
     <string name="settings_sign_out">Sign out</string>
     <string name="settings_sign_out_confirm">Sign out? Unsynced data may be lost.</string>
-    <string name="settings_no_email">No email (anonymous login)</string>
 
     <string name="shop_buy">Buy for %d coins</string>
     <string name="shop_wear">Wear</string>
@@ -193,7 +192,6 @@
     <string name="calendar_no_tasks">(no tasks)</string>
     <string name="no_tasks">No tasks</string>
 
-    <string name="without_auth">Continue as guest</string>
     <string name="register">Register</string>
     <string name="log_in">Log in</string>
     <string name="password">Password</string>

@@ -68,26 +68,12 @@ public class AuthenticationManager {
         return getCurrentUser() != null ? getCurrentUser().getUid() : null;
     }
 
-    public Task<AuthResult> signInAnonymously() {
-        if (getAuth() == null) {
-            throw new IllegalStateException("Firebase not initialized");
-        }
-        return getAuth().signInAnonymously()
-                .addOnSuccessListener(result -> {
-                    updateSessionFromFirebase(result.getUser());
-                    userSession.setAnonymous(true);
-                });
-    }
-
     public Task<AuthResult> signInWithEmail(String email, String password) {
         if (getAuth() == null) {
             throw new IllegalStateException("Firebase not initialized");
         }
         return getAuth().signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener(result -> {
-                    updateSessionFromFirebase(result.getUser());
-                    userSession.setAnonymous(false);
-                });
+                .addOnSuccessListener(result -> updateSessionFromFirebase(result.getUser()));
     }
 
     public Task<AuthResult> signUpWithEmail(String email, String password) {
@@ -95,10 +81,7 @@ public class AuthenticationManager {
             throw new IllegalStateException("Firebase not initialized");
         }
         return getAuth().createUserWithEmailAndPassword(email, password)
-                .addOnSuccessListener(result -> {
-                    updateSessionFromFirebase(result.getUser());
-                    userSession.setAnonymous(false);
-                });
+                .addOnSuccessListener(result -> updateSessionFromFirebase(result.getUser()));
     }
 
     private void updateSessionFromFirebase(FirebaseUser firebaseUser) {
@@ -115,7 +98,6 @@ public class AuthenticationManager {
             getAuth().signOut();
         }
         userSession.setFirebaseUserId(null);
-        userSession.setAnonymous(false);
     }
 
     public boolean isAuthenticated() {

@@ -39,7 +39,7 @@ public class AuthActivity extends AppCompatActivity {
     SyncManager syncManager;
 
     private EditText etEmail, etPassword;
-    private Button btnLogin, btnRegister, btnAnonymous;
+    private Button btnLogin, btnRegister;
     private ProgressBar progressBar;
 
     @Override
@@ -77,14 +77,12 @@ public class AuthActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
-        btnAnonymous = findViewById(R.id.btnAnonymous);
         progressBar = findViewById(R.id.progressBar);
     }
 
     private void setupListeners() {
         btnLogin.setOnClickListener(v -> login());
         btnRegister.setOnClickListener(v -> register());
-        btnAnonymous.setOnClickListener(v -> anonymousLogin());
     }
 
     private void showAuthScreen() {
@@ -148,24 +146,10 @@ public class AuthActivity extends AppCompatActivity {
                 });
     }
 
-    private void anonymousLogin() {
-        setLoading(true);
-        authManager.signInAnonymously()
-                .addOnSuccessListener(result -> {
-                    if (!isFinishing() && !isDestroyed()) navigateToMain();
-                })
-                .addOnFailureListener(e -> {
-                    if (isFinishing() || isDestroyed()) return;
-                    setLoading(false);
-                    showError(getString(R.string.auth_error_login, e.getMessage()));
-                });
-    }
-
     private void setLoading(boolean loading) {
         progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
         btnLogin.setEnabled(!loading);
         btnRegister.setEnabled(!loading);
-        btnAnonymous.setEnabled(!loading);
     }
 
     private void showError(String message) {
