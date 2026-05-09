@@ -51,6 +51,10 @@ public class AdviceViewModel extends ViewModel {
         return exportResult;
     }
 
+    public void clearExportResult() {
+        exportResult.setValue(null);
+    }
+
     public LiveData<Integer> getPetImageRes() {
         return petImageRes;
     }

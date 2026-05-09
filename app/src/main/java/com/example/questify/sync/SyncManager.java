@@ -471,7 +471,17 @@ public class SyncManager {
             return;
         }
 
+        Pet localPet = petRepository.getPet();
+        if (localPet == null || localPet.getGlobalId() == null) {
+            if (onComplete != null) {
+                onComplete.run();
+            }
+            return;
+        }
+        String localPetId = localPet.getGlobalId();
+
         firestore.collection(PET_CLOTHING_REF_COLLECTION)
+                .whereEqualTo("petGlobalId", localPetId)
                 .get()
                 .addOnSuccessListener(querySnapshot -> executor.execute(() -> {
                     Log.d(TAG, "Syncing " + querySnapshot.size() + " pet clothing refs from cloud");

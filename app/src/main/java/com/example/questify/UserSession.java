@@ -12,11 +12,9 @@ public class UserSession {
     private static final String PREF_NAME = "user_session";
     private static final String KEY_USER_GLOBAL_ID = "user_global_id";
     private static final String KEY_FIREBASE_USER_ID = "firebase_user_id";
-    private static final String KEY_IS_ANONYMOUS = "is_anonymous";
 
     private String userGlobalId;
     private String firebaseUserId;
-    private boolean isAnonymous;
 
     private final SharedPreferences sharedPreferences;
 
@@ -29,7 +27,6 @@ public class UserSession {
     private void loadFromPreferences() {
         this.userGlobalId = sharedPreferences.getString(KEY_USER_GLOBAL_ID, null);
         this.firebaseUserId = sharedPreferences.getString(KEY_FIREBASE_USER_ID, null);
-        this.isAnonymous = sharedPreferences.getBoolean(KEY_IS_ANONYMOUS, false);
     }
 
     private void saveToPreferences() {
@@ -40,7 +37,6 @@ public class UserSession {
         if (firebaseUserId != null) {
             editor.putString(KEY_FIREBASE_USER_ID, firebaseUserId);
         }
-        editor.putBoolean(KEY_IS_ANONYMOUS, isAnonymous);
         editor.apply();
     }
 
@@ -59,11 +55,6 @@ public class UserSession {
 
     public void setFirebaseUserId(String firebaseUserId) {
         this.firebaseUserId = firebaseUserId;
-        saveToPreferences();
-    }
-
-    public void setAnonymous(boolean anonymous) {
-        isAnonymous = anonymous;
         saveToPreferences();
     }
 }

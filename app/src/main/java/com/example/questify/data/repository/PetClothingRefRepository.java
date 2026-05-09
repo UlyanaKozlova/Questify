@@ -36,19 +36,35 @@ public class PetClothingRefRepository {
     }
 
     public List<PetClothingRef> getAll() {
-        return petClothingRefDao.getAll()
+        PetEntity pet = petDao.getPet();
+        if (pet == null) {
+            return java.util.Collections.emptyList();
+        }
+        return petClothingRefDao.getAllForPet(pet.globalId)
                 .stream()
                 .map(PetClothingRefMapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     public void deleteAll() {
+        PetEntity pet = petDao.getPet();
+        if (pet == null) {
+            return;
+        }
         String defaultGlobalId = clothingRepository.getDefaultGlobalId();
-        for (PetClothingRefEntity petClothingRefEntity : petClothingRefDao.getAll()) {
+        for (PetClothingRefEntity petClothingRefEntity : petClothingRefDao.getAllForPet(pet.globalId)) {
             if (!petClothingRefEntity.clothingGlobalId.equals(defaultGlobalId)) {
                 petClothingRefDao.delete(petClothingRefEntity);
             }
         }
+    }
+
+    public void purgeForeignRefs() {
+        PetEntity pet = petDao.getPet();
+        if (pet == null) {
+            return;
+        }
+        petClothingRefDao.deleteForeignRefs(pet.globalId);
     }
 
     public void ensureLocalClothingExists() {
@@ -69,13 +85,21 @@ public class PetClothingRefRepository {
     }
 
     public List<PetClothingRef> getPetClothingRefForSync() {
-        return petClothingRefDao.getAll()
+        PetEntity pet = petDao.getPet();
+        if (pet == null) {
+            return java.util.Collections.emptyList();
+        }
+        return petClothingRefDao.getAllForPet(pet.globalId)
                 .stream()
                 .map(PetClothingRefMapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     public void saveFromSync(PetClothingRef ref) {
+        PetEntity pet = petDao.getPet();
+        if (pet == null || !pet.globalId.equals(ref.getPetGlobalId())) {
+            return;
+        }
         PetClothingRefEntity existing = petClothingRefDao.getByPetAndClothing(
                 ref.getPetGlobalId(), ref.getClothingGlobalId());
         if (existing == null) {

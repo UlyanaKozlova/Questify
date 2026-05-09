@@ -46,6 +46,23 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="4dp">
+
+        <TextView style="@style/Questify.WeekdayLabel" android:text="@string/weekday_mon" />
+        <TextView style="@style/Questify.WeekdayLabel" android:text="@string/weekday_tue" />
+        <TextView style="@style/Questify.WeekdayLabel" android:text="@string/weekday_wed" />
+        <TextView style="@style/Questify.WeekdayLabel" android:text="@string/weekday_thu" />
+        <TextView style="@style/Questify.WeekdayLabel" android:text="@string/weekday_fri" />
+        <TextView style="@style/Questify.WeekdayLabel" android:text="@string/weekday_sat" />
+        <TextView style="@style/Questify.WeekdayLabel" android:text="@string/weekday_sun" />
+
+    </LinearLayout>
+
     <com.kizitonwose.calendar.view.CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"

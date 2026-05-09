@@ -24,6 +24,7 @@ public class InitPetUseCase {
     public void execute() {
         initClothingUseCase.execute();
         petRepository.ensureLocalPetExists();
+        petClothingRefRepository.purgeForeignRefs();
         petClothingRefRepository.ensureLocalClothingExists();
     }
 }

@@ -94,6 +94,7 @@ public class StatisticsFragment extends Fragment {
         viewModel.getExportResult().observe(getViewLifecycleOwner(), resId -> {
             if (resId != null) {
                 showMessage(getString(resId));
+                viewModel.clearExportResult();
             }
         });
 

@@ -24,6 +24,12 @@ public interface PetClothingRefDao {
     @Query("SELECT * FROM pet_clothing_ref")
     List<PetClothingRefEntity> getAll();
 
+    @Query("SELECT * FROM pet_clothing_ref WHERE petGlobalId = :petGlobalId")
+    List<PetClothingRefEntity> getAllForPet(String petGlobalId);
+
+    @Query("DELETE FROM pet_clothing_ref WHERE petGlobalId != :petGlobalId")
+    void deleteForeignRefs(String petGlobalId);
+
     @Query("SELECT * FROM pet_clothing_ref WHERE petGlobalId = :petGlobalId AND clothingGlobalId = :clothingGlobalId LIMIT 1")
     PetClothingRefEntity getByPetAndClothing(String petGlobalId, String clothingGlobalId);
 

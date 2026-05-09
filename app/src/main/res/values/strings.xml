@@ -274,4 +274,12 @@
     <string name="forward">›</string>
     <string name="back">‹</string>
     <string name="settings">Настройки</string>
+
+    <string name="weekday_mon">Пн</string>
+    <string name="weekday_tue">Вт</string>
+    <string name="weekday_wed">Ср</string>
+    <string name="weekday_thu">Чт</string>
+    <string name="weekday_fri">Пт</string>
+    <string name="weekday_sat">Сб</string>
+    <string name="weekday_sun">Вс</string>
 </resources>

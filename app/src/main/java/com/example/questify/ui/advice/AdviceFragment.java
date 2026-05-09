@@ -79,7 +79,10 @@ public class AdviceFragment extends Fragment {
         });
 
         viewModel.getExportResult().observe(getViewLifecycleOwner(), resId -> {
-            if (resId != null) showMessage(getString(resId));
+            if (resId != null) {
+                showMessage(getString(resId));
+                viewModel.clearExportResult();
+            }
         });
 
         viewModel.getPetImageRes().observe(getViewLifecycleOwner(), resId -> {
