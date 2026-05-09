@@ -46,7 +46,6 @@ public class StatisticsFragment extends Fragment {
     private TextView textTotal;
     private TextView textCompleted;
     private TextView textOverdue;
-    private TextView tvStatsUsername;
     private TextView tvStatsLevel;
     private PieChart pieChart;
     private View cardStats;
@@ -75,7 +74,6 @@ public class StatisticsFragment extends Fragment {
         textTotal = view.findViewById(R.id.textTotal);
         textCompleted = view.findViewById(R.id.textCompleted);
         textOverdue = view.findViewById(R.id.textOverdue);
-        tvStatsUsername = view.findViewById(R.id.tvStatsUsername);
         tvStatsLevel = view.findViewById(R.id.tvStatsLevel);
         pieChart = view.findViewById(R.id.pieChart);
         view.findViewById(R.id.chipGroupExportFormat);
@@ -91,7 +89,6 @@ public class StatisticsFragment extends Fragment {
         viewModel.getProjectChartData().observe(getViewLifecycleOwner(), this::updateChart);
         viewModel.getUser().observe(getViewLifecycleOwner(), user -> {
             if (user == null) return;
-            tvStatsUsername.setText(user.getUsername());
             tvStatsLevel.setText(getString(R.string.stats_user_level, user.getLevel()));
         });
         viewModel.getExportResult().observe(getViewLifecycleOwner(), resId -> {

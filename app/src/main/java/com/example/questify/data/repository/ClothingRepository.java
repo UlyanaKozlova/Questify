@@ -39,7 +39,12 @@ public class ClothingRepository {
     }
 
     public void update(Clothing clothing) {
+        ClothingEntity existing = clothingDao.getByGlobalId(clothing.getGlobalId());
+        if (existing == null) {
+            return;
+        }
         ClothingEntity entity = ClothingMapper.toEntity(clothing);
+        entity.localId = existing.localId;
         entity.updatedAt = System.currentTimeMillis();
         entity.needsSync = true;
         clothingDao.update(entity);

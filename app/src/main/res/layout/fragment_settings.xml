@@ -13,15 +13,6 @@
         android:paddingBottom="80dp">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/settingsButton"
-            android:textColor="@color/text_primary"
-            android:textSize="24sp" />
-
-        <TextView
             style="@style/TextAppearance.Questify.SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

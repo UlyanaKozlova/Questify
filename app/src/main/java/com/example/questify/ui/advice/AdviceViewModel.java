@@ -30,7 +30,6 @@ public class AdviceViewModel extends ViewModel {
     private final GetAdviceUseCase getAdviceUseCase;
     private final GetTasksAmountUseCase getTasksAmountUseCase;
     private final ExportStatisticsToPngUseCase exportStatisticsToPngUseCase;
-    private final PetRepository petRepository;
     private final ClothingRepository clothingRepository;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -65,7 +64,6 @@ public class AdviceViewModel extends ViewModel {
         this.getAdviceUseCase = getAdviceUseCase;
         this.getTasksAmountUseCase = getTasksAmountUseCase;
         this.exportStatisticsToPngUseCase = exportStatisticsToPngUseCase;
-        this.petRepository = petRepository;
         this.clothingRepository = clothingRepository;
 
         petImageRes.addSource(petRepository.getPetLive(), this::resolvePetImage);
